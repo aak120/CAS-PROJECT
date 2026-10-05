@@ -33,10 +33,12 @@ window.MQ = window.MQ || {};
   }
   function onLeave(fn) { cleanup = fn; }
 
+  let themeSetByApp = false;
   function applyTheme() {
     const t = (S && S.settings.theme) || 'auto';
-    if (t === 'auto') document.documentElement.removeAttribute('data-theme');
-    else document.documentElement.setAttribute('data-theme', t);
+    // In "auto" only undo a theme we set ourselves, so a host page's own theme choice is respected.
+    if (t === 'auto') { if (themeSetByApp) document.documentElement.removeAttribute('data-theme'); themeSetByApp = false; }
+    else { document.documentElement.setAttribute('data-theme', t); themeSetByApp = true; }
   }
 
   // ---------- Header & tabs ----------
