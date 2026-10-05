@@ -50,11 +50,11 @@ window.MQ = window.MQ || {};
       '</div>';
   }
   function renderTabs(active) {
-    const map = { lesson: 'learn', game: 'play', sim: 'sim' };
+    const map = { lesson: 'learn', practice: 'learn', game: 'play', sim: 'sim', personality: 'home' };
     active = map[active] || active;
     const tabs = [['home', '🏠', 'Home'], ['learn', '📚', 'Learn'], ['play', '🎮', 'Play'], ['sim', '📈', 'Simulate'], ['ranks', '🏆', 'Ranks']];
     $('#tabs').innerHTML = tabs.map(t => '<a href="#/' + t[0] + '" class="tab ' + (active === t[0] ? 'active' : '') + '"><span class="ti">' + t[1] + '</span><span class="tl">' + t[2] + '</span></a>').join('');
-    $('#tabs').style.display = ['lesson', 'game'].includes(location.hash.split('/')[1]) ? 'none' : '';
+    $('#tabs').style.display = ['lesson', 'game', 'practice', 'personality'].includes(location.hash.split('/')[1]) ? 'none' : '';
   }
 
   // ---------- Onboarding ----------
@@ -63,25 +63,34 @@ window.MQ = window.MQ || {};
     $('#tabs').innerHTML = '';
     const main = $('#main');
     main.className = 'screen onboarding';
-    let avatar = FREE_AVATARS[0], goal = 30;
+    let avatar = FREE_AVATARS[0], goal = 30, country = guessCountry();
     main.innerHTML =
       '<div class="hero"><div class="logo">💸</div><h1>MoneyQuest</h1><p>Level up your money skills with bite-sized lessons, games and simulations. No real money involved, ever.</p></div>' +
       '<div class="card"><label class="label" for="name">What should we call you?</label><input id="name" class="input" maxlength="16" placeholder="Your nickname" autocomplete="off">' +
       '<p class="hint">Use a nickname, not your full name. Your progress stays on this device.</p>' +
       '<div class="label">Pick an avatar</div><div class="avatar-grid">' + FREE_AVATARS.map(a => '<button class="avatar-pick ' + (a === avatar ? 'sel' : '') + '" data-a="' + a + '">' + a + '</button>').join('') + '</div>' +
+      '<div class="label">Where do you live?</div><div class="chips country-chips">' + ['IN', 'US', 'UK', 'GL'].map(k => '<button class="chip ' + (k === country ? 'on' : '') + '" data-c="' + k + '">' + MQ.COUNTRIES[k].flag + ' ' + MQ.COUNTRIES[k].name + '</button>').join('') + '</div>' +
+      '<p class="hint">Sets your currency, typical salaries and prices in simulations, and a country-specific unit (tax, banking, credit).</p>' +
       '<div class="label">Daily goal</div><div class="goal-grid">' + GOALS.map(g => '<button class="goal-pick ' + (g.xp === goal ? 'sel' : '') + '" data-g="' + g.xp + '"><b>' + g.name + '</b><span>' + g.xp + ' XP/day</span></button>').join('') + '</div>' +
       '<button id="start" class="btn primary block lg">Start my quest 🚀</button></div>';
     $$('.avatar-pick', main).forEach(b => b.onclick = () => { avatar = b.dataset.a; $$('.avatar-pick', main).forEach(x => x.classList.toggle('sel', x === b)); });
     $$('.goal-pick', main).forEach(b => b.onclick = () => { goal = +b.dataset.g; $$('.goal-pick', main).forEach(x => x.classList.toggle('sel', x === b)); });
+    $$('[data-c]', main).forEach(b => b.onclick = () => { country = b.dataset.c; $$('[data-c]', main).forEach(x => x.classList.toggle('on', x === b)); });
     $('#start').onclick = () => {
       const name = $('#name').value.trim();
       if (!name) { $('#name').focus(); toast('Pick a nickname first 🙂'); return; }
       S.profile = { name, avatar, id: Math.random().toString(36).slice(2, 10) };
       S.goal = goal;
+      S.settings.country = country;
       ST.save();
       sound('level');
-      go('#/home');
+      go('#/personality/onboard');
     };
+  }
+
+  function guessCountry() {
+    const l = (navigator.language || '').toUpperCase();
+    return /-IN$/.test(l) ? 'IN' : /-GB$/.test(l) ? 'UK' : /-US$/.test(l) ? 'US' : 'GL';
   }
 
   // ---------- Home ----------
@@ -101,7 +110,8 @@ window.MQ = window.MQ || {};
 
     main.innerHTML =
       '<h1 class="greet">Hey ' + esc(S.profile.name) + ' 👋</h1>' +
-      '<p class="sub">' + (st.today ? 'Streak secured for today. Keep going!' : st.atRisk ? '⚠️ Your ' + st.count + '-day streak needs you today!' : 'Earn XP today to start a streak 🔥') + '</p>' +
+      '<p class="sub">' + (st.today ? 'You learned something today. Nice!' : st.atRisk ? 'Learn one thing today to keep your ' + st.count + '-day learning streak.' : 'Finish a lesson, game or simulation to start a learning streak.') + '</p>' +
+      homeNudges() +
       '<div class="card goal-card">' + ring(tx / S.goal, 92, Math.min(tx, S.goal) + '/' + S.goal) +
       '<div><div class="kicker">Daily goal</div><h3>' + (tx >= S.goal ? 'Goal smashed! 🎯' : (S.goal - tx) + ' XP to go') + '</h3>' +
       '<div class="week">' + days.join('') + '</div></div></div>' +
@@ -109,11 +119,12 @@ window.MQ = window.MQ || {};
         : '<div class="card"><h3>🏆 All lessons complete!</h3><p class="muted">Replay lessons for practice, or try the simulations.</p></div>') +
       '<div id="challenge"></div>' +
       '<a class="card league-mini" href="#/ranks"><span class="tier-badge" style="--tc:' + tier.color + '">' + tier.e + '</span><div><div class="kicker">' + tier.name + ' League</div><h3>You are #' + rank + ' this week</h3></div><span class="go">›</span></a>' +
-      '<h2 class="section">Play & simulate</h2><div class="grid2">' +
-      tile('#/game/needs', '🛒', 'Needs vs Wants', 'Speed sort') +
-      tile('#/game/scam', '🕵️', 'Scam or Legit?', 'Spot the fake') +
-      tile('#/sim/market', '📈', 'Market Sim', 'Fake stocks, live') +
-      tile('#/sim/life', '🧑‍💼', 'Life Sim', '12 months of paychecks') + '</div>' +
+      '<h2 class="section">Simulate & play</h2><div class="grid2">' +
+      tile('#/sim/life', '🏙️', 'Life Simulator', 'Your first salary') +
+      tile('#/sim/portfolio', '🧺', 'Portfolio Sim', 'Invest through history') +
+      tile('#/game/scam', '🚨', 'Scam Simulator', 'Spot the red flags') +
+      tile('#/game/budget', '⚔️', 'Budget Battle', 'Survive the month') + '</div>' +
+      '<div class="card lit-mini"><div class="kicker">🧠 Financial Literacy Score</div><h3>' + (MQ.adaptive.overall() ? Math.round(MQ.adaptive.overall() * 100) + '%' : 'Answer a few questions to unlock') + '</h3>' + MQ.adaptive.scoreTable() + '<p class="hint">Tap a topic for a 3-minute adaptive challenge.</p></div>' +
       '<div class="card tip"><b>💡 Tip of the day</b><p>' + esc(money(tip)) + '</p></div>' +
       '<div class="card level-card"><div class="row"><div><div class="kicker">Level ' + lv.level + '</div><h3>' + lv.title + '</h3></div><div class="muted">' + S.xp + ' XP</div></div>' +
       '<div class="bar"><i style="width:' + (lv.pct * 100).toFixed(1) + '%"></i></div><div class="muted small">' + (lv.need - lv.into) + ' XP to level ' + (lv.level + 1) + '</div></div>';
@@ -122,6 +133,14 @@ window.MQ = window.MQ || {};
     if (S.league.result && !S.league.result.seen) showLeagueResult();
   });
 
+  function homeNudges() {
+    let out = '';
+    if (!S.personality) out += '<a class="card nudge" href="#/personality" style="--c:#8b5cf6"><span class="emoji-tile">🧩</span><div><div class="kicker">2-minute quiz</div><h3>Discover your money personality</h3><p class="muted small">Simulations adapt to how you handle money.</p></div><span class="go">›</span></a>';
+    const w = MQ.adaptive.weakest();
+    if (w) out += '<a class="card nudge" href="#/practice/' + w.cat.id + '" style="--c:#ef4444"><span class="emoji-tile">' + w.cat.e + '</span><div><div class="kicker">Personal coach · ' + Math.round(w.score * 100) + '%</div><h3>You seem to be struggling with ' + esc(w.cat.concept) + '.</h3><p class="muted small">Want a 3-minute challenge? Easier questions first, with explanations.</p></div><span class="go">›</span></a>';
+    return out;
+  }
+
   function tile(href, e, title, sub) {
     return '<a class="tile" href="' + href + '"><span class="te">' + e + '</span><b>' + title + '</b><span>' + sub + '</span></a>';
   }
@@ -129,12 +148,16 @@ window.MQ = window.MQ || {};
   function renderChallenge(el) {
     const today = ST.dateKey();
     const r = ST.rng('challenge:' + today);
-    const q = MQ.ALL_QUESTIONS[Math.floor(r() * MQ.ALL_QUESTIONS.length)];
+    const weak = MQ.adaptive.weakest();
+    let q, label = '';
+    if (weak) { const pool = MQ.adaptive.bankQuestions(weak.cat.id); q = pool[Math.floor(r() * pool.length)]; label = ' · picked for you: ' + weak.cat.name; }
+    else q = MQ.ALL_QUESTIONS[Math.floor(r() * MQ.ALL_QUESTIONS.length)];
+    const qCat = q.cat || MQ.adaptive.catOfLesson(q.lessonId);
     if (S.challenge.date === today) {
       el.innerHTML = '<div class="card challenge done"><div class="kicker">⚡ Daily challenge</div><h3>' + (S.challenge.correct ? 'Nailed it! Come back tomorrow.' : 'Done for today. New question tomorrow!') + '</h3></div>';
       return;
     }
-    el.innerHTML = '<div class="card challenge"><div class="kicker">⚡ Daily challenge · +15 XP</div><h3>' + esc(money(q.q)) + '</h3><div class="opts">' +
+    el.innerHTML = '<div class="card challenge"><div class="kicker">⚡ Daily challenge · +15 XP' + esc(label) + '</div><h3>' + esc(money(q.q)) + '</h3><div class="opts">' +
       q.options.map((o, i) => '<button class="opt" data-i="' + i + '">' + esc(money(o)) + '</button>').join('') + '</div><div class="fb"></div></div>';
     $$('.opt', el).forEach(b => b.onclick = () => {
       const i = +b.dataset.i, ok = i === q.answer;
@@ -142,6 +165,7 @@ window.MQ = window.MQ || {};
       if (!ok) b.classList.add('wrong');
       $('.fb', el).innerHTML = '<p class="' + (ok ? 'good' : 'bad') + '">' + (ok ? '✅ Correct! ' : '❌ Not quite. ') + esc(money(q.explain)) + '</p>';
       S.challenge = { date: today, correct: ok };
+      MQ.adaptive.recordAnswer(qCat, ok, q.qid);
       S.answers.total++; if (ok) S.answers.correct++;
       ST.save();
       sound(ok ? 'good' : 'bad');
@@ -150,22 +174,27 @@ window.MQ = window.MQ || {};
     });
   }
 
-  function unitOf(lesson) { return MQ.UNITS.find(u => u.id === lesson.unitId); }
+  function unitOf(lesson) { return MQ.UNITS.find(u => u.id === lesson.unitId) || Object.values(MQ.COUNTRY_UNITS).find(u => u.id === lesson.unitId); }
   function isUnlocked(lesson) {
     if (lesson.index === 0) return true;
     const prev = unitOf(lesson).lessons[lesson.index - 1];
     return !!(S.lessons[prev.id] && S.lessons[prev.id].done);
   }
   function nextLesson() {
-    for (const u of MQ.UNITS) for (const l of u.lessons) if (!(S.lessons[l.id] && S.lessons[l.id].done) && isUnlocked(l)) return l;
+    for (const u of MQ.visibleUnits()) for (const l of u.lessons) if (!(S.lessons[l.id] && S.lessons[l.id].done) && isUnlocked(l)) return l;
     return null;
   }
 
   // ---------- Learn ----------
   route('learn', main => {
-    const done = ST.countDone(S), total = Object.keys(MQ.LESSONS).length;
-    main.innerHTML = '<h1>Learn</h1><p class="sub">' + done + ' of ' + total + ' lessons complete. Units can be played in any order.</p>' +
-      MQ.UNITS.map(u => {
+    const units = MQ.visibleUnits();
+    const all = units.reduce((t, u) => t.concat(u.lessons), []);
+    const done = all.filter(l => S.lessons[l.id] && S.lessons[l.id].done).length;
+    const w = MQ.adaptive.weakest();
+    main.innerHTML = '<h1>Learn</h1><p class="sub">' + done + ' of ' + all.length + ' lessons complete. Units can be played in any order.</p>' +
+      '<div class="card"><div class="row"><div><div class="kicker">🧠 Financial Literacy Score</div><h3>' + (MQ.adaptive.overall() ? Math.round(MQ.adaptive.overall() * 100) + '% overall' : 'Not enough answers yet') + '</h3></div><a class="btn sm primary" href="#/practice' + (w ? '/' + w.cat.id : '') + '">🎯 Practice</a></div>' + MQ.adaptive.scoreTable() +
+      '<p class="hint">Tap a topic for a 3-minute adaptive challenge with freshly generated questions.</p></div>' +
+      units.map(u => {
         const d = u.lessons.filter(l => S.lessons[l.id] && S.lessons[l.id].done).length;
         return '<section class="unit" style="--c:' + u.color + '"><div class="unit-head"><span class="unit-emoji">' + u.emoji + '</span><div><h2>' + u.title + '</h2><p>' + esc(u.blurb) + '</p></div><span class="unit-count">' + d + '/' + u.lessons.length + '</span></div>' +
           '<div class="bar unit-bar"><i style="width:' + (d / u.lessons.length * 100) + '%"></i></div>' +
@@ -222,7 +251,7 @@ window.MQ = window.MQ || {};
       $$('.opt', main).forEach(b => b.onclick = () => { pick = +b.dataset.i; $$('.opt', main).forEach(x => x.classList.toggle('sel', x === b)); $('#check').disabled = false; });
       $('#check').onclick = () => {
         const ok = pick === q.answer;
-        if (firstTry[qi] === undefined) { firstTry[qi] = ok; S.answers.total++; if (ok) S.answers.correct++; ST.save(); }
+        if (firstTry[qi] === undefined) { firstTry[qi] = ok; S.answers.total++; if (ok) S.answers.correct++; MQ.adaptive.recordAnswer(MQ.adaptive.catOfLesson(lesson.id), ok, lesson.id + ':' + qi); ST.save(); }
         if (!ok) queue.push(qi);
         sound(ok ? 'good' : 'bad');
         $$('.opt', main).forEach((x, j) => { x.disabled = true; if (j === pick && !ok) x.classList.add('wrong'); if (ok && j === q.answer) x.classList.add('right'); });
@@ -259,7 +288,8 @@ window.MQ = window.MQ || {};
   // ---------- Ranks ----------
   route('ranks', (main, args) => {
     const tab = args[0] === 'friends' ? 'friends' : 'league';
-    main.innerHTML = '<h1>Leaderboards</h1><div class="seg"><a href="#/ranks" class="' + (tab === 'league' ? 'on' : '') + '">Weekly league</a><a href="#/ranks/friends" class="' + (tab === 'friends' ? 'on' : '') + '">Friends</a></div><div id="rk"></div>';
+    const cat = args[1] || 'weekXp';
+    main.innerHTML = '<h1>Leaderboards</h1><div class="seg"><a href="#/ranks" class="' + (tab === 'league' ? 'on' : '') + '">Weekly league</a><a href="#/ranks/friends" class="' + (tab === 'friends' ? 'on' : '') + '">Friends & categories</a></div><div id="rk"></div>';
     const el = $('#rk', main);
     if (tab === 'league') {
       const tier = ST.TIERS[S.league.tier], rows = ST.leagueTable();
@@ -273,27 +303,41 @@ window.MQ = window.MQ || {};
         }).join('') + '</ol>' +
         '<p class="hint center">League rivals are simulated players so you always have someone to race. Use the Friends tab to compare with real classmates.</p>';
     } else {
-      renderFriends(el);
+      renderFriends(el, cat);
     }
   });
 
-  function renderFriends(el) {
-    const me = { name: S.profile.name, avatar: S.profile.avatar, xp: S.xp, streak: ST.streakNow().count, lessons: ST.countDone(S), you: true };
-    const rows = S.friends.map(f => Object.assign({}, f)).concat([me]).sort((a, b) => b.xp - a.xp);
+  const BOARD_CATS = [
+    { id: 'weekXp', name: '⚡ Weekly XP', fmt: v => v + ' XP' },
+    { id: 'sim', name: '🏙️ Best simulator', fmt: v => (v >= 0 ? '+' : '') + v + '%', hint: 'Net-worth growth in the Life Simulator, as a % of total income' },
+    { id: 'decisions', name: '🧠 Best decisions', fmt: v => v + '/100', hint: 'Best Life Simulator decision score' },
+    { id: 'streakBest', name: '🔥 Longest streak', fmt: v => v + ' days' },
+    { id: 'improved', name: '📈 Most improved', fmt: v => '+' + v + ' pts', hint: 'Literacy Score gained this week' },
+    { id: 'diversify', name: '🌈 Best diversification', fmt: v => v + '/100', hint: 'Best Portfolio Simulator diversification score' },
+    { id: 'xp', name: '🏆 All-time XP', fmt: v => v + ' XP' }
+  ];
+
+  function renderFriends(el, catId) {
+    const cat = BOARD_CATS.find(c => c.id === catId) || BOARD_CATS[0];
+    const val = r => cat.id === 'xp' ? r.xp : ((r.stats || {})[cat.id] || 0);
+    const me = { name: S.profile.name, avatar: S.profile.avatar, xp: S.xp, streak: ST.streakNow().count, lessons: ST.countDone(S), you: true, stats: ST.myStats() };
+    const rows = S.friends.map(f => Object.assign({}, f)).concat([me]).sort((a, b) => val(b) - val(a));
     el.innerHTML = '<div class="card"><h3>🤝 Compete with friends</h3><p class="muted">Share your friend code with classmates (chat, email, anything). Paste theirs below to add them. Codes are snapshots, so swap new ones to update the board.</p>' +
       '<label class="label">Your friend code</label><div class="code-row"><input class="input mono" readonly id="mycode" value="' + esc(ST.friendCode()) + '"><button class="btn" id="copy">Copy</button></div>' +
-      '<label class="label" for="fc">Add a friend</label><div class="code-row"><input class="input mono" id="fc" placeholder="Paste MQ1-… code"><button class="btn primary" id="add">Add</button></div></div>' +
-      '<ol class="board">' + rows.map((r, i) => '<li class="' + (r.you ? 'you' : '') + '"><span class="pos">' + (i + 1) + '</span><span class="avatar sm">' + esc(r.avatar) + '</span><span class="nm">' + esc(r.name) + (r.you ? ' (you)' : '') + '<small>🔥' + r.streak + ' · 📚' + r.lessons + (r.date ? ' · as of ' + esc(r.date) : '') + '</small></span><span class="xp">' + r.xp + ' XP</span>' + (r.you ? '' : '<button class="rm" data-id="' + esc(r.id) + '" aria-label="Remove">✕</button>') + '</li>').join('') + '</ol>';
+      '<label class="label" for="fc">Add a friend</label><div class="code-row"><input class="input mono" id="fc" placeholder="Paste MQ2-… code"><button class="btn primary" id="add">Add</button></div></div>' +
+      '<div class="chips board-cats">' + BOARD_CATS.map(c => '<a class="chip ' + (c.id === cat.id ? 'on' : '') + '" href="#/ranks/friends/' + c.id + '">' + c.name + '</a>').join('') + '</div>' +
+      '<p class="hint">' + esc(cat.hint || 'Different boards reward different skills, not just grinding.') + '</p>' +
+      '<ol class="board">' + rows.map((r, i) => '<li class="' + (r.you ? 'you' : '') + '"><span class="pos">' + (i < 3 && rows.length > 1 ? ['🥇', '🥈', '🥉'][i] : i + 1) + '</span><span class="avatar sm">' + esc(r.avatar) + '</span><span class="nm">' + esc(r.name) + (r.you ? ' (you)' : '') + '<small>🔥' + r.streak + ' · 📚' + r.lessons + (r.date ? ' · as of ' + esc(r.date) : '') + (!r.you && !r.stats ? ' · old code' : '') + '</small></span><span class="xp">' + cat.fmt(val(r)) + '</span>' + (r.you ? '' : '<button class="rm" data-id="' + esc(r.id) + '" aria-label="Remove">✕</button>') + '</li>').join('') + '</ol>';
     $('#copy', el).onclick = () => {
       const inp = $('#mycode', el);
       inp.select();
       (navigator.clipboard ? navigator.clipboard.writeText(inp.value) : Promise.reject()).then(() => toast('📋 Copied!'), () => { document.execCommand('copy'); toast('📋 Copied!'); });
     };
     $('#add', el).onclick = () => {
-      try { const f = ST.addFriend($('#fc', el).value); toast('Added ' + f.name + '!', 'good'); renderFriends(el); }
+      try { const f = ST.addFriend($('#fc', el).value); toast('Added ' + f.name + '!', 'good'); renderFriends(el, cat.id); }
       catch (e) { toast(e.message, 'bad'); }
     };
-    $$('.rm', el).forEach(b => b.onclick = () => { S.friends = S.friends.filter(f => f.id !== b.dataset.id); ST.save(); renderFriends(el); });
+    $$('.rm', el).forEach(b => b.onclick = () => { S.friends = S.friends.filter(f => f.id !== b.dataset.id); ST.save(); renderFriends(el, cat.id); });
   }
 
   function showLeagueResult() {
@@ -323,9 +367,18 @@ window.MQ = window.MQ || {};
       '<div class="card"><div class="bar"><i style="width:' + lv.pct * 100 + '%"></i></div><div class="muted small">' + lv.into + ' / ' + lv.need + ' XP to level ' + (lv.level + 1) + '</div></div>' +
       '<div class="stat-grid">' +
       stat('⚡', S.xp, 'Total XP') + stat('🔥', st.count, 'Day streak') + stat('🏅', S.streak.best, 'Best streak') +
-      stat('📚', ST.countDone(S) + '/' + Object.keys(MQ.LESSONS).length, 'Lessons') + stat('🎯', acc + '%', 'Quiz accuracy') + stat('🪙', S.coins, 'Coins') + '</div>' +
+      stat('📚', ST.countDone(S), 'Lessons done') + stat('🎯', acc + '%', 'Quiz accuracy') + stat('🪙', S.coins, 'Coins') + '</div>' +
+      '<h2 class="section">🧠 Financial Literacy Score</h2><div class="card"><div class="row"><h3>' + (MQ.adaptive.overall() ? Math.round(MQ.adaptive.overall() * 100) + '% overall' : 'Answer questions to build your score') + '</h3>' + (MQ.adaptive.improvement() > 0.005 ? '<span class="pill up">+' + Math.round(MQ.adaptive.improvement() * 100) + ' this week</span>' : '') + '</div>' + MQ.adaptive.scoreTable() +
+      (MQ.adaptive.strongest() ? '<p class="small">💪 Strongest: <b>' + MQ.adaptive.strongest().cat.name + '</b>' + (MQ.adaptive.weakest() ? ' · 🎯 Work on: <b>' + MQ.adaptive.weakest().cat.name + '</b>' : '') + '</p>' : '') + '</div>' +
+      (S.personality ? MQ.personality.resultCard(S.personality, true) : '<a class="card nudge" href="#/personality" style="--c:#8b5cf6"><span class="emoji-tile">🧩</span><div><h3>Discover your money personality</h3><p class="muted small">A 6-question scenario quiz.</p></div><span class="go">›</span></a>') +
+      '<h2 class="section">🏅 Personal records</h2><div class="card"><div class="ledger">' +
+      '<div><span>🏙️ Life Sim best decision score</span><b>' + (S.records.lifeScore !== undefined ? S.records.lifeScore + '/100' : '–') + '</b></div>' +
+      '<div><span>💰 Life Sim best net-worth growth</span><b>' + (S.records.lifeNet !== undefined ? S.records.lifeNet + '% of income' : '–') + '</b></div>' +
+      '<div><span>🌈 Best diversification</span><b>' + (S.records.diversify !== undefined ? S.records.diversify + '/100' : '–') + '</b></div>' +
+      '<div><span>🚨 Scams spotted</span><b>' + (S.counters.scamsSpotted || 0) + '</b></div>' +
+      '<div><span>⚔️ Challenges won</span><b>' + S.challenges.filter(c => c.win).length + '/' + S.challenges.length + '</b></div></div></div>' +
       '<h2 class="section">Last 7 days</h2><div class="card"><div class="xp-chart">' + bars.join('') + '</div></div>' +
-      '<h2 class="section">Units</h2><div class="card">' + MQ.UNITS.map(u => {
+      '<h2 class="section">Units</h2><div class="card">' + MQ.visibleUnits().map(u => {
         const d = u.lessons.filter(l => S.lessons[l.id] && S.lessons[l.id].done).length;
         return '<div class="unit-prog" style="--c:' + u.color + '"><span>' + u.emoji + ' ' + u.title + '</span><div class="bar"><i style="width:' + d / u.lessons.length * 100 + '%"></i></div><span class="muted small">' + d + '/' + u.lessons.length + '</span></div>';
       }).join('') + '</div>' +
@@ -337,7 +390,9 @@ window.MQ = window.MQ || {};
       '</div>' +
       '<h2 class="section">Settings</h2><div class="card settings">' +
       '<label class="set-row"><span>Daily goal</span><select id="s-goal">' + GOALS.map(g => '<option value="' + g.xp + '" ' + (S.goal === g.xp ? 'selected' : '') + '>' + g.name + ' (' + g.xp + ' XP)</option>').join('') + '</select></label>' +
-      '<label class="set-row"><span>Currency symbol</span><select id="s-cur">' + ['$', '£', '€', '₹', '¥', 'A$', 'C$', 'S$', 'HK$', 'R', 'AED '].map(c => '<option ' + (S.settings.currency === c ? 'selected' : '') + '>' + c + '</option>').join('') + '</select></label>' +
+      '<label class="set-row"><span>Country mode</span><select id="s-country">' + ['IN', 'US', 'UK', 'GL'].map(k => '<option value="' + k + '" ' + (MQ.country().id === k ? 'selected' : '') + '>' + MQ.COUNTRIES[k].flag + ' ' + MQ.COUNTRIES[k].name + '</option>').join('') + '</select></label>' +
+      (MQ.country().id === 'GL' ? '<label class="set-row"><span>Currency symbol</span><select id="s-cur">' + ['$', '£', '€', '₹', '¥', 'A$', 'C$', 'S$', 'HK$', 'R', 'AED '].map(c => '<option ' + (S.settings.currency === c ? 'selected' : '') + '>' + c + '</option>').join('') + '</select></label>' : '') +
+      '<p class="hint">Country mode changes currency, number format, simulation prices and adds a country unit in Learn. Finish running simulations before switching.</p>' +
       '<label class="set-row"><span>Theme</span><select id="s-theme">' + [['auto', 'Match device'], ['light', 'Light'], ['dark', 'Dark']].map(t => '<option value="' + t[0] + '" ' + (S.settings.theme === t[0] ? 'selected' : '') + '>' + t[1] + '</option>').join('') + '</select></label>' +
       '<label class="set-row"><span>Sound effects</span><input type="checkbox" id="s-sound" ' + (S.settings.sound ? 'checked' : '') + '></label>' +
       '<button class="btn danger ghost block" id="reset">Reset all progress</button></div>' +
@@ -356,7 +411,8 @@ window.MQ = window.MQ || {};
       S.profile.avatar = e; ST.save(); render();
     });
     $('#s-goal').onchange = e => { S.goal = +e.target.value; ST.save(); };
-    $('#s-cur').onchange = e => { S.settings.currency = e.target.value; ST.save(); render(); };
+    if ($('#s-cur')) $('#s-cur').onchange = e => { S.settings.currency = e.target.value; ST.save(); render(); };
+    $('#s-country').onchange = e => { S.settings.country = e.target.value; ST.save(); toast(MQ.country().flag + ' ' + MQ.country().name + ' mode on'); render(); };
     $('#s-theme').onchange = e => { S.settings.theme = e.target.value; ST.save(); applyTheme(); };
     $('#s-sound').onchange = e => { S.settings.sound = e.target.checked; ST.save(); };
     $('#reset').onclick = () => {

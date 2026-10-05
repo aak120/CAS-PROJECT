@@ -60,7 +60,15 @@ window.MQ = window.MQ || {};
       life: null,
       friends: [],
       ownedAvatars: [],
-      settings: { currency: '$', sound: true, theme: 'auto' }
+      personality: null,   // result of the money-personality quiz
+      skills: {},          // adaptive learning: per-category decayed accuracy
+      qstats: {},          // per-question right/wrong for spaced review
+      skillWeek: null,     // baseline for "most improved"
+      records: {},         // personal bests for category leaderboards
+      counters: {},        // scams spotted, sims finished, ...
+      challenges: [],      // multiplayer challenge results
+      lifeSim: null, portfolio: null,
+      settings: { currency: '$', sound: true, theme: 'auto', country: null }
     };
   }
 
@@ -71,6 +79,8 @@ window.MQ = window.MQ || {};
       S = raw ? Object.assign(fresh(), JSON.parse(raw)) : fresh();
     } catch (e) { S = fresh(); }
     S.settings = Object.assign(fresh().settings, S.settings || {});
+    ['skills', 'qstats', 'records', 'counters'].forEach(k => { S[k] = S[k] || {}; });
+    S.challenges = S.challenges || [];
     rolloverLeague();
     return S;
   }
@@ -156,14 +166,30 @@ window.MQ = window.MQ || {};
   const BADGES = [
     { id: 'first-lesson', e: '🎓', name: 'First Steps', desc: 'Finish your first lesson', test: s => countDone(s) >= 1 },
     { id: 'five-lessons', e: '📚', name: 'Bookworm', desc: 'Finish 5 lessons', test: s => countDone(s) >= 5 },
-    { id: 'all-lessons', e: '🏆', name: 'Graduate', desc: 'Finish every lesson', test: s => countDone(s) >= Object.keys(MQ.LESSONS).length },
+    { id: 'all-lessons', e: '🏆', name: 'Graduate', desc: 'Finish every core lesson', test: s => MQ.UNITS.every(u => u.lessons.every(l => s.lessons[l.id] && s.lessons[l.id].done)) },
     { id: 'perfect', e: '💯', name: 'Perfectionist', desc: 'Get 100% on a quiz', test: s => Object.values(s.lessons).some(l => l.best === 1) },
     { id: 'unit', e: '🧩', name: 'Unit Cleared', desc: 'Complete a whole unit', test: s => MQ.UNITS.some(u => u.lessons.every(l => s.lessons[l.id] && s.lessons[l.id].done)) },
     { id: 'streak3', e: '🔥', name: 'On Fire', desc: 'Reach a 3-day streak', test: s => s.streak.best >= 3 },
-    { id: 'streak7', e: '🌋', name: 'Unstoppable', desc: 'Reach a 7-day streak', test: s => s.streak.best >= 7 },
+    { id: 'streak7', e: '🥉', name: 'Bronze Learner', desc: 'Learn 7 days in a row', test: s => s.streak.best >= 7 },
+    { id: 'streak30', e: '🥈', name: 'Silver Learner', desc: 'Learn 30 days in a row', test: s => s.streak.best >= 30 },
+    { id: 'streak100', e: '🎓', name: 'Financial Scholar', desc: 'Learn 100 days in a row', test: s => s.streak.best >= 100 },
     { id: 'xp500', e: '⚡', name: 'Power Up', desc: 'Earn 500 XP', test: s => s.xp >= 500 },
-    { id: 'gamer', e: '🕹️', name: 'Gamer', desc: 'Play all 3 mini-games', test: s => ['needs', 'scam', 'interest'].every(g => s.games[g] && s.games[g].plays) },
-    { id: 'scam-proof', e: '🛡️', name: 'Scam-Proof', desc: 'Score 100% in Scam or Legit', test: s => s.games.scam && s.games.scam.perfect },
+    { id: 'gamer', e: '🕹️', name: 'Gamer', desc: 'Play every mini-game', test: s => (MQ.GAMES || []).length > 0 && MQ.GAMES.every(g => s.games[g.id] && s.games[g.id].plays) },
+    { id: 'scam-proof', e: '🛡️', name: 'Scam-Proof', desc: 'Perfect round in the Scam Simulator', test: s => s.games.scam && s.games.scam.perfect },
+    { id: 'scam-spotter', e: '🚨', name: 'Scam Spotter', desc: 'Correctly identify 10 scams', test: s => (s.counters.scamsSpotted || 0) >= 10 },
+    { id: 'emergency-fund', e: '🧯', name: 'Emergency Fund', desc: 'Finish a Life Sim with 3+ months of expenses saved', test: s => flagOn(s, 'efund') },
+    { id: 'loan-payoff', e: '🔓', name: 'Loan Slayer', desc: 'Pay off a simulated loan in Life Sim', test: s => flagOn(s, 'loanPaid') },
+    { id: 'first-salary', e: '💼', name: 'First Paycheck', desc: 'Finish First Salary mode', test: s => flagOn(s, 'firstSalary') },
+    { id: 'what-if', e: '🧪', name: 'What-If Scientist', desc: 'Run a What-If replay', test: s => flagOn(s, 'whatIf') },
+    { id: 'diversifier', e: '🌈', name: 'Diversifier', desc: 'Invest across 4+ asset classes in the Portfolio Sim', test: s => flagOn(s, 'assetClasses4') },
+    { id: 'market-survivor', e: '🧘', name: 'Market Survivor', desc: 'Stick to your strategy through a simulated crash', test: s => flagOn(s, 'survivor') },
+    { id: 'inflation-survivor', e: '🎈', name: 'Inflation Survivor', desc: 'Keep your buying power in Inflation Dodge', test: s => flagOn(s, 'inflation') },
+    { id: 'credit-builder', e: '💳', name: 'Credit Builder', desc: 'Reach a "good" score in Credit Score Challenge', test: s => flagOn(s, 'creditGood') },
+    { id: 'loan-detective', e: '🔍', name: 'Loan Detective', desc: 'Find the cheapest loan every round', test: s => flagOn(s, 'loanPerfect') },
+    { id: 'budget-survivor', e: '⚔️', name: 'Budget Battler', desc: 'Survive a month in Budget Battle', test: s => flagOn(s, 'budgetWin') },
+    { id: 'self-aware', e: '🧩', name: 'Know Thyself', desc: 'Discover your money personality', test: s => !!s.personality },
+    { id: 'challenger', e: '⚔️', name: 'Challenger', desc: 'Finish a multiplayer challenge', test: s => s.challenges.length >= 1 },
+    { id: 'literate', e: '🧠', name: 'Money Brain', desc: 'Reach 70%+ Literacy Score in every category', test: s => MQ.adaptive && MQ.adaptive.allAbove(0.7) },
     { id: 'first-trade', e: '📈', name: 'First Trade', desc: 'Buy your first stock in the Market Sim', test: s => s.badgeFlags && s.badgeFlags.trade },
     { id: 'diversified', e: '🧺', name: 'Diversified', desc: 'Hold 4+ different investments at once', test: s => s.badgeFlags && s.badgeFlags.diversified },
     { id: 'profit', e: '💹', name: 'In the Green', desc: 'Finish a Market Sim year with a profit', test: s => s.badgeFlags && s.badgeFlags.profit },
@@ -172,6 +198,7 @@ window.MQ = window.MQ || {};
     { id: 'promoted', e: '🚀', name: 'Promoted', desc: 'Get promoted to a higher league', test: s => s.league.tier >= 1 },
     { id: 'friend', e: '🤝', name: 'Squad Up', desc: 'Add a friend with a friend code', test: s => s.friends.length >= 1 }
   ];
+  function flagOn(s, f) { return !!(s.badgeFlags && s.badgeFlags[f]); }
   function countDone(s) { return Object.values(s.lessons).filter(l => l.done).length; }
   function flag(name) { S.badgeFlags = S.badgeFlags || {}; S.badgeFlags[name] = true; save(); checkBadges(); }
   function checkBadges() {
@@ -240,24 +267,44 @@ window.MQ = window.MQ || {};
   // ---------- Friend codes (share progress without a server) ----------
   function b64encode(str) { return btoa(String.fromCharCode.apply(null, new TextEncoder().encode(str))); }
   function b64decode(b64) { return new TextDecoder().decode(Uint8Array.from(atob(b64), c => c.charCodeAt(0))); }
+  // Personal bests used by the category leaderboards. Higher is better.
+  function record(key, value) {
+    if (typeof value !== 'number' || !isFinite(value)) return false;
+    const better = S.records[key] === undefined || value > S.records[key];
+    if (better) { S.records[key] = Math.round(value * 10) / 10; save(); }
+    return better;
+  }
+  function myStats() {
+    return {
+      weekXp: S.league.weekXp, streakBest: S.streak.best,
+      improved: MQ.adaptive ? Math.round(MQ.adaptive.improvement() * 100) : 0,
+      sim: S.records.lifeNet || 0, decisions: S.records.lifeScore || 0, diversify: S.records.diversify || 0
+    };
+  }
   function friendCode() {
     const p = S.profile || { name: 'Player', avatar: '🙂' };
-    const data = { n: p.name, a: p.avatar, x: S.xp, s: streakNow().count, l: countDone(S), d: dateKey(), id: p.id };
-    return 'MQ1-' + b64encode(JSON.stringify(data));
+    const data = { n: p.name, a: p.avatar, x: S.xp, s: streakNow().count, l: countDone(S), d: dateKey(), id: p.id, st: myStats() };
+    return 'MQ2-' + b64encode(JSON.stringify(data));
   }
   function addFriend(code) {
     code = (code || '').trim();
-    if (!code.startsWith('MQ1-')) throw new Error('That does not look like a MoneyQuest friend code.');
+    if (!/^MQ[12]-/.test(code)) throw new Error('That does not look like a MoneyQuest friend code.');
     let d;
     try { d = JSON.parse(b64decode(code.slice(4))); } catch (e) { throw new Error('That code is damaged. Ask your friend to copy it again.'); }
     if (!d || typeof d.n !== 'string' || typeof d.x !== 'number') throw new Error('That code is missing information.');
     if (S.profile && d.id && d.id === S.profile.id) throw new Error('That is your own code! Share it with a friend instead.');
-    const f = { id: d.id || d.n, name: String(d.n).slice(0, 20), avatar: String(d.a || '🙂').slice(0, 4), xp: Math.max(0, d.x | 0), streak: Math.max(0, d.s | 0), lessons: Math.max(0, d.l | 0), date: String(d.d || '') };
+    const f = { id: d.id || d.n, name: String(d.n).slice(0, 20), avatar: String(d.a || '🙂').slice(0, 4), xp: Math.max(0, d.x | 0), streak: Math.max(0, d.s | 0), lessons: Math.max(0, d.l | 0), date: String(d.d || ''), stats: sanitizeStats(d.st) };
     const i = S.friends.findIndex(x => x.id === f.id);
     if (i >= 0) S.friends[i] = f; else S.friends.push(f);
     save();
     checkBadges();
     return f;
+  }
+
+  function sanitizeStats(st) {
+    const out = {};
+    ['weekXp', 'streakBest', 'improved', 'sim', 'decisions', 'diversify'].forEach(k => { const v = st && +st[k]; out[k] = isFinite(v) ? v : 0; });
+    return out;
   }
 
   MQ.state = {
@@ -266,6 +313,6 @@ window.MQ = window.MQ || {};
     levelInfo, addXP, todayXp, streakNow,
     BADGES, checkBadges, flag,
     TIERS, leagueTable, weekProgress,
-    friendCode, addFriend, countDone
+    friendCode, addFriend, countDone, record, myStats, b64encode, b64decode, hashStr
   };
 })(window.MQ);

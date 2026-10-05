@@ -8,12 +8,17 @@ window.MQ = window.MQ || {};
   function esc(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   }
-  function cur() { return (MQ.state.get() && MQ.state.get().settings.currency) || '$'; }
+  function cur() {
+    const S = MQ.state.get();
+    const c = MQ.country && MQ.country();
+    return (c && c.cur) || (S && S.settings.currency) || '$';
+  }
+  function locale() { const c = MQ.country && MQ.country(); return (c && c.locale) || undefined; }
   // Swap "$" amounts in content text for the player's currency symbol.
   function money(text) { const c = cur(); return c === '$' ? text : String(text).replace(/\$(?=\d)/g, c); }
   function fmt(n, decimals) {
     const d = decimals === undefined ? (Math.abs(n) < 100 && n % 1 !== 0 ? 2 : 0) : decimals;
-    const s = Math.abs(n).toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: d });
+    const s = Math.abs(n).toLocaleString(locale(), { minimumFractionDigits: d, maximumFractionDigits: d });
     return (n < 0 ? '−' : '') + cur() + s;
   }
   function pct(n, d) { return (n >= 0 ? '+' : '−') + Math.abs(n * 100).toFixed(d === undefined ? 1 : d) + '%'; }
@@ -144,5 +149,14 @@ window.MQ = window.MQ || {};
 
   function shuffle(a, r) { a = a.slice(); r = r || Math.random; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
-  MQ.ui = { $, $$, esc, money, fmt, pct, toast, modal, closeModal, celebrate, confetti, sound, ring, lineChart, shuffle };
+  // Short money format: ₹1.2L, $45k
+  function fmtShort(n) {
+    const a = Math.abs(n), c = MQ.country && MQ.country();
+    let s;
+    if (c && c.id === 'IN') s = a >= 1e7 ? (a / 1e7).toFixed(a >= 1e8 ? 0 : 1) + 'Cr' : a >= 1e5 ? (a / 1e5).toFixed(a >= 1e6 ? 0 : 1) + 'L' : a >= 1e3 ? Math.round(a / 1e3) + 'k' : Math.round(a);
+    else s = a >= 1e6 ? (a / 1e6).toFixed(1) + 'M' : a >= 1e3 ? (a / 1e3).toFixed(a >= 1e4 ? 0 : 1) + 'k' : Math.round(a);
+    return (n < 0 ? '−' : '') + cur() + s;
+  }
+
+  MQ.ui = { $, $$, esc, money, fmt, fmtShort, pct, cur, toast, modal, closeModal, celebrate, confetti, sound, ring, lineChart, shuffle };
 })(window.MQ);

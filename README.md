@@ -6,17 +6,51 @@ A fun, game-style financial literacy app built for my CAS project. Teens learn m
 
 ## Features
 
-| Area | What's in it |
+### 🏙️ Life Simulator (with First Salary mode)
+- **Generated characters:** for example "Sara, 22, junior designer, takes home ₹35,000. Rent ₹13,000, food ₹8,000, has ₹13,000 saved, wants a ₹1,10,000 scooter." Modes: **First Salary**, **Teen Part-Timer**, or **Custom** (type your own numbers).
+- **Each payday:** essentials are paid, then you split the rest between wants, emergency fund, goal fund, investing (index / gold / hype stock) and extra debt payments.
+- **The big purchase:** pay cash, take a **loan**, use **Buy Now Pay Later**, or a **credit card**, with real interest maths.
+- **Random life events, scaled to your income:** car breakdown, stolen phone, promotion, rent hike, market crash, scam DM, employer pension match and more. If cash runs out, your emergency fund pays first, then the credit card. People with a buffer shrug; people living paycheck to paycheck get hurt.
+- **Personalised:** your money personality changes which events appear.
+- **Analytics at the end:** savings rate, emergency fund (months), debt-to-income, diversification, impulse spending, interest earned vs paid, biggest strength / weakness and the **concept to learn next**.
+- **🧪 What If replays:** the engine is deterministic, so it replays your exact decisions with one change (save instead of borrowing, invest 10% more, inflation at 6%, a 25% crash, and so on). The suggestions are chosen from what you actually did.
+- **⚔️ Multiplayer challenges:** share a code, your friend plays the identical life, and the app explains why your outcomes differed.
+
+### 🧺 Portfolio Simulator
+Split ₹10 lakh / $10,000 / £10,000 across **Stocks, Bonds, ETFs, Gold, Cash, Real Estate**. Then live through **US markets 2000–2024**, **Indian markets 2008–2024**, or a **random future**, one year at a time. Each year explains *why* it happened (dot-com crash, 2008, taper tantrum, COVID, 2022 rate hikes…). Crashes ask you to sell, hold or buy more. Results show CAGR, real return after inflation, worst drop, diversification score, a "what if you'd picked one asset" comparison and What-If replays.
+
+### 🎮 10 mini-games, each tied to a concept
+| Game | Concept |
 |---|---|
-| 📚 **Learn** | 6 units, 18 lessons (Money Basics, Saving & Banking, Earning & Taxes, Credit & Debt, Investing, Money Safety). Swipe-style cards, then a quiz. Wrong answers come back at the end, Duolingo-style. Up to 3 stars per lesson. |
-| 🔥 **Streaks & goals** | Daily XP goal with a progress ring, a day streak, a 7-day activity strip and Streak Freezes you can buy with coins. |
-| ⚡ **Daily challenge** | One new question every day for bonus XP. |
-| 🎮 **Mini-games** | **Needs vs Wants** (45-second swipe sort with combos), **Scam or Legit?** (spot phishing and scams), **Interest Showdown** (which option compounds to more?). |
-| 📈 **Market Mania sim** | Start with $10,000 of pretend money. 7 fictional companies, an index fund and a bond fund. Prices move live (1×/2×/4× speed), breaking news moves the market, dividends get paid, trades cost a fee, and at the end of the "year" you compare yourself with just holding the index. |
-| 🧑‍💼 **Life Sim** | 12 months with a part-time job and a savings goal. Budget each payday with sliders, then handle a random life event (cracked phone, concert, scam DM, dentist...). Overspend and your emergency fund covers it, then a 24% APR credit card. Ends with a grade. |
-| 🏆 **Leaderboards** | Weekly leagues (Bronze → Diamond) with promotion and demotion against simulated rivals, plus a **Friends** board built from shareable friend codes, so classmates can compete without any server. |
-| 🏅 **Progress** | Levels and titles, XP history chart, unit progress, quiz accuracy, 17 badges, coin shop (avatars, streak freezes). |
-| ⚙️ **Settings** | Currency symbol ($, £, €, ₹, ¥, …), daily goal, light/dark theme, sound. |
+| Needs vs Wants | Budgeting (rapid-fire) |
+| ⚔️ Budget Battle | Survive a month on a limited income |
+| 🏁 Compound Interest Race | Time + rate vs 3 rivals |
+| ✨ Interest Showdown | Compound interest intuition |
+| 🎈 Inflation Dodge | Purchasing power and real returns |
+| 💳 Credit Score Challenge | Builds a fictional score (CIBIL / FICO / Experian scale per country) |
+| 🔍 Loan Detective | Total cost vs monthly payment, "0% EMI" and flat-rate tricks |
+| 🧺 Diversification Challenge | Build portfolios for different goals and test them on 500 simulated futures |
+| 🚨 Scam Simulator | Legit / Suspicious / Scam, then spot the red flags (phishing, Ponzi, fake investments, UPI/payment-app, identity theft, social media…) |
+| 📈 Market Mania | Live fictional stock market |
+
+### 🧠 Adaptive learning
+- 6 core units + a **country unit** (🇮🇳 India / 🇺🇸 US / 🇬🇧 UK), with lesson cards and quizzes.
+- **Financial Literacy Score** per category (Budgeting, Saving, Taxes & Income, Credit, Investing, Money Safety), built from lessons, games and sims, weighted towards recent answers.
+- **Personal coach:** "You seem to be struggling with compound interest. Want a 3-minute challenge?" Practice uses **freshly generated questions** that get easier or harder as you answer, plus spaced review of questions you missed.
+- The daily challenge is picked from your weakest topic.
+
+### 🧩 Money personality
+A scenario quiz at onboarding ("You have ₹10,000 left at the end of the month…") gives a profile such as 🟢 Planner · 🟡 Moderate risk · 🔴 Impulsive spending. It tailors the simulations and comes with a clear note that it is not a diagnosis or professional assessment.
+
+### 🏆 Leaderboards, streaks and achievements
+- A weekly league plus friend boards by **category**: weekly XP, best simulator, best decisions, longest streak, most improved, best diversification.
+- Streaks reward *learning*, with milestone badges at 7 / 30 / 100 days ("Financial Scholar") and streak freezes.
+- 30+ achievements: Emergency Fund, Diversifier, Loan Slayer, Inflation Survivor, Scam Spotter, Market Survivor, Credit Builder and more.
+
+### 🌎 Country modes
+Currency, number format (₹10,00,000), typical salaries and prices, credit-score scale and a country-specific unit. Facts were checked in 2025, and the app reminds players to verify on official sites (rbi.org.in, incometax.gov.in, irs.gov, fdic.gov, gov.uk, fscs.org.uk).
+
+> Historical returns in the Portfolio Simulator are approximate, rounded yearly figures from public index data, for learning only.
 
 ## Run it
 
@@ -48,11 +82,17 @@ It then opens full-screen with its own icon like a normal app, and works offline
 index.html            App shell (header, screen, bottom tabs)
 css/styles.css        All styling, including light and dark themes
 js/content.js         ✏️ Lessons, quizzes, game data and tips. Edit this to add content!
+js/country.js         Country modes (IN/US/UK) and country lessons
+js/adaptive.js        Literacy Score, question generators, practice mode
+js/personality.js     Money personality quiz
+js/lifesim.js         Life Simulator engine + What-If + challenges
+js/portfolio.js       Portfolio Simulator + historical data
+js/games2.js          Budget Battle, Race, Inflation, Credit, Loan, Diversification
 js/state.js           XP, levels, streaks, badges, leagues, friend codes (saved in localStorage)
 js/ui.js              Toasts, confetti, sounds, charts, formatting helpers
 js/app.js             Router and Home / Learn / Lesson / Ranks / Profile screens
-js/games.js           The three mini-games
-js/sims.js            Market Mania + Life Sim
+js/games.js           Game registry, Needs vs Wants, Scam Simulator, Interest Showdown
+js/sims.js            Simulate hub + Market Mania
 sw.js                 Offline caching (bump VERSION when you change files)
 manifest.webmanifest  Makes the app installable
 icons/                App icons
