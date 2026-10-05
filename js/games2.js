@@ -389,7 +389,7 @@ window.MQ = window.MQ || {};
       function done() {
         const avg = Math.round(total / goals.length);
         record('diversify', avg);
-        rec('investing', avg / 100);
+        rec('risk', avg / 100);
         endScreen(main, g, '<div class="big-emoji bounce">' + (avg >= 75 ? '🌈' : '🧺') + '</div><h1>Average score: ' + avg + '/100</h1><p class="muted">The right mix depends on WHEN you need the money. Short goals need safety, long goals can handle ups and downs, and diversification helps both.</p>', 8 + Math.round(avg / 6));
       }
       show();
@@ -402,6 +402,6 @@ window.MQ = window.MQ || {};
     { id: 'inflation', e: '🎈', title: 'Inflation Dodge', sub: 'Prices keep rising. Move your money each year to protect how many pizzas it can buy.', color: '#ec4899', cat: 'investing', fn: inflationDodge },
     { id: 'credit', e: '💳', title: 'Credit Score Challenge', sub: 'A year of credit decisions. Build a fictional credit score from scratch.', color: '#ef4444', cat: 'credit', fn: creditChallenge },
     { id: 'loan', e: '🔍', title: 'Loan Detective', sub: 'Compare loan offers and find the true cheapest one. Beware of hidden fees!', color: '#0ea5e9', cat: 'credit', fn: loanDetective },
-    { id: 'diversify', e: '🧺', title: 'Diversification Challenge', sub: 'Build a portfolio for different goals and test it against 500 possible futures.', color: '#8b5cf6', cat: 'investing', fn: diversification }
+    { id: 'diversify', e: '🧺', title: 'Diversification Challenge', sub: 'Build a portfolio for different goals and test it against 500 possible futures.', color: '#8b5cf6', cat: 'risk', fn: diversification }
   );
 })(window.MQ);

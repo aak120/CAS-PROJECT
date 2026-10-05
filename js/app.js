@@ -317,17 +317,26 @@ window.MQ = window.MQ || {};
     { id: 'xp', name: '🏆 All-time XP', fmt: v => v + ' XP' }
   ];
 
+  let showBots = true;
   function renderFriends(el, catId) {
     const cat = BOARD_CATS.find(c => c.id === catId) || BOARD_CATS[0];
     const val = r => cat.id === 'xp' ? r.xp : ((r.stats || {})[cat.id] || 0);
     const me = { name: S.profile.name, avatar: S.profile.avatar, xp: S.xp, streak: ST.streakNow().count, lessons: ST.countDone(S), you: true, stats: ST.myStats() };
-    const rows = S.friends.map(f => Object.assign({}, f)).concat([me]).sort((a, b) => val(b) - val(a));
+    // League rivals get plausible (seeded, clearly labelled) stats so every board has competition before friends join.
+    const bots = ST.leagueTable().filter(r => !r.you).slice(0, 6).map(r => {
+      const g = ST.rng(S.league.week + ':' + r.name);
+      return { name: r.name, avatar: r.avatar, bot: true, xp: 200 + Math.round(g() * 2500), streak: Math.round(g() * 12), lessons: Math.round(g() * 18),
+        stats: { weekXp: r.xp, streakBest: 2 + Math.round(g() * 30), sim: Math.round(-8 + g() * 40), decisions: Math.round(35 + g() * 45), improved: Math.round(g() * 12), diversify: Math.round(30 + g() * 60) } };
+    });
+    const rows = S.friends.map(f => Object.assign({}, f)).concat(showBots ? bots : [], [me]).sort((a, b) => val(b) - val(a));
     el.innerHTML = '<div class="card"><h3>🤝 Compete with friends</h3><p class="muted">Share your friend code with classmates (chat, email, anything). Paste theirs below to add them. Codes are snapshots, so swap new ones to update the board.</p>' +
       '<label class="label">Your friend code</label><div class="code-row"><input class="input mono" readonly id="mycode" value="' + esc(ST.friendCode()) + '"><button class="btn" id="copy">Copy</button></div>' +
       '<label class="label" for="fc">Add a friend</label><div class="code-row"><input class="input mono" id="fc" placeholder="Paste MQ2-… code"><button class="btn primary" id="add">Add</button></div></div>' +
       '<div class="chips board-cats">' + BOARD_CATS.map(c => '<a class="chip ' + (c.id === cat.id ? 'on' : '') + '" href="#/ranks/friends/' + c.id + '">' + c.name + '</a>').join('') + '</div>' +
       '<p class="hint">' + esc(cat.hint || 'Different boards reward different skills, not just grinding.') + '</p>' +
-      '<ol class="board">' + rows.map((r, i) => '<li class="' + (r.you ? 'you' : '') + '"><span class="pos">' + (i < 3 && rows.length > 1 ? ['🥇', '🥈', '🥉'][i] : i + 1) + '</span><span class="avatar sm">' + esc(r.avatar) + '</span><span class="nm">' + esc(r.name) + (r.you ? ' (you)' : '') + '<small>🔥' + r.streak + ' · 📚' + r.lessons + (r.date ? ' · as of ' + esc(r.date) : '') + (!r.you && !r.stats ? ' · old code' : '') + '</small></span><span class="xp">' + cat.fmt(val(r)) + '</span>' + (r.you ? '' : '<button class="rm" data-id="' + esc(r.id) + '" aria-label="Remove">✕</button>') + '</li>').join('') + '</ol>';
+      '<label class="set-row small"><span>Include simulated rivals 🤖</span><input type="checkbox" id="bots" ' + (showBots ? 'checked' : '') + '></label>' +
+      '<ol class="board">' + rows.map((r, i) => '<li class="' + (r.you ? 'you' : '') + '"><span class="pos">' + (i < 3 && rows.length > 1 ? ['🥇', '🥈', '🥉'][i] : i + 1) + '</span><span class="avatar sm">' + esc(r.avatar) + '</span><span class="nm">' + esc(r.name) + (r.you ? ' (you)' : '') + '<small>🔥' + r.streak + ' · 📚' + r.lessons + (r.date ? ' · as of ' + esc(r.date) : '') + (!r.you && !r.stats ? ' · old code' : '') + (r.bot ? ' · 🤖 simulated' : '') + '</small></span><span class="xp">' + cat.fmt(val(r)) + '</span>' + (r.you ? '' : (r.bot ? '' : '<button class="rm" data-id="' + esc(r.id) + '" aria-label="Remove">✕</button>')) + '</li>').join('') + '</ol>';
+    $('#bots', el).onchange = e => { showBots = e.target.checked; renderFriends(el, cat.id); };
     $('#copy', el).onclick = () => {
       const inp = $('#mycode', el);
       inp.select();

@@ -12,9 +12,11 @@ A fun, game-style financial literacy app built for my CAS project. Teens learn m
 - **The big purchase:** pay cash, take a **loan**, use **Buy Now Pay Later**, or a **credit card**, with real interest maths.
 - **Random life events, scaled to your income:** car breakdown, stolen phone, promotion, rent hike, market crash, scam DM, employer pension match and more. If cash runs out, your emergency fund pays first, then the credit card. People with a buffer shrug; people living paycheck to paycheck get hurt.
 - **Personalised:** your money personality changes which events appear.
+- **A storyline in First Salary and Teen modes:** a money mentor introduces one concept each month, and features unlock step by step (big purchases in month 2, investing in month 3).
+- **Payslips:** gross pay → approximate tax and deductions per country (PF in India, federal/state tax + FICA in the US, income tax + NI in the UK) → take-home.
 - **Analytics at the end:** savings rate, emergency fund (months), debt-to-income, diversification, impulse spending, interest earned vs paid, biggest strength / weakness and the **concept to learn next**.
 - **🧪 What If replays:** the engine is deterministic, so it replays your exact decisions with one change (save instead of borrowing, invest 10% more, inflation at 6%, a 25% crash, and so on). The suggestions are chosen from what you actually did.
-- **⚔️ Multiplayer challenges:** share a code, your friend plays the identical life, and the app explains why your outcomes differed.
+- **⚔️ Multiplayer challenges:** share a code, your friend plays the identical life, and the app explains why your outcomes differed. **Pass & play** does the same on one phone, which is handy for classroom workshops.
 
 ### 🧺 Portfolio Simulator
 Split ₹10 lakh / $10,000 / £10,000 across **Stocks, Bonds, ETFs, Gold, Cash, Real Estate**. Then live through **US markets 2000–2024**, **Indian markets 2008–2024**, or a **random future**, one year at a time. Each year explains *why* it happened (dot-com crash, 2008, taper tantrum, COVID, 2022 rate hikes…). Crashes ask you to sell, hold or buy more. Results show CAGR, real return after inflation, worst drop, diversification score, a "what if you'd picked one asset" comparison and What-If replays.
@@ -35,7 +37,7 @@ Split ₹10 lakh / $10,000 / £10,000 across **Stocks, Bonds, ETFs, Gold, Cash, 
 
 ### 🧠 Adaptive learning
 - 6 core units + a **country unit** (🇮🇳 India / 🇺🇸 US / 🇬🇧 UK), with lesson cards and quizzes.
-- **Financial Literacy Score** per category (Budgeting, Saving, Taxes & Income, Credit, Investing, Money Safety), built from lessons, games and sims, weighted towards recent answers.
+- **Financial Literacy Score** per category (Budgeting, Saving, Taxes & Income, Credit, Investing, Risk, Money Safety), built from lessons, games and sims, weighted towards recent answers.
 - **Personal coach:** "You seem to be struggling with compound interest. Want a 3-minute challenge?" Practice uses **freshly generated questions** that get easier or harder as you answer, plus spaced review of questions you missed.
 - The daily challenge is picked from your weakest topic.
 
@@ -43,12 +45,12 @@ Split ₹10 lakh / $10,000 / £10,000 across **Stocks, Bonds, ETFs, Gold, Cash, 
 A scenario quiz at onboarding ("You have ₹10,000 left at the end of the month…") gives a profile such as 🟢 Planner · 🟡 Moderate risk · 🔴 Impulsive spending. It tailors the simulations and comes with a clear note that it is not a diagnosis or professional assessment.
 
 ### 🏆 Leaderboards, streaks and achievements
-- A weekly league plus friend boards by **category**: weekly XP, best simulator, best decisions, longest streak, most improved, best diversification.
+- A weekly league plus boards by **category** (friends + optional simulated rivals): weekly XP, best simulator, best decisions, longest streak, most improved, best diversification.
 - Streaks reward *learning*, with milestone badges at 7 / 30 / 100 days ("Financial Scholar") and streak freezes.
 - 30+ achievements: Emergency Fund, Diversifier, Loan Slayer, Inflation Survivor, Scam Spotter, Market Survivor, Credit Builder and more.
 
 ### 🌎 Country modes
-Currency, number format (₹10,00,000), typical salaries and prices, credit-score scale and a country-specific unit. Facts were checked in 2025, and the app reminds players to verify on official sites (rbi.org.in, incometax.gov.in, irs.gov, fdic.gov, gov.uk, fscs.org.uk).
+Currency, number format (₹10,00,000), typical salaries and prices, credit-score scale, approximate payslip deductions, student loans and a country-specific unit. Facts were checked in 2025, and the app reminds players to verify on official sites (rbi.org.in, incometax.gov.in, irs.gov, fdic.gov, gov.uk, fscs.org.uk).
 
 > Historical returns in the Portfolio Simulator are approximate, rounded yearly figures from public index data, for learning only.
 

@@ -97,7 +97,9 @@ window.MQ = window.MQ || {};
         savings: MQ.pickRange(r, base.savings), goal: { e: goal.e, name: goal.name, cost: MQ.pickRange(r, goal.cost) }
       };
     }
+    const tx = (c.tax || MQ.COUNTRIES.US.tax)[mode === 'teen' ? 'teen' : 'first'];
     Object.assign(scn, {
+      taxRate: tx.rate, taxLabel: tx.label,
       v: 1, seed, country: c.id, mode, months: opts.months || 12, inflation: c.inflation, savingsAPY: c.savingsAPY, cardAPR: c.cardAPR, loanAPR: c.loanAPR + 2,
       indexName: c.indexName
     });
@@ -183,7 +185,8 @@ window.MQ = window.MQ || {};
     st.checking += st.income - pensionC;
     st.t.income += st.income;
     if (pensionC) { st.inv.index += pensionC * 2; st.t.matched += pensionC; st.t.saved += pensionC; st.t.invested += pensionC * 2; }
-    const led = [['Pay (take-home)', st.income]];
+    const gross = scn.taxRate ? st.income / (1 - scn.taxRate) : 0;
+    const led = scn.taxRate ? [['Gross pay', gross], ['✂️ ' + scn.taxLabel, -(gross - st.income)]] : [['Pay (take-home)', st.income]];
     if (pensionC) led.push(['Retirement plan (matched ×2)', -pensionC]);
     const bills = [['🏠 Rent', st.exp.rent], ['🍲 Food', st.exp.food], ['🚌 Transport', st.exp.transport], ['📱 Phone', st.exp.phone], ['🔁 Subscriptions & habits', st.subs]];
     bills.forEach(b => { if (b[1] > 0.5) { pay(st, b[1], st.notes); led.push([b[0], -b[1]]); } });
@@ -426,7 +429,7 @@ window.MQ = window.MQ || {};
     if (a.sold !== b.sold) out.push((a.sold ? la : lb) + ' panic-sold during the crash and missed the recovery.');
     if (Math.abs(a.matched - b.matched) > 1) out.push((a.matched > b.matched ? la : lb) + ' got ' + F(Math.abs(a.matched - b.matched)) + ' more in free employer matching.');
     if (Math.abs(a.happy - b.happy) > 8) out.push('Happiness: ' + a.happy + ' vs ' + b.happy + '. Money is not everything!');
-    return out;
+    return out.map(x => x.charAt(0).toUpperCase() + x.slice(1));
   }
   function howText(m) { return !m.owned ? 'did not buy it' : m.ownedHow === 'cash' ? 'paid cash' : m.ownedHow === 'loan' ? 'took a loan' : m.ownedHow === 'bnpl' ? 'used Buy Now Pay Later' : 'used a credit card'; }
 
@@ -561,7 +564,8 @@ window.MQ = window.MQ || {};
     main.innerHTML = head(main, 'Meet your character') +
       (challenge ? '<div class="card challenge-banner">⚔️ Challenge from <b>' + esc(challenge.by) + '</b>: same life, same surprises. Can you beat their net worth of <b>' + F(challenge.r.nw) + '</b>?</div>' : '') +
       '<div class="card char pop"><div class="big-emoji">' + (scn.mode === 'teen' ? '🧑‍🎓' : '🧑‍💼') + '</div><h2>' + esc(scn.name) + ', ' + scn.age + '</h2><p class="muted">' + esc(scn.mode === 'custom' ? 'Your custom life' : 'Works as a ' + scn.job) + '</p>' +
-      '<div class="ledger"><div><span>💰 Take-home pay</span><b class="up">' + F(scn.income) + '/mo</b></div>' +
+      '<div class="ledger">' + (scn.taxRate ? '<div><span>💼 Gross salary</span><b>' + F(scn.income / (1 - scn.taxRate)) + '/mo</b></div><div><span>✂️ ' + esc(scn.taxLabel) + '</span><b class="down">−' + F(scn.income / (1 - scn.taxRate) - scn.income) + '</b></div>' : '') +
+      '<div><span>💰 Take-home pay</span><b class="up">' + F(scn.income) + '/mo</b></div>' +
       (scn.exp.rent ? '<div><span>🏠 Rent</span><b>' + F(scn.exp.rent) + '</b></div>' : '<div><span>🏠 Rent</span><b>Lives with family</b></div>') +
       '<div><span>🍲 Food</span><b>' + F(scn.exp.food) + '</b></div><div><span>🚌 Transport & bills</span><b>' + F(scn.exp.transport + scn.exp.phone) + '</b></div>' +
       '<div class="total"><span>Left after essentials</span><b>' + F(scn.income - ess) + '/mo</b></div>' +
@@ -586,18 +590,49 @@ window.MQ = window.MQ || {};
   }
   function mood(h) { return h >= 80 ? '😄' : h >= 60 ? '🙂' : h >= 40 ? '😐' : h >= 20 ? '😟' : '😫'; }
 
+  // First Salary / Teen modes tell a story and unlock concepts step by step. Custom lives get everything at once.
+  function unlocked(scn, m) {
+    if (scn.mode === 'custom') return { buy: true, inv: true };
+    return { buy: m >= 2, inv: m >= 3 };
+  }
+  function mentor(l) {
+    const st = l.st, scn = l.scn, m = st.m;
+    if (scn.mode === 'custom') return null;
+    const ess = essentials(st), name = MQ.country().id === 'IN' ? 'Kiran' : MQ.country().id === 'UK' ? 'Ellie' : 'Sam';
+    const foodNow = st.exp.food, food0 = scn.exp.food;
+    const beats = {
+      1: ['🎉 First payday!', 'Welcome to your first ' + (scn.mode === 'teen' ? 'pay packet' : 'real salary') + '. Needs come first, and they are already paid. Before treating yourself, start an <b>emergency fund</b>: future-you will thank you. Investing and big purchases unlock soon.', 'saving-1'],
+      2: ['🔓 Big purchases unlocked', 'You can now buy your ' + esc(scn.goal.name) + ': cash, loan, Buy Now Pay Later or credit card. Compare the <b>total cost</b>, not the monthly payment. Or keep saving.', 'credit-1'],
+      3: ['🔓 Investing unlocked', 'Money you will not need for years can go into an <b>index fund</b>, which owns hundreds of companies. It goes up and down, so keep emergency money separate.', 'investing-2'],
+      4: ['🔁 Subscription check', 'Look at your bills. Small monthly costs (' + F(st.subs) + '/mo right now) quietly add up to ' + F(st.subs * 12) + ' a year.', 'basics-3'],
+      5: ['🧯 Emergency fund target', 'A solid target is 3 months of essentials: ' + F(ess * 3) + '. You have ' + F(st.ef) + ' (' + (st.ef / ess).toFixed(1) + ' months).', 'saving-1'],
+      6: ['📈 Halfway there', 'Your net worth went from ' + F(st.startNW) + ' to ' + F(netWorth(st)) + '. Is the line going up? If not, what is leaking?', 'basics-2'],
+      7: ['💳 Credit card rule', 'Only use a card for what you can pay off in full. Card interest here is ' + scn.cardAPR + '% a year.' + (st.card > 1 ? ' You owe ' + F(st.card) + '. Attack it!' : ''), 'credit-2'],
+      8: ['🧺 Diversify', 'Do not put everything in one hype stock. Mixing index funds, gold and cash softens crashes.', 'investing-3'],
+      9: ['🎈 Inflation check', 'Your food bill went from ' + F(food0) + ' to ' + F(foodNow) + ' a month, with no change in what you eat. That is inflation at ' + st.inflation + '% a year.', 'investing-1'],
+      10: ['🧾 Payslip lesson', scn.taxRate ? 'You earn ' + F(st.income / (1 - scn.taxRate)) + ' gross but take home ' + F(st.income) + '. Deductions like ' + esc(scn.taxLabel) + ' come out first. Always budget with take-home pay.' : 'Your pay is below the tax threshold, so take-home = gross. Once you earn more, tax and deductions come out first. Always budget with take-home pay.', 'earning-1'],
+      11: ['🎯 SMART goals', 'Specific, measurable, time-bound goals beat "save more". How close are you to your ' + esc(scn.goal.name) + '?', 'saving-1'],
+      12: ['🏁 Final month', 'Last payday of the year! After this you will see your analytics and can replay "What if…?" versions of your choices.', null]
+    };
+    const b = beats[m];
+    return b ? '<div class="card mentor pop"><div class="mentor-head"><span class="avatar sm">🧑‍🏫</span><div><small>' + name + ', your money mentor</small><b>' + b[0] + '</b></div></div><p>' + b[1] + '</p>' + (b[2] ? '<a class="small" href="#/lesson/' + b[2] + '">📚 Quick lesson ›</a>' : '') + '</div>' : '';
+  }
+
   function monthScreen(main) {
     const l = L(), st = l.st, scn = l.scn;
     const last = l.dec.months[l.dec.months.length - 1];
-    const def = last ? last.alloc : { fun: 0.3, ef: st.ef < essentials(st) * 3 ? 0.25 : 0.1, goal: 0.3, inv: 0.1, debt: 0 };
+    const def = Object.assign({}, last ? last.alloc : { fun: 0.3, ef: st.ef < essentials(st) * 3 ? 0.25 : 0.1, goal: 0.3, inv: 0.1, debt: 0 });
     const avail = Math.max(0, Math.floor(st.checking));
+    const un = unlocked(scn, st.m);
+    if (!un.inv) def.inv = 0;
     main.innerHTML = head(main, 'Month ' + st.m + '/' + scn.months, '<span class="pill">' + (l.challenge ? '⚔️ ' : '') + esc(scn.name) + '</span>') + hud(l) +
       '<div class="card"><h3>💸 Payday</h3><div class="ledger">' + st.ledger.map(x => '<div><span>' + esc(x[0]) + '</span><b class="' + (x[1] >= 0 ? 'up' : 'down') + '">' + (x[1] >= 0 ? '+' : '−') + F(Math.abs(x[1])) + '</b></div>').join('') +
       '<div class="total"><span>Available to plan</span><b>' + F(avail) + '</b></div></div>' + (st.notes.length ? '<ul class="list small">' + st.notes.map(n => '<li>' + esc(n) + '</li>').join('') + '</ul>' : '') + '</div>' +
-      (st.owned ? '' : goalPanel(l)) +
+      (mentor(l) || '') +
+      (st.owned ? '' : un.buy ? goalPanel(l) : '<div class="card locked-card">🔒 <b>Buying your ' + esc(scn.goal.name) + '</b> unlocks next month. For now, build your goal fund.</div>') +
       '<div class="card"><h3>Plan the month</h3>' +
-      slider('fun', '🎉 Wants & fun', avail) + slider('ef', '🧯 Emergency fund', avail) + slider('goal', scn.goal.e + ' Goal fund', avail) + slider('inv', '📈 Invest', avail) + (st.card > 0.5 ? slider('debt', '💳 Extra card payment', avail) : '') +
-      '<div class="mix"><span class="kicker">Invest in</span><div class="chips">' + Object.keys(MIXES).map(k => '<button class="chip ' + (l.mix === k ? 'on' : '') + '" data-mix="' + k + '">' + MIXES[k].name + '</button>').join('') + '</div></div>' +
+      slider('fun', '🎉 Wants & fun', avail) + slider('ef', '🧯 Emergency fund', avail) + slider('goal', scn.goal.e + ' Goal fund', avail) + (un.inv ? slider('inv', '📈 Invest', avail) : '<p class="muted small">🔒 Investing unlocks in month 3.</p>') + (st.card > 0.5 ? slider('debt', '💳 Extra card payment', avail) : '') +
+      (!un.inv ? '' : '<div class="mix"><span class="kicker">Invest in</span><div class="chips">' + Object.keys(MIXES).map(k => '<button class="chip ' + (l.mix === k ? 'on' : '') + '" data-mix="' + k + '">' + MIXES[k].name + '</button>').join('') + '</div></div>') +
       '<div class="ledger"><div class="total"><span>Left in checking (buffer)</span><b id="left"></b></div></div><p class="muted small" id="hint"></p>' +
       '<button class="btn primary block lg" id="lock">Lock in month ' + st.m + '</button></div>';
     const ids = ['fun', 'ef', 'goal', 'inv', 'debt'].filter(id => $('#' + id));
@@ -711,6 +746,7 @@ window.MQ = window.MQ || {};
       if (MQ.adaptive) {
         MQ.adaptive.recordResult('budgeting', m.sub.spending / 100); MQ.adaptive.recordResult('saving', (m.sub.saving + m.sub.resilience) / 200);
         MQ.adaptive.recordResult('credit', m.sub.debt / 100); MQ.adaptive.recordResult('investing', m.sub.investing / 100);
+        if (l.st.sawCrash) MQ.adaptive.recordResult('risk', m.sold ? 0.2 : 0.9);
       }
       if (l.challenge) {
         const them = l.challenge.r;
@@ -749,12 +785,14 @@ window.MQ = window.MQ || {};
       '<div class="whatifs">' + whatIfs(l).map(w => '<button class="btn whatif" data-id="' + w.id + '">' + esc(w.label) + '</button>').join('') + '</div><div id="wi-out"></div>' +
       '<h2 class="section">⚔️ Challenge a friend</h2><div class="card"><p class="muted small">Send this code. Your friend plays the same life and sees how your decisions compare.</p><div class="code-row"><input class="input mono" readonly id="cc" value="' + esc(challengeCode(l, m)) + '"><button class="btn" id="ccopy">Copy</button></div>' +
       (l.challenge ? '<p class="muted small">Send your result back to ' + esc(l.challenge.by) + ':</p><div class="code-row"><input class="input mono" readonly id="rc" value="' + esc(resultCode(l, m)) + '"><button class="btn" id="rcopy">Copy</button></div>' : '') + '</div>' +
+      (l.challenge ? '' : '<div class="card"><h3>👥 Pass & play</h3><p class="muted small">Same phone, same classroom? Hand it to a friend: they play this exact life and see how they compare with you. (Your records are saved; this replaces the run on screen.)</p><button class="btn block" id="pass">Hand the phone to a friend</button></div>') +
       '<button class="btn primary block lg" id="again">New life 🎲</button><button class="btn ghost block" id="same">Replay this exact life</button>';
     lineChart($('#nwc'), [{ data: st.hist.map(x => x.nw), color: getVar('--accent'), fill: true }], { length: scn.months + 1, baseline: m.startNW });
     const copy = id => () => { const i = $('#' + id); i.select(); (navigator.clipboard ? navigator.clipboard.writeText(i.value) : Promise.reject()).then(() => toast('📋 Copied!'), () => { document.execCommand('copy'); toast('📋 Copied!'); }); };
     $('#ccopy').onclick = copy('cc'); if ($('#rcopy')) $('#rcopy').onclick = copy('rc');
     $('#again').onclick = () => MQ.app.go('#/sim/life/new');
     $('#same').onclick = () => startRun(scn, l.challenge);
+    if ($('#pass')) $('#pass').onclick = () => { const me = S().profile.name; toast('📱 Hand the phone over! Challenger: ' + me); startRun(scn, { by: me, r: summary(m), local: true }); };
     $$('.whatif', main).forEach(b => b.onclick = () => {
       const w = whatIfs(l).find(x => x.id === b.dataset.id);
       const alt = replay(scn, l.dec, w.mods), am = metrics(alt, scn);

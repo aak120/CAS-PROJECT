@@ -10,6 +10,7 @@ window.MQ = window.MQ || {};
       savingsName: 'savings account / FD', indexName: 'Nifty 50 index fund',
       names: ['Aarav', 'Priya', 'Rohan', 'Ananya', 'Kabir', 'Meera', 'Ishaan', 'Diya', 'Arjun', 'Sara'],
       portfolioStart: 1000000, dataset: 'IN',
+      tax: { first: { rate: 0.06, label: 'Provident Fund + professional tax (no income tax below the ₹12 lakh rebate)' }, teen: { rate: 0, label: '' } },
       first: { age: [21, 24], job: ['junior designer', 'software trainee', 'bank associate', 'marketing executive', 'lab assistant'], income: [35000, 60000], rent: [9000, 18000], food: [6000, 9000], transport: [1500, 3500], phone: [300, 700], savings: [10000, 40000] },
       teen: { age: [16, 18], job: ['home tutor', 'café helper', 'freelance video editor', 'event volunteer (paid)'], income: [6000, 12000], rent: [0, 0], food: [1500, 2500], transport: [500, 1200], phone: [200, 400], savings: [2000, 8000] },
       goals: {
@@ -23,6 +24,7 @@ window.MQ = window.MQ || {};
       savingsName: 'high-yield savings account', indexName: 'S&P 500 index fund',
       names: ['Jordan', 'Maya', 'Tyler', 'Ava', 'Diego', 'Chloe', 'Marcus', 'Lily', 'Ethan', 'Zoe'],
       portfolioStart: 10000, dataset: 'US',
+      tax: { first: { rate: 0.2, label: 'Federal + state income tax + FICA (approx.)' }, teen: { rate: 0.08, label: 'FICA + a little federal tax (approx.)' } },
       first: { age: [21, 24], job: ['junior analyst', 'retail supervisor', 'dental assistant', 'IT help-desk tech', 'barista trainer'], income: [2800, 4200], rent: [900, 1600], food: [350, 550], transport: [150, 400], phone: [40, 80], savings: [800, 3000] },
       teen: { age: [16, 18], job: ['grocery bagger', 'lifeguard', 'babysitter', 'fast-food crew'], income: [500, 900], rent: [0, 0], food: [80, 150], transport: [40, 100], phone: [25, 50], savings: [200, 800] },
       goals: {
@@ -36,6 +38,7 @@ window.MQ = window.MQ || {};
       savingsName: 'easy-access savings / cash ISA', indexName: 'global index fund',
       names: ['Oliver', 'Amelia', 'Harry', 'Isla', 'Leo', 'Freya', 'Zain', 'Poppy', 'Alfie', 'Maya'],
       portfolioStart: 10000, dataset: 'US',
+      tax: { first: { rate: 0.17, label: 'Income tax + National Insurance (approx.)' }, teen: { rate: 0, label: '' } },
       first: { age: [21, 24], job: ['graduate trainee', 'apprentice electrician', 'admin assistant', 'junior developer', 'nursery assistant'], income: [1900, 2800], rent: [650, 1100], food: [200, 320], transport: [80, 180], phone: [12, 25], savings: [500, 2500] },
       teen: { age: [16, 18], job: ['Saturday shop assistant', 'paper round', 'café staff', 'tutor'], income: [350, 650], rent: [0, 0], food: [60, 110], transport: [30, 70], phone: [10, 20], savings: [150, 600] },
       goals: {
@@ -91,13 +94,15 @@ window.MQ = window.MQ || {};
             { emoji: '🧾', title: 'GST', body: '<b>GST</b> is a tax on goods and services, usually already included in the price you see.' },
             { emoji: '🔢', title: 'CIBIL score', body: 'Your <b>CIBIL score</b> runs from 300 to 900. Around <b>750+</b> is generally seen as good. Paying EMIs and card bills on time matters most.' },
             { emoji: '📆', title: 'SIPs & index funds', body: 'A <b>SIP</b> invests a fixed amount in a mutual fund every month (dollar-cost averaging, Indian style). A <b>Nifty 50 index fund</b> owns India\'s 50 largest listed companies.' },
+            { emoji: '🎓', title: 'Education loans', body: 'Indian education loans usually start charging interest while you study, and repayment begins after a <b>moratorium</b> (course length plus a grace period). Under the old tax regime, the interest can be deducted under <b>Section 80E</b>. Compare interest rates, collateral rules and whether interest is "simple" during study.' },
             { emoji: '🚨', title: 'SEBI & finfluencers', body: '<b>SEBI</b> regulates markets. Before trusting a "stock tips" Telegram group or influencer, check if they are SEBI-registered. Guaranteed returns are a red flag.' }
           ],
           quiz: [
             { q: 'What is a SIP?', options: ['A one-time lottery ticket', 'Investing a fixed amount in a fund every month', 'A type of loan', 'A tax form'], answer: 1, explain: 'SIP = Systematic Investment Plan.' },
             { q: 'What range does a CIBIL score use?', options: ['0–100', '300–900', '1–10', '500–1,000'], answer: 1, explain: 'CIBIL runs from 300 to 900. Around 750+ is generally good.' },
             { q: 'A Telegram group promises "guaranteed 5% daily returns". You should...', options: ['Join quickly', 'Check SEBI registration and avoid guaranteed-return promises', 'Invest your savings', 'Invite friends for bonuses'], answer: 1, explain: 'Guaranteed high returns are a classic scam sign.' },
-            { q: 'True or false: in a slab system, crossing into a higher slab means your whole income is taxed at the higher rate.', options: ['True', 'False'], answer: 1, explain: 'Only the income inside the higher slab gets the higher rate.' }
+            { q: 'True or false: in a slab system, crossing into a higher slab means your whole income is taxed at the higher rate.', options: ['True', 'False'], answer: 1, explain: 'Only the income inside the higher slab gets the higher rate.' },
+            { q: 'An education loan "moratorium" means...', options: ['The loan is forgiven', 'Repayments start only after your course plus a grace period', 'You pay double interest', 'You cannot study abroad'], answer: 1, explain: 'Interest usually still builds up during the moratorium, so paying some early helps.' }
           ]
         }
       ]
@@ -126,13 +131,15 @@ window.MQ = window.MQ || {};
             { emoji: '✂️', title: 'Where your paycheck goes', body: 'Typical deductions: federal income tax, state income tax (most states) and <b>FICA</b>: Social Security 6.2% + Medicare 1.45% = <b>7.65%</b>. Your W-4 form tells your employer how much federal tax to withhold.' },
             { emoji: '🏷️', title: 'Sales tax', body: 'Sales tax is usually <b>added at checkout</b> and varies by state and city. A $50 shirt can cost $54 at the register.' },
             { emoji: '🌱', title: 'Roth IRA', body: 'If you have earned income, even as a teen (via a custodial account), a <b>Roth IRA</b> lets you invest after-tax money that can grow tax-free for retirement. Check irs.gov for yearly limits.' },
+            { emoji: '🎓', title: 'Student loans', body: '<b>Federal</b> student loans have fixed rates set each year and offer options like income-driven repayment. With <b>unsubsidized</b> loans, interest builds up while you are in school. <b>Private</b> loans are usually less flexible. Borrow only what you need: check studentaid.gov.' },
             { emoji: '🎁', title: '401(k) match', body: 'Many employers <b>match</b> part of what you put in a 401(k). Not taking the full match is like refusing free money.' }
           ],
           quiz: [
             { q: 'What does FICA pay for?', options: ['Sales tax', 'Social Security and Medicare', 'Student loans', 'Bank fees'], answer: 1, explain: 'FICA = Social Security (6.2%) + Medicare (1.45%).' },
             { q: 'A $50 item in a state with 8% sales tax costs at checkout...', options: ['$50', '$54', '$58', '$46'], answer: 1, explain: '$50 × 1.08 = $54.' },
             { q: 'Your employer matches 401(k) contributions up to 4%. Not contributing means...', options: ['You save money', 'You give up free money', 'Nothing changes', 'Higher taxes for them'], answer: 1, explain: 'The match is part of your pay. Grab it.' },
-            { q: 'True or false: teens with a job can invest in a custodial Roth IRA.', options: ['True', 'False'], answer: 0, explain: 'You need earned income, and an adult opens it with you.' }
+            { q: 'True or false: teens with a job can invest in a custodial Roth IRA.', options: ['True', 'False'], answer: 0, explain: 'You need earned income, and an adult opens it with you.' },
+            { q: 'With an unsubsidized federal student loan, interest...', options: ['Never starts', 'Builds up while you are still in school', 'Is paid by the government forever', 'Only applies to private loans'], answer: 1, explain: 'Unsubsidized loans accrue interest from day one.' }
           ]
         }
       ]

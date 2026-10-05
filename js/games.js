@@ -7,7 +7,7 @@ window.MQ = window.MQ || {};
   const app = MQ.app;
 
   // Game registry. games2.js adds more games to MQ.GAMES.
-  const CAT_NAMES = { budgeting: 'Budgeting', saving: 'Saving', credit: 'Credit', investing: 'Investing', safety: 'Money safety', earning: 'Taxes & income' };
+  const CAT_NAMES = { budgeting: 'Budgeting', saving: 'Saving', credit: 'Credit', investing: 'Investing', risk: 'Risk', safety: 'Money safety', earning: 'Taxes & income' };
   MQ.GAMES = MQ.GAMES || [];
   MQ.GAMES.unshift(
     { id: 'needs', e: '🛒', title: 'Needs vs Wants', sub: 'Rapid-fire: sort as many items as you can in 45 seconds. Build combos for bonus points!', color: '#22c55e', cat: 'budgeting', fn: (m, g) => needsGame(m, g) },

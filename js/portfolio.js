@@ -313,7 +313,7 @@ window.MQ = window.MQ || {};
       if (ASSETS.filter(a => cfg.alloc[a.id] >= 10).length >= 4) ST.flag('assetClasses4');
       ST.record('diversify', res.realCagr > 0 ? div : Math.round(div * 0.6));
       p.best = Math.max(p.best || 0, div);
-      if (MQ.adaptive) MQ.adaptive.recordResult('investing', Math.min(1, div / 100 * 0.6 + (res.sold ? 0 : 0.4)));
+      if (MQ.adaptive) { MQ.adaptive.recordResult('investing', Math.min(1, 0.4 + Math.max(0, res.realCagr) * 8)); MQ.adaptive.recordResult('risk', Math.min(1, div / 100 * 0.6 + (res.sold ? 0 : 0.4))); }
       ST.save();
       ST.addXP(30 + Math.round(div / 5), 'Portfolio Sim');
     }

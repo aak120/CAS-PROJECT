@@ -455,3 +455,10 @@ h4 { margin: 10px 0 4px; }
   .buy-opts { grid-template-columns: 1fr; }
   .lit-row { grid-template-columns: 1.4fr 1fr 36px; font-size: 13px; }
 }
+.mentor { border-left: 5px solid var(--accent2); }
+.mentor-head { display: flex; gap: 10px; align-items: center; }
+.mentor-head div { display: flex; flex-direction: column; }
+.mentor-head small { color: var(--muted); font-weight: 700; }
+.mentor p { margin: 8px 0 4px; }
+.mentor a { color: var(--accent2); font-weight: 800; }
+.locked-card { color: var(--muted); background: var(--card2); }

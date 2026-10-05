@@ -10,14 +10,16 @@ window.MQ = window.MQ || {};
     { id: 'saving', name: 'Saving', e: '🐷', unit: 'saving', lesson: 'saving-3', concept: 'compound interest and emergency funds', refresher: 'Compound interest = interest on your interest. Each year multiply by (1 + rate). The Rule of 72: 72 ÷ rate ≈ years to double. An emergency fund is a few months of essential expenses.' },
     { id: 'earning', name: 'Taxes & Income', e: '💼', unit: 'earning', lesson: 'earning-1', concept: 'gross vs net pay and how tax brackets work', refresher: 'Gross pay = hours × rate. Net pay = gross − deductions (tax etc.). Tax brackets only tax the part of income above each threshold at the higher rate. Profit = revenue − costs.' },
     { id: 'credit', name: 'Credit', e: '💳', unit: 'credit', lesson: 'credit-2', concept: 'APR, total cost of borrowing and credit utilization', refresher: 'The total cost of a loan = all payments − amount borrowed. Longer loans have smaller payments but usually cost more in total. Credit utilization = balance ÷ limit; under ~30% looks good.' },
-    { id: 'investing', name: 'Investing', e: '📈', unit: 'investing', lesson: 'investing-3', concept: 'risk, inflation and diversification', refresher: 'Higher potential return means higher risk. Inflation shrinks buying power: future price = price × (1 + inflation)^years. Real return ≈ return − inflation. Spreading money across assets (diversification) softens losses.' },
+    { id: 'investing', name: 'Investing', e: '📈', unit: 'investing', lesson: 'investing-2', concept: 'inflation, real returns and investment costs', refresher: 'Inflation shrinks buying power: future price = price × (1 + inflation)^years. Real return ≈ return − inflation. Fees compound too: 1% a year sounds small but adds up over decades.' },
+    { id: 'risk', name: 'Risk', e: '🎲', unit: 'investing', lesson: 'investing-1', concept: 'risk vs return and diversification', refresher: 'Higher potential return comes with higher risk. Money you need soon belongs somewhere safe; money for 10+ years can ride out crashes. Spreading money across many assets (diversification) softens losses, and selling in a panic locks them in.' },
     { id: 'safety', name: 'Money Safety', e: '🛡️', unit: 'safety', lesson: 'safety-1', concept: 'spotting scam red flags', refresher: 'Red flags: urgency or threats, requests for PINs/OTPs/passwords, strange links, payment by gift card or crypto, guaranteed returns, and "pay a fee to get your prize".' }
   ];
   const BY = {}; CATS.forEach(c => BY[c.id] = c);
   const UNIT_CAT = { basics: 'budgeting', saving: 'saving', earning: 'earning', credit: 'credit', investing: 'investing', safety: 'safety' };
+  const LESSON_CAT = { 'investing-1': 'risk', 'investing-3': 'risk' };
 
   function S() { return ST.get(); }
-  function catOfLesson(id) { const l = MQ.LESSONS[id]; return l ? (l.cat || UNIT_CAT[l.unitId] || 'budgeting') : 'budgeting'; }
+  function catOfLesson(id) { const l = MQ.LESSONS[id]; return l ? (LESSON_CAT[id] || l.cat || UNIT_CAT[l.unitId] || 'budgeting') : 'budgeting'; }
 
   // ---------- Scoring (decayed accuracy, so recent answers matter more) ----------
   function ensureWeek() {
@@ -100,17 +102,17 @@ window.MQ = window.MQ || {};
         return mc(r, word, ['surplus of ' + F(Math.abs(d) + M(20)), 'deficit of ' + F(Math.abs(d) + M(40)), d >= 0 ? 'deficit of ' + F(d) : 'surplus of ' + F(-d)], 'Income − expenses = ' + F(inc) + ' − ' + F(exp) + ' = ' + (d >= 0 ? '' : '−') + F(Math.abs(d)) + '.', { q: 'Income: ' + F(inc) + '. Expenses: ' + F(exp) + '. What do you have?' });
       },
       (r, lvl) => {
-        const d = M(ri(3, 7)), y = d * 260;
+        const d = M(ri(r, 3, 7)), y = d * 260;
         return mc(r, F(y), [F(d * 52), F(d * 30), F(d * 1000)], d + ' × 5 school days × 52 weeks = ' + F(y) + '. Small habits add up!', { q: 'You spend ' + F(d) + ' on snacks every school day (5 days a week, all year). About how much is that per year?' });
       }
     ],
     saving: [
       (r, lvl) => {
-        const p = M(ri(5, 20) * 100), rate = ri(3, 9), a = p * (1 + rate / 100);
+        const p = M(ri(r, 5, 20) * 100), rate = ri(r, 3, 9), a = p * (1 + rate / 100);
         return mc(r, F(a), [F(p + rate), F(p * (1 + rate / 10)), F(p * rate / 100)], p + ' × ' + (1 + rate / 100).toFixed(2) + ' = ' + F(a) + '.', { q: F(p) + ' earns ' + rate + '% interest for one year. How much do you have at the end?' });
       },
       (r, lvl) => {
-        const p = M(ri(5, 20) * 100), rate = MQ.pick(r, [5, 10, 8]), a = p * Math.pow(1 + rate / 100, 2);
+        const p = M(ri(r, 5, 20) * 100), rate = MQ.pick(r, [5, 10, 8]), a = p * Math.pow(1 + rate / 100, 2);
         return mc(r, F(a), [F(p * (1 + 2 * rate / 100)), F(p * (1 + rate / 100)), F(p * Math.pow(1 + rate / 100, 3))], 'Year 1: ×' + (1 + rate / 100) + ', year 2: ×' + (1 + rate / 100) + ' again. Compounding beats simple interest of ' + F(p * (1 + 2 * rate / 100)) + '.', { q: F(p) + ' grows at ' + rate + '% per year, compounded yearly. Value after 2 years?' });
       },
       (r, lvl) => {
@@ -118,54 +120,53 @@ window.MQ = window.MQ || {};
         return mc(r, 'About ' + y + ' years', ['About ' + (y * 2) + ' years', 'About ' + Math.max(1, Math.round(y / 2)) + ' years', 'About ' + (y + 10) + ' years'], 'Rule of 72: 72 ÷ ' + rate + ' ≈ ' + y + ' years.', { q: 'Using the Rule of 72, how long does money take to double at ' + rate + '% a year?' });
       },
       (r, lvl) => {
-        const e = M(ri(8, 20) * 100), m = MQ.pick(r, [3, 6]);
+        const e = M(ri(r, 8, 20) * 100), m = MQ.pick(r, [3, 6]);
         return mc(r, F(e * m), [F(e), F(e * 12), F(e * m / 2)], m + ' months × ' + F(e) + ' = ' + F(e * m) + '.', { q: 'Your essential costs are ' + F(e) + ' a month. How big is a ' + m + '-month emergency fund?' });
       }
     ],
     earning: [
       (r, lvl) => {
-        const h = ri(8, 20), rate = M(ri(10, 16)), g = h * rate;
+        const h = ri(r, 8, 20), rate = M(ri(r, 10, 16)), g = h * rate;
         return mc(r, F(g), [F(g + rate), F(h + rate), F(g * 0.8)], h + ' hours × ' + F(rate) + ' = ' + F(g) + '.', { q: 'You work ' + h + ' hours at ' + F(rate) + ' an hour. What is your gross pay?' });
       },
       (r, lvl) => {
-        const g = M(ri(4, 12) * 100), d = MQ.pick(r, [10, 15, 20, 25]), n = g * (1 - d / 100);
+        const g = M(ri(r, 4, 12) * 100), d = MQ.pick(r, [10, 15, 20, 25]), n = g * (1 - d / 100);
         return mc(r, F(n), [F(g), F(g * d / 100), F(g * (1 + d / 100))], 'Net = gross − ' + d + '% = ' + F(g) + ' − ' + F(g * d / 100) + ' = ' + F(n) + '.', { q: 'Your gross pay is ' + F(g) + ' and ' + d + '% is deducted. What is your net (take-home) pay?' });
       },
       (r, lvl) => {
-        const price = M(ri(8, 20)), cost = Math.round(price * (0.3 + r() * 0.4)), n = ri(10, 40), p = (price - cost) * n;
+        const price = M(ri(r, 8, 20)), cost = Math.round(price * (0.3 + r() * 0.4)), n = ri(r, 10, 40), p = (price - cost) * n;
         return mc(r, F(p), [F(price * n), F(cost * n), F((price + cost) * n)], 'Profit per item ' + F(price - cost) + ' × ' + n + ' = ' + F(p) + '.', { q: 'You sell ' + n + ' items at ' + F(price) + '. Each costs ' + F(cost) + ' to make. Total profit?' });
       },
       (r, lvl) => {
-        const t = M(ri(10, 20) * 1000), x = M(ri(2, 9) * 1000), tax = x * 0.2;
+        const t = M(ri(r, 10, 20) * 1000), x = M(ri(r, 2, 9) * 1000), tax = x * 0.2;
         return mc(r, F(tax), [F((t + x) * 0.2), F(t * 0.2), 'Nothing'], 'Only the ' + F(x) + ' above the threshold is taxed at 20%: ' + F(tax) + '.', { q: 'Income up to ' + F(t) + ' is tax-free. Income above that is taxed at 20%. You earn ' + F(t + x) + '. How much tax?' });
       }
     ],
     credit: [
       (r, lvl) => {
-        const lim = M(ri(5, 20) * 100), b = Math.round(lim * MQ.pick(r, [0.1, 0.2, 0.5, 0.8, 0.9]) / 10) * 10, u = Math.round(b / lim * 100);
+        const lim = M(ri(r, 5, 20) * 100), b = Math.round(lim * MQ.pick(r, [0.1, 0.2, 0.5, 0.8, 0.9]) / 10) * 10, u = Math.round(b / lim * 100);
         return mc(r, u + '%' + (u <= 30 ? ' (healthy)' : ' (high)'), [u + '%' + (u <= 30 ? ' (high)' : ' (healthy)'), Math.min(100, u + 20) + '%' + ' (high)', Math.max(1, Math.round(u / 3)) + '% (healthy)'], F(b) + ' ÷ ' + F(lim) + ' = ' + u + '%. Under about 30% looks responsible.', { q: 'Credit limit ' + F(lim) + ', balance ' + F(b) + '. What is your utilization?' });
       },
       (r, lvl) => {
-        const p = M(ri(5, 15) * 100), apr = MQ.pick(r, [12, 18, 24, 30]), n = MQ.pick(r, [12, 24]);
+        const p = M(ri(r, 5, 15) * 100), apr = MQ.pick(r, [12, 18, 24, 30]), n = MQ.pick(r, [12, 24]);
         const i = apr / 1200, m = Math.round(p * i / (1 - Math.pow(1 + i, -n))), tot = m * n - p;
         return mc(r, F(tot), [F(p * apr / 100), F(m), F(tot / 2)], F(m) + ' × ' + n + ' months = ' + F(m * n) + ', minus the ' + F(p) + ' borrowed = ' + F(tot) + ' of interest.', { q: 'You borrow ' + F(p) + ' and repay ' + F(m) + ' a month for ' + n + ' months. How much interest do you pay in total?' });
       },
       (r, lvl) => {
-        const p = M(ri(8, 20) * 100);
+        const p = M(ri(r, 8, 20) * 100);
         const tot = (apr, n) => { const i = apr / 1200, m = p * i / (1 - Math.pow(1 + i, -n)); return m * n - p; };
         const a = tot(12, 12), b = tot(10, 48);
         const ans = a < b ? '12 months at 12% APR' : '48 months at 10% APR';
         return mc(r, ans, [ans === '12 months at 12% APR' ? '48 months at 10% APR' : '12 months at 12% APR', 'They cost exactly the same'], 'Total interest: 12 months at 12% ≈ ' + F(a) + ', 48 months at 10% ≈ ' + F(b) + '. A longer loan means more months of interest, even at a lower rate.', { q: 'Borrowing ' + F(p) + '. Which costs LESS interest in total?' });
       },
       (r, lvl) => {
-        const p = M(ri(5, 15) * 100), y = MQ.pick(r, [1, 2, 3]), flat = p * 0.1 * y;
+        const p = M(ri(r, 5, 15) * 100), y = MQ.pick(r, [1, 2, 3]), flat = p * 0.1 * y;
         return mc(r, F(flat), [F(p * 0.1), F(flat / 2), F(p * Math.pow(1.1, y) - p + p * 0.05)], '"Flat" interest charges 10% of the ORIGINAL amount every year, even as you repay: ' + F(p) + ' × 10% × ' + y + ' = ' + F(flat) + '. The true APR is much higher than 10%.', { q: 'A shop offers ' + F(p) + ' at "10% flat interest per year" for ' + y + ' year' + (y > 1 ? 's' : '') + '. Total interest?' });
       }
     ],
     investing: [
-      (r, lvl) => mc(r, 'A single new start-up\'s stock', ['A savings account', 'A government bond', 'A broad index fund'], 'One young company can fail completely. Index funds spread risk over many companies; savings and government bonds are the least risky.', { q: 'Which of these is usually the RISKIEST?' }),
       (r, lvl) => {
-        const p = M(ri(2, 9) * 10), inf = MQ.pick(r, [3, 5, 7]), n = MQ.pick(r, [5, 10]), fp = p * Math.pow(1 + inf / 100, n);
+        const p = M(ri(r, 2, 9) * 10), inf = MQ.pick(r, [3, 5, 7]), n = MQ.pick(r, [5, 10]), fp = p * Math.pow(1 + inf / 100, n);
         return mc(r, F(fp), [F(p), F(p * (1 + inf * n / 100) * 0.85), F(p * (1 + inf / 100))], F(p) + ' × ' + (1 + inf / 100) + '^' + n + ' ≈ ' + F(fp) + '. Same item, more money: inflation.', { q: 'Pizza costs ' + F(p) + ' today. With ' + inf + '% inflation every year, roughly what does it cost in ' + n + ' years?' });
       },
       (r, lvl) => {
@@ -173,8 +174,25 @@ window.MQ = window.MQ || {};
         return mc(r, 'About ' + real + '%', ['About ' + (a + b) + '%', 'About ' + a + '%', 'About ' + (-b) + '%'], 'Real return ≈ return − inflation = ' + a + '% − ' + b + '% = ' + real + '%.', { q: 'Your investment returned ' + a + '% this year and inflation was ' + b + '%. Roughly what is your REAL return?' });
       },
       (r, lvl) => {
+        const p = M(ri(r, 5, 20) * 100), n = MQ.pick(r, [20, 30, 40]);
+        const a = p * Math.pow(1.07, n), b = p * Math.pow(1.06, n);
+        return mc(r, F(a - b), [F(p * 0.01 * n), F(p * 0.01), 'Nothing, 1% is tiny'], 'At 7%: ' + F(a) + '. After a 1% fee (6%): ' + F(b) + '. The fee cost ' + F(a - b) + ', far more than 1% × ' + n + ' years. Fees compound too.', { q: 'You invest ' + F(p) + ' for ' + n + ' years at 7% a year. How much does a 1% yearly fee (so 6% instead) cost you in the end?' });
+      },
+      (r, lvl) => mc(r, 'Hundreds of companies at once, for a low fee', ['One company the fund manager likes', 'Only government bonds', 'A guaranteed return'], 'An index fund copies a whole market index, so you own a small slice of every company in it.', { q: 'An index fund (like an ' + MQ.country().indexName + ') gives you...' })
+    ],
+    risk: [
+      (r, lvl) => mc(r, 'A single new start-up\'s stock', ['A savings account', 'A government bond', 'A broad index fund'], 'One young company can fail completely. Index funds spread risk over many companies; savings and government bonds are the least risky.', { q: 'Which of these is usually the RISKIEST?' }),
+      (r, lvl) => {
+        const yrs = MQ.pick(r, [1, 2]), goal = MQ.pick(r, ['a car', 'a laptop', 'university fees']);
+        return mc(r, 'A savings account or fixed deposit', ['All in a hot tech stock', 'Crypto', 'All in an index fund'], 'Money needed within ' + yrs + ' year' + (yrs > 1 ? 's' : '') + ' should not be exposed to a crash it has no time to recover from.', { q: 'You need money for ' + goal + ' in ' + yrs + ' year' + (yrs > 1 ? 's' : '') + '. Where is the most sensible place to keep it?' });
+      },
+      (r, lvl) => {
         const x = MQ.pick(r, [10, 20, 30]), y = MQ.pick(r, [10, 20, 40]), tot = (x - y) / 2;
         return mc(r, (tot >= 0 ? '+' : '') + tot + '%', ['−' + y + '%', '+' + x + '%', (tot >= 0 ? '−' : '+') + Math.abs(tot) + '%'].filter(o => o !== (tot >= 0 ? '+' : '') + tot + '%'), 'Half your money gained ' + x + '%, half lost ' + y + '%: (' + x + ' − ' + y + ') ÷ 2 = ' + tot + '%. Diversification softened the loss.', { q: 'You split money 50/50: fund A rises ' + x + '%, fund B falls ' + y + '%. Overall change?' });
+      },
+      (r, lvl) => {
+        const d = MQ.pick(r, [20, 30, 35]);
+        return mc(r, 'Nothing is lost until you sell. Selling now locks in the loss', ['Sell immediately to stop the pain', 'The money is gone forever either way', 'Borrow money to buy more'], 'A ' + d + '% drop is a paper loss. Historically, broad markets have recovered from crashes, but only investors who stayed in got the recovery.', { q: 'Your long-term index fund drops ' + d + '% in a crash. Which statement is true?' });
       }
     ],
     safety: [
