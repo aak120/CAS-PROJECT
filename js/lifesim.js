@@ -37,9 +37,9 @@ window.MQ = window.MQ || {};
     promotion: { kind: 'opportunity', e: '💼', modes: ['first', 'custom'], gen: (r, s) => ({ d: nice(s.income * (0.1 + r() * 0.18)) }),
       t: p => 'You got a promotion! Income +' + F(p.d) + '/month.',
       c: p => [['Auto-save the raise (live like before)', { income: p.d, autoSave: p.d, note: 'Avoiding "lifestyle inflation" is one of the most powerful money habits.' }], ['Enjoy it: upgrade my lifestyle', { income: p.d, sub: p.d * 0.8, happy: 6, note: 'Most of the raise now goes on a nicer lifestyle every month.' }], ['Split it 50/50', { income: p.d, autoSave: p.d / 2, sub: p.d * 0.4, happy: 3 }]] },
-    extraShifts: { kind: 'opportunity', e: '⏰', modes: ['teen'], gen: (r, s) => ({ d: nice(s.income * (0.25 + r() * 0.2)) }),
+    extraShifts: { kind: 'opportunity', e: '⏰', modes: ['teen'], needsJob: true, gen: (r, s) => ({ d: nice(s.income * (0.25 + r() * 0.2)) }),
       t: p => 'Your manager offers extra shifts this month (+' + F(p.d) + ').', c: p => [['Take them', { cash: p.d, happy: -4 }], ['Decline. Exams are coming', { happy: 1 }]] },
-    sideGig: { kind: 'opportunity', e: '🎨', modes: ['first', 'teen', 'custom'], gen: (r, s) => ({ d: nice(s.income * (0.2 + r() * 0.25)) }),
+    sideGig: { kind: 'opportunity', e: '🎨', modes: ['first', 'teen', 'custom'], needsJob: true, gen: (r, s) => ({ d: nice(s.income * (0.2 + r() * 0.25)) }),
       t: p => 'A side gig pops up: ' + F(p.d) + ' for a weekend project.', c: p => [['Take it and save the money', { toEF: p.d, happy: -3 }], ['Take it and invest the money', { toInv: p.d, happy: -3 }], ['Rest instead', { happy: 3 }]] },
     windfall: { kind: 'opportunity', e: '🎁', modes: ['first', 'teen', 'custom'], gen: (r, s) => ({ d: nice(s.income * (0.2 + r() * 0.35)) }),
       t: p => 'Surprise money! A bonus/gift of ' + F(p.d) + ' arrives.', c: p => [['Save it', { toEF: p.d }], ['Invest it', { toInv: p.d }], ['Spend it on something fun', { happy: 7 }], ['Put it towards my goal', { toGoal: p.d }]] },
@@ -79,7 +79,7 @@ window.MQ = window.MQ || {};
       t: p => 'Your best friend\'s birthday: gift + outing ≈ ' + F(p.c) + '.', c: p => [['Big gift and the full outing', { cash: -p.c, happy: 7 }], ['Thoughtful, cheaper gift (' + F(p.c * 0.3) + ')', { cash: -p.c * 0.3, happy: 6, note: 'Thoughtful beats expensive. Friends remember the effort.' }], ['Skip it', { happy: -7 }]] },
     sellStuff: { kind: 'opportunity', e: '🧺', modes: ['teen'], gen: (r, s) => ({ d: nice(s.income * (0.15 + r() * 0.15)) }),
       t: p => 'Clear out old games, clothes and gadgets? You could sell them for about ' + F(p.d) + '.', c: p => [['Sell and save the money', { toEF: p.d, happy: 2 }], ['Sell and put it towards my goal', { toGoal: p.d, happy: 2 }], ['Sell and spend it', { cash: p.d, happy: 4 }], ['Keep everything', {}]] },
-    tutorGig: { kind: 'opportunity', e: '🧑‍🏫', modes: ['teen'], gen: (r, s) => ({ d: nice(s.income * (0.15 + r() * 0.1)) }),
+    tutorGig: { kind: 'opportunity', e: '🧑‍🏫', modes: ['teen'], needsJob: true, gen: (r, s) => ({ d: nice(s.income * (0.15 + r() * 0.1)) }),
       t: p => 'A neighbour asks you to tutor their kid every week (+' + F(p.d) + '/month).', c: p => [['Accept', { income: p.d, happy: -3, note: 'A regular side income! Try saving it before you get used to spending it.' }], ['Decline. Too busy', { happy: 1 }]] },
     busPass: { kind: 'shock', e: '🎫', modes: ['teen'], gen: (r, s) => ({ c: nice(s.income * (0.06 + r() * 0.06)) }),
       t: p => 'You lost your bus pass. A replacement costs ' + F(p.c) + '.', c: p => [['Replace it', { cash: -p.c }], ['Walk and cycle for a while', { happy: -4, note: 'Free and healthy, if a bit tiring.' }]] },
@@ -87,6 +87,10 @@ window.MQ = window.MQ || {};
       t: p => 'A Discord DM: "FREE rare skins! Just log in with your game account here 👉 free-skinz.gg"', c: p => [['Log in and claim', { cash: -p.c, happy: -10, note: 'Scam! Your account was hijacked and the saved card was used for ' + F(p.c) + '. Never log in through links in DMs.' }], ['Report & block', { happy: 2, note: 'Nice. "Free skins" links are one of the most common scams aimed at gamers.' }]] },
     hoodieDrop: { kind: 'temptation', e: '🧥', modes: ['teen'], gen: (r, s) => ({ c: nice(s.income * (0.2 + r() * 0.15)) }),
       t: p => 'Everyone at school has the new hoodie drop: ' + F(p.c) + '.', c: p => [['Buy it', { cash: -p.c, happy: 5, impulse: p.c }], ['Find a similar one second-hand (' + F(p.c * 0.3) + ')', { cash: -p.c * 0.3, happy: 4 }], ['Skip the trend', { happy: -2 }]] },
+    chores: { kind: 'opportunity', e: '🧹', modes: ['teen'], gen: (r, s) => ({ d: nice(s.income * (0.15 + r() * 0.15)) }),
+      t: p => 'Your parents offer ' + F(p.d) + ' extra this month for extra chores (car wash, garden, sorting the cupboard).', c: p => [['Deal!', { cash: p.d, happy: -2, note: 'Earning extra by helping out is a great way to boost savings.' }], ['No thanks', { happy: 1 }]] },
+    festival: { kind: 'opportunity', e: '🪔', modes: ['teen'], gen: (r, s) => ({ d: nice(s.income * (0.4 + r() * 0.5)) }),
+      t: (p, x) => (x && x.scn && x.scn.country === 'IN' ? 'Diwali' : 'Holiday season') + '! Relatives give you ' + F(p.d) + ' as gift money.', c: p => [['Save all of it', { toEF: p.d }], ['Put it towards my goal', { toGoal: p.d, happy: 2 }], ['Half towards my goal, half to spend', { toGoal: p.d / 2, happy: 5 }], ['Spend it on treats', { happy: 8 }]] },
     crash: { kind: 'market', e: '📉', modes: ['first', 'teen', 'custom'], gen: (r) => ({ d: 15 + Math.floor(r() * 10) }),
       t: p => 'Markets crashed ' + p.d + '%! Headlines are screaming. Your investments just dropped.',
       c: p => [['Sell everything before it gets worse', { crash: 'sell' }], ['Hold steady', { crash: 'hold' }], ['Buy more while prices are low', { crash: 'buy' }]] },
@@ -129,10 +133,11 @@ window.MQ = window.MQ || {};
       // Teens can't get credit cards or loans: overspending becomes an interest-free IOU to parents that must be paid back.
       scn.cardAPR = 0; scn.loanAPR = 0; scn.loanMonths = 6;
       scn.debtName = 'IOU to your parents';
-      scn.allowance = nice(scn.income * 0.4);
+      scn.teenJob = c.teenJob !== false;
+      scn.allowance = scn.teenJob ? nice(scn.income * 0.4) : scn.income;
       scn.exp.rent = nice(scn.income * 0.05);
       scn.labels = { rent: '✏️ School stuff', food: '🥪 Lunches & snacks', transport: '🚌 Bus & travel', phone: '📱 Phone top-up' };
-      scn.job = scn.job + ' + pocket money';
+      scn.job = scn.teenJob ? scn.job + ' + pocket money' : 'student on pocket money';
     }
     // Personalised event mix: temptations for impulsive players, market drama for risk-lovers, shocks for planners.
     const p = opts.personality;
@@ -142,7 +147,7 @@ window.MQ = window.MQ || {};
       if (p.riskLevel === 'high') w.market = 1.6;
       if (p.impulseLevel === 'low') w.shock = 1.8;
     }
-    const pool = Object.keys(EV).filter(k => !EV[k].followOnly && k !== 'crash' && EV[k].modes.includes(mode) && !(EV[k].needsRent && !scn.exp.rent));
+    const pool = Object.keys(EV).filter(k => !EV[k].followOnly && k !== 'crash' && EV[k].modes.includes(mode) && !(EV[k].needsRent && !scn.exp.rent) && !(EV[k].needsJob && mode === 'teen' && !scn.teenJob));
     const used = new Set(), events = [];
     for (let m = 1; m <= scn.months; m++) {
       if (r() > (m === 1 ? 0.55 : 0.8)) continue;
@@ -222,7 +227,7 @@ window.MQ = window.MQ || {};
     const led = scn.taxRate ? [['Gross pay', gross], ['✂️ ' + scn.taxLabel, -(gross - st.income)]] : [['Pay (take-home)', st.income]];
     if (pensionC) led.push(['Retirement plan (matched ×2)', -pensionC]);
     const L = scn.labels || { rent: '🏠 Rent', food: '🍲 Food', transport: '🚌 Transport', phone: '📱 Phone' };
-    if (scn.allowance && !scn.taxRate) { led.length = 0; led.push(['🪙 Pocket money', scn.allowance], ['💼 Part-time job', st.income - scn.allowance]); }
+    if (scn.allowance && !scn.taxRate) { led.length = 0; led.push(['🪙 Pocket money', scn.allowance]); if (st.income - scn.allowance > 0.5) led.push([scn.teenJob ? '💼 Part-time job' : '🧹 Extra earnings', st.income - scn.allowance]); }
     const bills = [[L.rent, st.exp.rent], [L.food, st.exp.food], [L.transport, st.exp.transport], [L.phone, st.exp.phone], ['🔁 Subscriptions & habits', st.subs]];
     bills.forEach(b => { if (b[1] > 0.5) { pay(st, b[1], st.notes); led.push([b[0], -b[1]]); } });
     st.loans.slice().forEach(l => {
@@ -557,7 +562,7 @@ window.MQ = window.MQ || {};
   function modeCards() {
     const c = MQ.country();
     return '<div class="mode-grid">' +
-      '<button class="card mode" data-mode="teen"><span class="emoji-tile" style="--c:#22c55e">🧑‍🎓</span><div><h3>Teen Life <span class="tag">Start here</span></h3><p class="muted small">Pocket money, a part-time job, school trips, games and friends. Save up for something big in 12 months.</p></div></button>' +
+      '<button class="card mode" data-mode="teen"><span class="emoji-tile" style="--c:#22c55e">🧑‍🎓</span><div><h3>Teen Life <span class="tag">Start here</span></h3><p class="muted small">' + (c.teenJob ? 'Pocket money, a part-time job, school trips, games and friends.' : 'Pocket money, gift money, school trips, games and friends.') + ' Save up for something big in 12 months.</p></div></button>' +
       '<button class="card mode" data-mode="first"><span class="emoji-tile" style="--c:#f59e0b">🔮</span><div><h3>Future You: First Salary</h3><p class="muted small">Fast-forward to age 22: first full-time job, rent, bills, loans and credit cards.</p></div></button>' +
       '<button class="card mode" data-mode="custom"><span class="emoji-tile" style="--c:#6366f1">✍️</span><div><h3>Custom life</h3><p class="muted small">Type in your own numbers: income, rent, savings, goal.</p></div></button></div>' +
       '<p class="hint">Scenarios use typical ' + esc(c.name) + ' numbers (' + c.flag + '). Change country in Profile → Settings.</p>';
@@ -600,12 +605,12 @@ window.MQ = window.MQ || {};
     const ess = scn.exp.rent + scn.exp.food + scn.exp.transport + scn.exp.phone;
     main.innerHTML = head(main, 'Meet your character') +
       (challenge ? '<div class="card challenge-banner">⚔️ Challenge from <b>' + esc(challenge.by) + '</b>: same life, same surprises. Can you beat their net worth of <b>' + F(challenge.r.nw) + '</b>?</div>' : '') +
-      '<div class="card char pop"><div class="big-emoji">' + (scn.mode === 'teen' ? '🧑‍🎓' : '🧑‍💼') + '</div><h2>' + esc(scn.name) + ', ' + scn.age + '</h2><p class="muted">' + esc(scn.mode === 'custom' ? 'Your custom life' : 'Works as a ' + scn.job) + '</p>' +
+      '<div class="card char pop"><div class="big-emoji">' + (scn.mode === 'teen' ? '🧑‍🎓' : '🧑‍💼') + '</div><h2>' + esc(scn.name) + ', ' + scn.age + '</h2><p class="muted">' + esc(scn.mode === 'custom' ? 'Your custom life' : scn.mode === 'teen' && !scn.teenJob ? 'Student · lives on pocket money and gifts' : 'Works as a ' + scn.job) + '</p>' +
       '<div class="ledger">' + (scn.taxRate ? '<div><span>💼 Gross salary</span><b>' + F(scn.income / (1 - scn.taxRate)) + '/mo</b></div><div><span>✂️ ' + esc(scn.taxLabel) + '</span><b class="down">−' + F(scn.income / (1 - scn.taxRate) - scn.income) + '</b></div>' : '') +
-      '<div><span>💰 Take-home pay</span><b class="up">' + F(scn.income) + '/mo</b></div>' +
+      '<div><span>' + (scn.mode === 'teen' ? '💰 Money in each month' : '💰 Take-home pay') + '</span><b class="up">' + F(scn.income) + '/mo</b></div>' +
+      (scn.allowance && scn.teenJob && !scn.taxRate ? '<div><span>&nbsp;&nbsp;🪙 Pocket money</span><b>' + F(scn.allowance) + '</b></div><div><span>&nbsp;&nbsp;💼 Part-time job</span><b>' + F(scn.income - scn.allowance) + '</b></div>' : '') +
       (scn.mode === 'teen' ? '<div><span>🏠 Home</span><b>Lives with family</b></div><div><span>✏️ School stuff</span><b>' + F(scn.exp.rent) + '</b></div>' : scn.exp.rent ? '<div><span>🏠 Rent</span><b>' + F(scn.exp.rent) + '</b></div>' : '<div><span>🏠 Rent</span><b>Lives with family</b></div>') +
-      (scn.allowance && !scn.taxRate ? '<div><span>🪙 Pocket money</span><b>' + F(scn.allowance) + '</b></div><div><span>💼 Part-time job</span><b>' + F(scn.income - scn.allowance) + '</b></div>' : '') +
-      '<div><span>' + (scn.labels ? scn.labels.food : '🍲 Food') + '</span><b>' + F(scn.exp.food) + '</b></div><div><span>' + (scn.labels ? '🚌 Travel & phone' : '🚌 Transport & bills') + '</span><b>' + F(scn.exp.transport + scn.exp.phone) + '</b></div>' +
+            '<div><span>' + (scn.labels ? scn.labels.food : '🍲 Food') + '</span><b>' + F(scn.exp.food) + '</b></div><div><span>' + (scn.labels ? '🚌 Travel & phone' : '🚌 Transport & bills') + '</span><b>' + F(scn.exp.transport + scn.exp.phone) + '</b></div>' +
       '<div class="total"><span>Left after essentials</span><b>' + F(scn.income - ess) + '/mo</b></div>' +
       '<div><span>🐷 Savings now</span><b>' + F(scn.savings) + '</b></div><div><span>' + scn.goal.e + ' Wants a ' + esc(scn.goal.name) + '</span><b>' + F(scn.goal.cost) + '</b></div></div></div>' +
       '<div class="card"><h3>How it works</h3><ul class="list"><li>Each payday, essentials are paid first. You split the rest between <b>wants</b>, an <b>emergency fund</b>, your <b>goal fund</b>, <b>investing</b> and <b>paying off debt</b>.</li>' +
@@ -639,7 +644,7 @@ window.MQ = window.MQ || {};
     const ess = essentials(st), name = MQ.country().id === 'IN' ? 'Kiran' : MQ.country().id === 'UK' ? 'Ellie' : 'Sam';
     const foodNow = st.exp.food, food0 = scn.exp.food;
     const beats = {
-      1: ['🎉 First payday!', 'Welcome to your first ' + (scn.mode === 'teen' ? 'pay packet' : 'real salary') + '. Needs come first, and they are already paid. Before treating yourself, start an <b>emergency fund</b>: future-you will thank you. Investing and big purchases unlock soon.', 'saving-1'],
+      1: ['🎉 First payday!', (scn.mode === 'teen' ? (scn.teenJob ? 'Your pocket money and first pay packet just arrived!' : 'Your pocket money just arrived!') : 'Welcome to your first real salary.') + ' Needs come first, and they are already paid. Before treating yourself, start an <b>emergency fund</b>: future-you will thank you. Investing and big purchases unlock soon.', 'saving-1'],
       2: ['🔓 Big purchases unlocked', scn.mode === 'teen' ? 'You can now buy your ' + esc(scn.goal.name) + ' with your savings, or borrow from your parents and pay them back monthly. Borrowing gets it sooner, but repayments shrink your spending money for months.' : 'You can now buy your ' + esc(scn.goal.name) + ': cash, loan, Buy Now Pay Later or credit card. Compare the <b>total cost</b>, not the monthly payment. Or keep saving.', scn.mode === 'teen' ? 'teen-4' : 'credit-1'],
       3: ['🔓 Investing unlocked', (scn.mode === 'teen' ? 'With a parent\'s help (a custodial or junior account), money ' : 'Money ') + 'you will not need for years can go into an <b>index fund</b>, which owns hundreds of companies. It goes up and down, so keep emergency money separate.', 'investing-2'],
       4: ['🔁 Subscription check', 'Look at your bills. Small monthly costs (' + F(st.subs) + '/mo right now) quietly add up to ' + F(st.subs * 12) + ' a year.', 'basics-3'],
@@ -648,7 +653,7 @@ window.MQ = window.MQ || {};
       7: scn.mode === 'teen' ? ['🤝 Borrowing rule', 'Owing parents or friends is still debt. Agree how and when you will pay it back, and stick to it.' + (st.card > 1 ? ' You currently owe ' + F(st.card) + '.' : ''), 'credit-1'] : ['💳 Credit card rule', 'Only use a card for what you can pay off in full. Card interest here is ' + scn.cardAPR + '% a year.' + (st.card > 1 ? ' You owe ' + F(st.card) + '. Attack it!' : ''), 'credit-2'],
       8: ['🧺 Diversify', 'Do not put everything in one hype stock. Mixing index funds, gold and cash softens crashes.', 'investing-3'],
       9: ['🎈 Inflation check', 'Your food bill went from ' + F(food0) + ' to ' + F(foodNow) + ' a month, with no change in what you eat. That is inflation at ' + st.inflation + '% a year.', 'investing-1'],
-      10: ['🧾 Payslip lesson', scn.taxRate ? 'You earn ' + F(st.income / (1 - scn.taxRate)) + ' gross but take home ' + F(st.income) + '. Deductions like ' + esc(scn.taxLabel) + ' come out first. Always budget with take-home pay.' : 'Your pay is below the income-tax threshold, so you keep all of it. But you already pay tax: sales tax / VAT / GST is part of the price of most things you buy. Later, when you earn more, tax comes out of your pay first.', 'earning-2'],
+      10: ['🧾 Payslip lesson', scn.taxRate ? 'You earn ' + F(st.income / (1 - scn.taxRate)) + ' gross but take home ' + F(st.income) + '. Deductions like ' + esc(scn.taxLabel) + ' come out first. Always budget with take-home pay.' : (scn.teenJob ? 'Your pay is below the income-tax threshold, so you keep all of it.' : 'You do not earn a salary yet, so there is no income tax to pay.') + ' But you already pay tax: sales tax / VAT / GST is part of the price of most things you buy. Later, when you earn more, tax comes out of your pay first.', 'earning-2'],
       11: ['🎯 SMART goals', 'Specific, measurable, time-bound goals beat "save more". How close are you to your ' + esc(scn.goal.name) + '?', 'saving-1'],
       12: ['🏁 Final month', 'Last payday of the year! After this you will see your analytics and can replay "What if…?" versions of your choices.', null]
     };

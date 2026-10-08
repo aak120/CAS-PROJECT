@@ -7,7 +7,7 @@ A fun, game-style financial literacy app built for my CAS project. Teens learn m
 ## Features
 
 ### 🏙️ Life Simulator (Teen Life + Future You)
-- **Teen Life (main mode):** pocket money + a part-time job, school stuff, lunches, bus fare and phone top-ups. Events include school trips, exam tutoring, game sales, loot boxes, birthday parties, "free skins" scams, selling old stuff and tutoring gigs. Teens can't get credit cards or loans, so overspending becomes an interest-free IOU to parents that has to be paid back.
+- **Teen Life (main mode):** in India and Global mode teens live on pocket money and gifts (Diwali/holiday money, extra chores); in the US and UK they also have a part-time job. Costs include school stuff, lunches, bus fare and phone top-ups. Events include school trips, exam tutoring, game sales, loot boxes, birthday parties, "free skins" scams, selling old stuff and tutoring gigs. Teens can't get credit cards or loans, so overspending becomes an interest-free IOU to parents that has to be paid back.
 - **Future You: First Salary:** fast-forward to age 22 with rent, a loan, BNPL and credit cards.
 - **Generated characters:** for example "Sara, 22, junior designer, takes home ₹35,000. Rent ₹13,000, food ₹8,000, has ₹13,000 saved, wants a ₹1,10,000 scooter." Modes: **First Salary**, **Teen Part-Timer**, or **Custom** (type your own numbers).
 - **Each payday:** essentials are paid, then you split the rest between wants, emergency fund, goal fund, investing (index / gold / hype stock) and extra debt payments.

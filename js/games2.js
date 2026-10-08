@@ -37,7 +37,7 @@ window.MQ = window.MQ || {};
         { e: '🎁', t: 'New season loot boxes in your favourite game', c: [['Buy 10 boxes', -0.15, 1], ['Just the battle pass', -0.05, 3], ['Skip', 0, -1]] },
         { e: '🧋', t: 'Bubble tea after school with friends', c: [['Every day this week', -0.1, 5], ['Once this week', -0.02, 3], ['Bring a drink from home', 0, 0]] },
         { e: '🎤', t: 'Concert announced!', c: [['Buy a ticket', -0.11, 10], ['Watch the livestream', 0, -2]] },
-        { e: '👶', t: 'A neighbour offers babysitting work', c: [['Take it (+money, tired)', 0.15, -3], ['Decline', 0, 1]] },
+        MQ.country().teenJob ? { e: '👶', t: 'A neighbour offers babysitting work', c: [['Take it (+money, tired)', 0.15, -3], ['Decline', 0, 1]] } : { e: '🧹', t: 'Your parents offer extra pocket money for extra chores', c: [['Deal! (+money, tired)', 0.12, -2], ['No thanks', 0, 1]] },
         { e: '🧺', t: 'Sell old games and clothes online?', c: [['Sell them', 0.1, 1], ['Keep them', 0, 0]] },
         { e: '🎁', t: 'You find money in an old jacket!', c: [['Nice!', 0.03, 3]] },
         { e: '🍕', t: 'Friends order pizza at movie night', c: [['Chip in', -0.025, 4], ['Bring snacks from home', -0.008, 2]] }
@@ -399,7 +399,7 @@ window.MQ = window.MQ || {};
   }
 
   MQ.GAMES.push(
-    { id: 'budget', e: '⚔️', title: 'Budget Battle', sub: 'Survive a month of school life on your pocket money. Every few days brings a new choice.', color: '#f97316', cat: 'budgeting', fn: budgetBattle },
+    { id: 'budget', e: '⚔️', title: 'Budget Battle', sub: 'Survive a month of school life on your money. Every few days brings a new choice.', color: '#f97316', cat: 'budgeting', fn: budgetBattle },
     { id: 'race', e: '🏁', title: 'Compound Interest Race', sub: 'Pick your saving strategy and race 3 rivals to a big target. Who gets there first?', color: '#22c55e', cat: 'saving', fn: compoundRace },
     { id: 'inflation', e: '🎈', title: 'Inflation Dodge', sub: 'Prices keep rising. Move your money each year to protect how many pizzas it can buy.', color: '#ec4899', cat: 'investing', fn: inflationDodge },
     { id: 'credit', e: '💳', title: 'Credit Score Challenge', sub: 'Fast-forward to 18 and your first credit card. Build a fictional credit score from scratch.', color: '#ef4444', cat: 'credit', fn: creditChallenge },

@@ -12,10 +12,12 @@ window.MQ = window.MQ || {};
       portfolioStart: 1000000, dataset: 'IN',
       tax: { first: { rate: 0.06, label: 'Provident Fund + professional tax (no income tax below the ₹12 lakh rebate)' }, teen: { rate: 0, label: '' } },
       first: { age: [21, 24], job: ['junior designer', 'software trainee', 'bank associate', 'marketing executive', 'lab assistant'], income: [35000, 60000], rent: [9000, 18000], food: [6000, 9000], transport: [1500, 3500], phone: [300, 700], savings: [10000, 40000] },
-      teen: { age: [16, 18], job: ['home tutor', 'café helper', 'freelance video editor', 'event volunteer (paid)'], income: [6000, 12000], rent: [0, 0], food: [1500, 2500], transport: [500, 1200], phone: [200, 400], savings: [2000, 8000] },
+      // Most Indian teens don't have jobs (under-14s can't be employed; 14–17 only non-hazardous work), so teen life runs on pocket money.
+      teenJob: false,
+      teen: { age: [14, 17], job: ['student'], income: [1500, 3500], rent: [0, 0], food: [300, 650], transport: [150, 400], phone: [100, 250], savings: [1000, 5000] },
       goals: {
         first: [{ e: '💻', name: 'laptop', cost: [55000, 75000] }, { e: '🛵', name: 'scooter', cost: [85000, 110000] }, { e: '✈️', name: 'trip to Goa with friends', cost: [30000, 45000] }],
-        teen: [{ e: '📱', name: 'new phone', cost: [15000, 25000] }, { e: '🎧', name: 'gaming setup', cost: [20000, 35000] }, { e: '🎒', name: 'school trip', cost: [12000, 20000] }]
+        teen: [{ e: '🎧', name: 'pair of wireless earbuds', cost: [2500, 4000] }, { e: '🚲', name: 'new bicycle', cost: [7000, 10000] }, { e: '🎒', name: 'school trip', cost: [5000, 8000] }, { e: '🎮', name: 'game controller', cost: [3500, 5500] }]
       }
     },
     US: {
@@ -26,6 +28,7 @@ window.MQ = window.MQ || {};
       portfolioStart: 10000, dataset: 'US',
       tax: { first: { rate: 0.2, label: 'Federal + state income tax + FICA (approx.)' }, teen: { rate: 0.08, label: 'FICA + a little federal tax (approx.)' } },
       first: { age: [21, 24], job: ['junior analyst', 'retail supervisor', 'dental assistant', 'IT help-desk tech', 'barista trainer'], income: [2800, 4200], rent: [900, 1600], food: [350, 550], transport: [150, 400], phone: [40, 80], savings: [800, 3000] },
+      teenJob: true,
       teen: { age: [16, 18], job: ['grocery bagger', 'lifeguard', 'babysitter', 'fast-food crew'], income: [500, 900], rent: [0, 0], food: [80, 150], transport: [40, 100], phone: [25, 50], savings: [200, 800] },
       goals: {
         first: [{ e: '💻', name: 'laptop', cost: [1000, 1500] }, { e: '🚗', name: 'used-car down payment', cost: [2500, 4000] }, { e: '✈️', name: 'trip with friends', cost: [1200, 2000] }],
@@ -40,6 +43,7 @@ window.MQ = window.MQ || {};
       portfolioStart: 10000, dataset: 'US',
       tax: { first: { rate: 0.17, label: 'Income tax + National Insurance (approx.)' }, teen: { rate: 0, label: '' } },
       first: { age: [21, 24], job: ['graduate trainee', 'apprentice electrician', 'admin assistant', 'junior developer', 'nursery assistant'], income: [1900, 2800], rent: [650, 1100], food: [200, 320], transport: [80, 180], phone: [12, 25], savings: [500, 2500] },
+      teenJob: true,
       teen: { age: [16, 18], job: ['Saturday shop assistant', 'paper round', 'café staff', 'tutor'], income: [350, 650], rent: [0, 0], food: [60, 110], transport: [30, 70], phone: [10, 20], savings: [150, 600] },
       goals: {
         first: [{ e: '💻', name: 'laptop', cost: [800, 1200] }, { e: '🚗', name: 'first car', cost: [2500, 3500] }, { e: '✈️', name: 'festival + trip', cost: [900, 1500] }],
@@ -48,7 +52,12 @@ window.MQ = window.MQ || {};
     }
   };
   // "Global" uses US-style numbers but lets the player pick any currency symbol.
-  MQ.COUNTRIES.GL = Object.assign({}, MQ.COUNTRIES.US, { id: 'GL', flag: '🌍', name: 'Global / other', cur: null, locale: undefined, credit: { name: 'credit score', min: 300, max: 850, good: 740 }, savingsName: 'savings account', indexName: 'global index fund' });
+  MQ.COUNTRIES.GL = Object.assign({}, MQ.COUNTRIES.US, { id: 'GL', flag: '🌍', name: 'Global / other', cur: null, locale: undefined, credit: { name: 'credit score', min: 300, max: 850, good: 740 }, savingsName: 'savings account', indexName: 'global index fund',
+    // Default: pocket money only (rules on teen work differ a lot between countries).
+    teenJob: false,
+    tax: { first: MQ.COUNTRIES.US.tax.first, teen: { rate: 0, label: '' } },
+    teen: { age: [14, 17], job: ['student'], income: [60, 150], rent: [0, 0], food: [15, 35], transport: [10, 25], phone: [10, 20], savings: [50, 300] },
+    goals: { first: MQ.COUNTRIES.US.goals.first, teen: [{ e: '🎧', name: 'pair of wireless earbuds', cost: [80, 150] }, { e: '🚲', name: 'new bike', cost: [200, 350] }, { e: '🎒', name: 'school trip', cost: [150, 300] }, { e: '🎮', name: 'game controller', cost: [60, 90] }] } });
 
   MQ.country = function () {
     const S = MQ.state && MQ.state.get();
@@ -76,6 +85,7 @@ window.MQ = window.MQ || {};
           id: 'in-1', title: 'Banking & UPI', emoji: '🏦', cat: 'saving',
           cards: [
             { emoji: '🧒', title: 'Bank accounts for teens', body: 'Banks offer savings accounts for minors, opened with a parent or guardian. RBI rules let banks allow children aged 10+ to operate their own account, and some payment apps offer teen accounts linked to a parent. Ask your bank what it offers.' },
+            { emoji: '⚖️', title: 'Teens and work in India', body: 'Under the Child and Adolescent Labour Act, children <b>under 14</b> cannot be employed, and <b>14–17-year-olds</b> may only do non-hazardous work. Most Indian teens get money from pocket money, festival and birthday gifts, and helping at home, so learning to manage that well matters.' },
             { emoji: '📲', title: 'UPI is instant money', body: 'UPI moves money between bank accounts in seconds. Golden rule: <b>you never need your UPI PIN to receive money</b>. A "collect request" asking for your PIN means money is <i>leaving</i> your account.' },
             { emoji: '🔒', title: 'Fixed deposits (FD)', body: 'An <b>FD</b> locks money for a fixed time at a fixed interest rate. Breaking it early usually costs a penalty. A <b>recurring deposit (RD)</b> lets you add a fixed amount every month.' },
             { emoji: '🛡️', title: 'Deposit insurance', body: 'The <b>DICGC</b> insures bank deposits up to <b>₹5 lakh</b> per depositor per bank, including interest. Check rbi.org.in for the latest.' },

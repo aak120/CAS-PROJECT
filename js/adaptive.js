@@ -93,7 +93,7 @@ window.MQ = window.MQ || {};
       (r, lvl) => {
         const inc = M(ri(r, 1, 4) * 100), part = MQ.pick(r, [['wants', 0.3], ['savings', 0.2], ['needs', 0.5]]);
         const a = inc * part[1];
-        return mc(r, F(a), [F(inc * 0.1), F(inc * (part[1] === 0.3 ? 0.2 : 0.3)), F(inc * (part[1] === 0.5 ? 0.2 : 0.5))], part[1] * 100 + '% of ' + F(inc) + ' = ' + F(a) + '.', { q: 'You get ' + F(inc) + ' a month from pocket money and a weekend job. Using 50/30/20, how much goes to ' + part[0] + '?' });
+        return mc(r, F(a), [F(inc * 0.1), F(inc * (part[1] === 0.3 ? 0.2 : 0.3)), F(inc * (part[1] === 0.5 ? 0.2 : 0.5))], part[1] * 100 + '% of ' + F(inc) + ' = ' + F(a) + '.', { q: 'You get ' + F(inc) + ' a month from ' + (MQ.country().teenJob ? 'pocket money and a weekend job' : 'pocket money and gifts') + '. Using 50/30/20, how much goes to ' + part[0] + '?' });
       },
       (r, lvl) => {
         const inc = M(ri(r, 4, 9) * 100), exp = inc + M((ri(r, -12, 12) * 10) || 30);

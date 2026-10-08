@@ -94,12 +94,12 @@ MQ.UNITS = [
         cards: [
           { emoji: '🗺️', title: 'A budget is a plan', body: 'A <b>budget</b> is a plan for your money: what comes in (<b>income</b>) and what goes out (<b>expenses</b>). It is not a punishment. It tells your money where to go instead of wondering where it went.' },
           { emoji: '➖', title: 'Income − Expenses', body: 'If income is bigger than expenses you have a <b>surplus</b> (yay, save it). If expenses are bigger you have a <b>deficit</b>, and that gap gets filled with debt or by emptying your savings.' },
-          { emoji: '🥧', title: 'The 50/30/20 rule', body: 'A simple starting split: <b>50%</b> needs, <b>30%</b> wants, <b>20%</b> savings. If pocket money and a weekend job bring in $200 a month, that is $100 / $60 / $40.' },
+          { emoji: '🥧', title: 'The 50/30/20 rule', body: 'A simple starting split: <b>50%</b> needs, <b>30%</b> wants, <b>20%</b> savings. If pocket money and gifts bring in $200 a month, that is $100 / $60 / $40.' },
           { emoji: '🧑‍🎓', title: 'Teen twist', body: 'If you do not pay rent or bills yet, your "needs" slice is small. That is your superpower: you can save way more than 20% while life is cheap.' }
         ],
         quiz: [
           { q: 'In the 50/30/20 rule, what is the 20% for?', options: ['Wants', 'Savings and debt repayment', 'Rent', 'Taxes'], answer: 1, explain: '50% needs, 30% wants, 20% savings and paying off debt.' },
-          { q: 'You get $200 a month from pocket money and a weekend job. Using 50/30/20, how much goes to wants?', options: ['$40', '$60', '$100', '$20'], answer: 1, explain: '30% of $200 = $60.' },
+          { q: 'You get $200 a month from pocket money and gifts. Using 50/30/20, how much goes to wants?', options: ['$40', '$60', '$100', '$20'], answer: 1, explain: '30% of $200 = $60.' },
           { q: 'You get $250 this month and spend $280. You have a...', options: ['Surplus of $30', 'Deficit of $30', 'Balanced budget', 'Tax refund'], answer: 1, explain: 'Spending more than you earn is a deficit.' },
           { q: 'True or false: budgets are only for people who are bad with money.', options: ['True', 'False'], answer: 1, explain: 'Most people who are good with money use a budget. That is part of why they are good with it.' }
         ]
@@ -181,7 +181,7 @@ MQ.UNITS = [
       {
         id: 'earning-1', title: 'Your First Payslip', emoji: '🧾',
         cards: [
-          { emoji: '🧒', title: 'Your first job', body: 'Babysitting, tutoring, a café shift or a Saturday shop job: your first pay often comes as a teen. Check the local rules on age, hours and minimum wage for young workers.' },
+          { emoji: '🧒', title: 'Your first job', body: 'Babysitting, tutoring, a café shift or a Saturday shop job: your first pay often comes as a teen. Rules differ a lot by country: in the US and UK many teens work part-time, while in India under-14s cannot be employed and most teens rely on pocket money. Always check local rules on age, hours and minimum wage.' },
           { emoji: '💰', title: 'Gross pay', body: '<b>Gross pay</b> is what you earn before anything is taken out. 15 hours × $12/hour = $180 gross.' },
           { emoji: '✂️', title: 'Deductions', body: 'Before money reaches you, some is taken out: <b>income tax</b>, social security or national insurance, sometimes pension contributions. These are <b>deductions</b>.' },
           { emoji: '🏁', title: 'Net pay', body: '<b>Net pay</b> (take-home pay) is what actually lands in your account. Always budget with net pay, not gross.' },
