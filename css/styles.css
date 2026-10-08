@@ -462,3 +462,73 @@ h4 { margin: 10px 0 4px; }
 .mentor p { margin: 8px 0 4px; }
 .mentor a { color: var(--accent2); font-weight: 800; }
 .locked-card { color: var(--muted); background: var(--card2); }
+
+/* ======================= Responsive website layout ======================= */
+:focus-visible { outline: 3px solid var(--accent2); outline-offset: 2px; }
+.opt:focus-visible, .btn:focus-visible, .chip:focus-visible { outline-offset: 3px; }
+
+/* Tablets: a roomier single column */
+@media (min-width: 600px) {
+  .app, #tabs, .check-bar { max-width: 760px; }
+  .screen { padding-left: 24px; padding-right: 24px; }
+  .grid2 { grid-template-columns: repeat(4, 1fr); }
+  .badges { grid-template-columns: repeat(4, 1fr); }
+  .whatifs { display: grid; grid-template-columns: 1fr 1fr; }
+}
+
+/* Laptops & desktops: sidebar navigation + wide content */
+@media (min-width: 960px) {
+  .app {
+    max-width: 1280px; display: grid; grid-template-columns: 240px minmax(0, 1fr);
+    grid-template-rows: auto 1fr; grid-template-areas: "nav top" "nav main";
+  }
+  #topbar { grid-area: top; padding: 16px 36px; }
+  #main { grid-area: main; }
+  .screen { padding: 8px 36px 56px; }
+  #tabs {
+    grid-area: nav; display: flex !important; position: sticky; top: 0; bottom: auto; left: auto; transform: none;
+    width: auto; max-width: none; height: 100vh; height: 100dvh; flex-direction: column; justify-content: flex-start; gap: 4px;
+    padding: 22px 14px; border-top: 0; border-right: 1px solid var(--line); z-index: 10;
+  }
+  #tabs:empty { display: none !important; }
+  #tabs::before { content: "💸 MoneyQuest"; white-space: nowrap; font-weight: 900; font-size: 22px; padding: 4px 14px 20px; color: var(--text); }
+  .tab { flex: none; flex-direction: row; gap: 12px; padding: 11px 14px; border-radius: 12px; font-size: 15px; justify-content: flex-start; }
+  .tab .ti { font-size: 22px; }
+  .tab:hover { background: var(--card2); color: var(--text); }
+  .tab.active { background: var(--good-bg); }
+  .tab.active .ti { transform: none; }
+
+  /* Onboarding has no navigation yet: centre it */
+  .onboarding { grid-column: 1 / -1; grid-row: 1 / -1; max-width: 620px; width: 100%; margin-inline: auto; }
+
+  /* Focused screens (lessons, quizzes, games) stay at a comfortable reading width */
+  .screen-lesson, .screen-practice, .screen-game, .screen-personality, .screen-sim, .screen-ranks {
+    max-width: 860px; width: 100%; justify-self: center;
+  }
+  .screen-lesson, .screen-practice { padding-bottom: 56px; }
+  .check-bar { position: sticky; bottom: 12px; left: auto; transform: none; max-width: none; width: auto; margin-top: 20px; border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+  .lesson-card { min-height: 0; padding-block: 24px; }
+
+  /* Dashboard-style pages flow into two balanced columns (masonry-style) */
+  .screen-home, .screen-learn, .screen-play { columns: 2; column-gap: 18px; }
+  .screen-home > *, .screen-learn > *, .screen-play > * { break-inside: avoid; }
+  .screen-home > h1, .screen-home > .sub, .screen-home > .section, .screen-home > .grid2,
+  .screen-learn > h1, .screen-learn > .sub, .screen-learn > .card:first-of-type,
+  .screen-play > h1, .screen-play > .sub { column-span: all; }
+  .screen-home > .section { margin-top: 16px; }
+  .screen-home > #challenge, .screen-learn > .unit { display: block; }
+
+  .stat-grid { grid-template-columns: repeat(6, 1fr); }
+  .badges { grid-template-columns: repeat(5, 1fr); }
+  .mode-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .mode-grid .mode { flex-direction: column; align-items: flex-start; height: 100%; }
+  .buy-opts { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
+  .nw-stage { height: 340px; }
+}
+
+@media (min-width: 960px) and (hover: hover) {
+  a.card:hover, button.card:not(:disabled):hover, .tile:hover, .mk-row:hover, .opt:not(:disabled):hover {
+    border-color: color-mix(in srgb, var(--accent2) 45%, var(--line)); transform: translateY(-1px);
+  }
+  a.card, button.card, .tile, .opt { transition: transform .12s, border-color .12s; }
+}

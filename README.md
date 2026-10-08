@@ -67,18 +67,34 @@ It's a plain HTML/CSS/JavaScript app with no build step and nothing to install.
   ```
   then open http://localhost:8000.
 
-## Put it on your phone (free)
+## Put it online (free)
 
-1. Push this repo to GitHub (already done if you're reading this there).
-2. On GitHub go to **Settings → Pages** and under "Build and deployment" choose **Deploy from a branch**, pick your branch and the `/ (root)` folder, then save.
-3. After a minute your app is live at `https://<your-username>.github.io/<repo-name>/`.
-4. Open that link on your phone:
-   - **iPhone (Safari):** Share → **Add to Home Screen**
-   - **Android (Chrome):** ⋮ menu → **Install app** / **Add to Home screen**
+MoneyQuest is a static website with no build step, so it works on any static host. It adapts to every screen:
+- **Phones:** bottom tab bar.
+- **Tablets:** wider single column.
+- **Laptops and desktops:** sidebar navigation with two-column dashboards.
 
-It then opens full-screen with its own icon like a normal app, and works offline after the first visit.
+### Option A: Netlify (easiest, auto-updates)
+1. Go to [app.netlify.com](https://app.netlify.com) → **Add new site** → **Import an existing project** → pick this GitHub repo.
+2. Branch: the branch you want live. **Build command:** leave empty. **Publish directory:** `.` (the included `netlify.toml` already sets this).
+3. Click **Deploy**. Every push to that branch redeploys automatically.
 
-> **App Store / Google Play?** You can wrap this same code with [Capacitor](https://capacitorjs.com/) later to publish to the stores. Apple requires a paid developer account ($99/year) and a Mac with Xcode. For a CAS project, the installable web app is usually the practical route.
+No GitHub? Use the **drag and drop** box on Netlify's "Sites" page and drop the whole project folder.
+
+### Option B: GitHub Pages
+1. On GitHub: **Settings → Pages → Build and deployment → Deploy from a branch**, pick your branch and `/ (root)`, then save.
+2. After a minute it's live at `https://<username>.github.io/<repo-name>/`. The included `.nojekyll` file makes GitHub serve every file as-is.
+
+### Install it like an app
+Open the site on a phone:
+- **iPhone (Safari):** Share → **Add to Home Screen**
+- **Android (Chrome):** ⋮ → **Install app**
+
+On a laptop, Chrome and Edge show an install icon in the address bar. After the first visit it also works offline.
+
+Progress is saved in each browser (no accounts), so a phone and a laptop keep separate progress. Use friend codes to compare.
+
+> When you change files, bump `VERSION` in `sw.js` so installed copies pick up the update.
 
 ## Project structure
 
@@ -98,6 +114,8 @@ js/app.js             Router and Home / Learn / Lesson / Ranks / Profile screens
 js/games.js           Game registry, Needs vs Wants, Scam Simulator, Interest Showdown
 js/sims.js            Simulate hub + Market Mania
 sw.js                 Offline caching (bump VERSION when you change files)
+netlify.toml          Netlify settings (no build, cache headers)
+.nojekyll             Tells GitHub Pages to serve files as-is
 manifest.webmanifest  Makes the app installable
 icons/                App icons
 ```

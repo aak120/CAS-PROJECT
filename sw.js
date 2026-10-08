@@ -1,6 +1,6 @@
 // Offline support: cache the app shell so MoneyQuest works without internet once loaded.
 // Bump VERSION whenever you change any file so phones pick up the update.
-const VERSION = 'mq-v4';
+const VERSION = 'mq-v5';
 const FILES = [
   './', './index.html', './manifest.webmanifest', './css/styles.css',
   './js/content.js', './js/country.js', './js/ui.js', './js/state.js', './js/app.js', './js/adaptive.js', './js/personality.js',
