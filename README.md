@@ -6,7 +6,9 @@ A fun, game-style financial literacy app built for my CAS project. Teens learn m
 
 ## Features
 
-### 🏙️ Life Simulator (with First Salary mode)
+### 🏙️ Life Simulator (Teen Life + Future You)
+- **Teen Life (main mode):** pocket money + a part-time job, school stuff, lunches, bus fare and phone top-ups. Events include school trips, exam tutoring, game sales, loot boxes, birthday parties, "free skins" scams, selling old stuff and tutoring gigs. Teens can't get credit cards or loans, so overspending becomes an interest-free IOU to parents that has to be paid back.
+- **Future You: First Salary:** fast-forward to age 22 with rent, a loan, BNPL and credit cards.
 - **Generated characters:** for example "Sara, 22, junior designer, takes home ₹35,000. Rent ₹13,000, food ₹8,000, has ₹13,000 saved, wants a ₹1,10,000 scooter." Modes: **First Salary**, **Teen Part-Timer**, or **Custom** (type your own numbers).
 - **Each payday:** essentials are paid, then you split the rest between wants, emergency fund, goal fund, investing (index / gold / hype stock) and extra debt payments.
 - **The big purchase:** pay cash, take a **loan**, use **Buy Now Pay Later**, or a **credit card**, with real interest maths.
@@ -36,7 +38,7 @@ Split ₹10 lakh / $10,000 / £10,000 across **Stocks, Bonds, ETFs, Gold, Cash, 
 | 📈 Market Mania | Live fictional stock market |
 
 ### 🧠 Adaptive learning
-- 6 core units + a **country unit** (🇮🇳 India / 🇺🇸 US / 🇬🇧 UK), with lesson cards and quizzes.
+- A **Teen Money Life** unit first (pocket money, gaming & digital spending, friends & FOMO, saving for something big), then 6 core units with teen examples, plus a **country unit** (🇮🇳 India / 🇺🇸 US / 🇬🇧 UK), with lesson cards and quizzes.
 - **Financial Literacy Score** per category (Budgeting, Saving, Taxes & Income, Credit, Investing, Risk, Money Safety), built from lessons, games and sims, weighted towards recent answers.
 - **Personal coach:** "You seem to be struggling with compound interest. Want a 3-minute challenge?" Practice uses **freshly generated questions** that get easier or harder as you answer, plus spaced review of questions you missed.
 - The daily challenge is picked from your weakest topic.

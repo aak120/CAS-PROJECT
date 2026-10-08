@@ -75,6 +75,7 @@ window.MQ = window.MQ || {};
         {
           id: 'in-1', title: 'Banking & UPI', emoji: '🏦', cat: 'saving',
           cards: [
+            { emoji: '🧒', title: 'Bank accounts for teens', body: 'Banks offer savings accounts for minors, opened with a parent or guardian. RBI rules let banks allow children aged 10+ to operate their own account, and some payment apps offer teen accounts linked to a parent. Ask your bank what it offers.' },
             { emoji: '📲', title: 'UPI is instant money', body: 'UPI moves money between bank accounts in seconds. Golden rule: <b>you never need your UPI PIN to receive money</b>. A "collect request" asking for your PIN means money is <i>leaving</i> your account.' },
             { emoji: '🔒', title: 'Fixed deposits (FD)', body: 'An <b>FD</b> locks money for a fixed time at a fixed interest rate. Breaking it early usually costs a penalty. A <b>recurring deposit (RD)</b> lets you add a fixed amount every month.' },
             { emoji: '🛡️', title: 'Deposit insurance', body: 'The <b>DICGC</b> insures bank deposits up to <b>₹5 lakh</b> per depositor per bank, including interest. Check rbi.org.in for the latest.' },
@@ -116,6 +117,7 @@ window.MQ = window.MQ || {};
             { emoji: '🛡️', title: 'FDIC insurance', body: 'Deposits at FDIC-insured banks are protected up to <b>$250,000</b> per depositor, per bank, per ownership category. Check fdic.gov.' },
             { emoji: '🔢', title: 'FICO scores', body: 'Most lenders use <b>FICO</b> scores from 300 to 850. Payment history and how much of your limit you use matter most. Landlords and some employers may check credit too.' },
             { emoji: '💸', title: 'Payment apps = cash', body: 'Zelle, Venmo and Cash App payments are usually instant and hard to reverse. Only send money to people you know in real life.' },
+            { emoji: '🏦', title: 'Teen bank accounts', body: 'Under 18, most US banks require a parent or guardian as a joint owner on a checking account. Many teen accounts come with a debit card, spending alerts and no monthly fees.' },
             { emoji: '🧒', title: 'Building credit young', body: 'Being an authorized user on a parent\'s card, or a secured card at 18, can start your credit history. Pay in full, every time.' }
           ],
           quiz: [
@@ -150,6 +152,7 @@ window.MQ = window.MQ || {};
         {
           id: 'uk-1', title: 'Banking & Credit', emoji: '🏦', cat: 'credit',
           cards: [
+            { emoji: '🧒', title: 'Teen accounts & Junior ISAs', body: 'Many UK banks offer current accounts from around age 11 with a debit card. A <b>Junior ISA</b> lets family save or invest up to £9,000 a year for you tax-free. The money becomes yours at 18. Check gov.uk for current limits.' },
             { emoji: '🛡️', title: 'FSCS protection', body: 'The <b>FSCS</b> protects deposits if a UK-authorised bank fails, up to <b>£120,000</b> per person per banking licence (raised from £85,000 in December 2025). Check fscs.org.uk.' },
             { emoji: '📂', title: 'Credit files', body: 'Experian, Equifax and TransUnion each keep a credit file on you and each uses its own score scale. Being on the <b>electoral roll</b> and paying on time both help.' },
             { emoji: '⚠️', title: 'Overdrafts', body: 'Arranged overdrafts often charge around <b>40% a year</b>. Handy in an emergency, expensive as a habit.' },

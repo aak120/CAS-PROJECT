@@ -122,7 +122,7 @@ window.MQ = window.MQ || {};
       '<div id="challenge"></div>' +
       '<a class="card league-mini" href="#/ranks"><span class="tier-badge" style="--tc:' + tier.color + '">' + tier.e + '</span><div><div class="kicker">' + tier.name + ' League</div><h3>You are #' + rank + ' this week</h3></div><span class="go">›</span></a>' +
       '<h2 class="section">Simulate & play</h2><div class="grid2">' +
-      tile('#/sim/life', '🏙️', 'Life Simulator', 'Your first salary') +
+      tile('#/sim/life', '🏙️', 'Life Simulator', 'A year of teen money life') +
       tile('#/sim/portfolio', '🧺', 'Portfolio Sim', 'Invest through history') +
       tile('#/game/scam', '🚨', 'Scam Simulator', 'Spot the red flags') +
       tile('#/game/budget', '⚔️', 'Budget Battle', 'Survive the month') + '</div>' +

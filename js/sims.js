@@ -15,7 +15,7 @@ window.MQ = window.MQ || {};
     const m = S.market, l = S.lifeSim, pf = S.portfolio;
     const status = (cond1, t1, cond2, t2) => cond1 ? t1 : cond2 ? t2 : '✨ New';
     main.innerHTML = '<h1>Simulate</h1><p class="sub">Practise real decisions with fake money. Nothing here is real, so experiment and learn from mistakes!</p>' +
-      card('#/sim/life', '#f59e0b', '🏙️', 'Life Simulator', 'A generated life with a salary, rent, a big goal and random surprises. Save, borrow, invest or spend, then replay "What if…?" versions. Includes First Salary mode, custom lives and multiplayer challenges.',
+      card('#/sim/life', '#f59e0b', '🏙️', 'Life Simulator', 'Live a year of teen money life: pocket money, a part-time job, school trips, games, friends and a big goal. Make your choices, then replay "What if…?" versions. Also: Future You (first salary), custom lives and multiplayer challenges.',
         status(l && l.phase !== 'done', '▶ In progress · ' + (l && l.scn ? esc(l.scn.name) + ', month ' + Math.min(l.st.m, l.scn.months) : ''), l && l.phase === 'done', '✅ Finished · start a new life')) +
       card('#/sim/portfolio', '#0ea5e9', '🧺', 'Portfolio Simulator', 'Split ' + fmt(MQ.country().portfolioStart) + ' across stocks, bonds, ETFs, gold, cash and real estate, then live through real historical periods (like 2008 or 2020) or a random future. Find out WHY it happened.',
         status(pf && pf.run && !pf.run.done, '▶ In progress', pf && pf.best, '🏅 Best diversification: ' + (S.records.diversify || 0) + '/100')) +

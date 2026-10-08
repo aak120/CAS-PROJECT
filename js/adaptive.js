@@ -15,7 +15,7 @@ window.MQ = window.MQ || {};
     { id: 'safety', name: 'Money Safety', e: '🛡️', unit: 'safety', lesson: 'safety-1', concept: 'spotting scam red flags', refresher: 'Red flags: urgency or threats, requests for PINs/OTPs/passwords, strange links, payment by gift card or crypto, guaranteed returns, and "pay a fee to get your prize".' }
   ];
   const BY = {}; CATS.forEach(c => BY[c.id] = c);
-  const UNIT_CAT = { basics: 'budgeting', saving: 'saving', earning: 'earning', credit: 'credit', investing: 'investing', safety: 'safety' };
+  const UNIT_CAT = { teen: 'budgeting', basics: 'budgeting', saving: 'saving', earning: 'earning', credit: 'credit', investing: 'investing', safety: 'safety' };
   const LESSON_CAT = { 'investing-1': 'risk', 'investing-3': 'risk' };
 
   function S() { return ST.get(); }
@@ -91,9 +91,9 @@ window.MQ = window.MQ || {};
         return mc(r, part[1] + '%', ['50%', '30%', '20%', '10%'].filter(x => x !== part[1] + '%').slice(0, 3), 'In 50/30/20: 50% needs, 30% wants, 20% savings and debt payments.', { q: 'In the 50/30/20 rule, what share goes to ' + part[0] + '?' });
       },
       (r, lvl) => {
-        const inc = M(ri(r, 3, 9) * 100), part = MQ.pick(r, [['wants', 0.3], ['savings', 0.2], ['needs', 0.5]]);
+        const inc = M(ri(r, 1, 4) * 100), part = MQ.pick(r, [['wants', 0.3], ['savings', 0.2], ['needs', 0.5]]);
         const a = inc * part[1];
-        return mc(r, F(a), [F(inc * 0.1), F(inc * (part[1] === 0.3 ? 0.2 : 0.3)), F(inc * (part[1] === 0.5 ? 0.2 : 0.5))], part[1] * 100 + '% of ' + F(inc) + ' = ' + F(a) + '.', { q: 'You take home ' + F(inc) + ' a month. Using 50/30/20, how much goes to ' + part[0] + '?' });
+        return mc(r, F(a), [F(inc * 0.1), F(inc * (part[1] === 0.3 ? 0.2 : 0.3)), F(inc * (part[1] === 0.5 ? 0.2 : 0.5))], part[1] * 100 + '% of ' + F(inc) + ' = ' + F(a) + '.', { q: 'You get ' + F(inc) + ' a month from pocket money and a weekend job. Using 50/30/20, how much goes to ' + part[0] + '?' });
       },
       (r, lvl) => {
         const inc = M(ri(r, 4, 9) * 100), exp = inc + M((ri(r, -12, 12) * 10) || 30);
@@ -104,6 +104,15 @@ window.MQ = window.MQ || {};
       (r, lvl) => {
         const d = M(ri(r, 3, 7)), y = d * 260;
         return mc(r, F(y), [F(d * 52), F(d * 30), F(d * 1000)], d + ' × 5 school days × 52 weeks = ' + F(y) + '. Small habits add up!', { q: 'You spend ' + F(d) + ' on snacks every school day (5 days a week, all year). About how much is that per year?' });
+      },
+      (r, lvl) => {
+        const packP = M(MQ.pick(r, [5, 10, 20])), gems = MQ.pick(r, [500, 1000, 2000]), cost = MQ.pick(r, [200, 400, 800, 1200].filter(x => x < gems * 1.5));
+        const real = packP * cost / gems;
+        return mc(r, fmt(real, real % 1 ? 2 : 0), [fmt(real * 2, 2), fmt(real / 2, 2), fmt(packP, 0)], cost + ' ÷ ' + gems + ' × ' + F(packP) + ' = ' + fmt(real, 2) + '. In-game currency hides the real price.', { q: gems + ' gems cost ' + F(packP) + '. A skin costs ' + cost + ' gems. What is its real price?' });
+      },
+      (r, lvl) => {
+        const total = M(ri(r, 4, 8) * 10), n = MQ.pick(r, [4, 5]), mine = Math.max(1, Math.round(total * 0.08)), even = total / n;
+        return mc(r, 'Pay for what you had (' + F(mine) + '), if agreed upfront', ['Split evenly (' + F(even) + ')', 'Pay the whole bill', 'Pay nothing'], 'Splitting evenly would cost you ' + F(even - mine) + ' extra. Agree how to split before ordering.', { q: n + ' friends order food costing ' + F(total) + '. You only had a drink for ' + F(mine) + '. What is the fairest way to pay?' });
       }
     ],
     saving: [
@@ -120,8 +129,9 @@ window.MQ = window.MQ || {};
         return mc(r, 'About ' + y + ' years', ['About ' + (y * 2) + ' years', 'About ' + Math.max(1, Math.round(y / 2)) + ' years', 'About ' + (y + 10) + ' years'], 'Rule of 72: 72 ÷ ' + rate + ' ≈ ' + y + ' years.', { q: 'Using the Rule of 72, how long does money take to double at ' + rate + '% a year?' });
       },
       (r, lvl) => {
-        const e = M(ri(r, 8, 20) * 100), m = MQ.pick(r, [3, 6]);
-        return mc(r, F(e * m), [F(e), F(e * 12), F(e * m / 2)], m + ' months × ' + F(e) + ' = ' + F(e * m) + '.', { q: 'Your essential costs are ' + F(e) + ' a month. How big is a ' + m + '-month emergency fund?' });
+        const item = MQ.pick(r, [['a games console', 3], ['a new phone', 4], ['a bike', 2], ['concert tickets', 1.5], ['a laptop', 5]]);
+        const wk = M(ri(r, 1, 3) * 5), weeks = ri(r, 8, 30), price = wk * weeks;
+        return mc(r, weeks + ' weeks', [Math.round(weeks / 2) + ' weeks', (weeks + 10) + ' weeks', Math.round(weeks * 1.5) + ' weeks'], F(price) + ' ÷ ' + F(wk) + ' a week = ' + weeks + ' weeks.', { q: 'You want ' + item[0] + ' that costs ' + F(price) + '. You save ' + F(wk) + ' every week. How many weeks until you can buy it?' });
       }
     ],
     earning: [

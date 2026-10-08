@@ -23,7 +23,7 @@ window.MQ = window.MQ || {};
       t: p => 'Your bike needs new brakes and a tyre: ' + F(p.c) + '.', c: p => [['Get it fixed', { cash: -p.c }], ['Watch a tutorial and fix it yourself (' + F(p.c * 0.35) + ')', { cash: -p.c * 0.35, happy: 2 }], ['Take rides for a month (' + F(p.c * 1.6) + ')', { cash: -p.c * 1.6 }]] },
     phoneStolen: { kind: 'shock', e: '📱', modes: ['first', 'teen', 'custom'], gen: (r, s) => ({ c: nice(s.income * (0.35 + r() * 0.6)) }),
       t: p => 'Your phone was stolen. The same model costs ' + F(p.c) + '.',
-      c: p => [['Replace it with the same model', { cash: -p.c }], ['Buy a cheaper model (' + F(p.c * 0.4) + ')', { cash: -p.c * 0.4, happy: -4 }], ['Get the newest flagship on a 12-month EMI', { emi: { total: p.c * 1.5, months: 12, apr: 18, name: 'Phone EMI' }, happy: 6, impulse: p.c * 0.5 }]] },
+      c: (p, x) => [['Replace it with the same model', { cash: -p.c }], ['Buy a cheaper model (' + F(p.c * 0.4) + ')', { cash: -p.c * 0.4, happy: -4 }], isTeen(x) ? ['Parents buy the newest flagship, you repay them over 12 months', { emi: { total: p.c * 1.5, months: 12, apr: 0, name: 'Phone IOU to parents' }, happy: 6, impulse: p.c * 0.5 }] : ['Get the newest flagship on a 12-month EMI', { emi: { total: p.c * 1.5, months: 12, apr: 18, name: 'Phone EMI' }, happy: 6, impulse: p.c * 0.5 }]] },
     dentist: { kind: 'shock', e: '🦷', modes: ['first', 'teen', 'custom'], gen: (r, s) => ({ c: nice(s.income * (0.08 + r() * 0.12)) }),
       t: p => 'Toothache! A dentist visit costs ' + F(p.c) + '.', c: p => [['Go now', { cash: -p.c }], ['Ignore it and hope it goes away', { happy: -6, follow: { id: 'dentist2', p: { c: p.c * 3.5 } } }]] },
     dentist2: { kind: 'shock', e: '😖', modes: [], followOnly: true, t: p => 'That toothache got worse. Emergency treatment costs ' + F(p.c) + '.', c: p => [['Pay for treatment', { cash: -p.c, note: 'Ignoring small problems often turns them into expensive ones.' }]] },
@@ -52,12 +52,12 @@ window.MQ = window.MQ || {};
       t: p => 'LIMITED DROP: sneakers for ' + F(p.c) + '. "Only 3 left!"',
       c: p => [['Buy now!', { cash: -p.c, happy: 5, impulse: p.c }], ['Use the 24-hour rule', { chance: { p: 0.6, eff: { happy: 0 }, yes: 'Next day you did not even want them anymore. Saved ' + F(p.c) + '!', no: 'You still wanted them, so you bought them, guilt-free.', noEff: { cash: -p.c, happy: 4 } } }], ['Skip', { happy: -1 }]] },
     trip: { kind: 'temptation', e: '🏖️', modes: ['first', 'teen', 'custom'], gen: (r, s) => ({ c: nice(s.income * (0.25 + r() * 0.3)) }),
-      t: p => 'Friends are planning a weekend trip: ' + F(p.c) + ' each.', c: p => [['Go all in!', { cash: -p.c, happy: 12, impulse: p.c * 0.4 }], ['Suggest a cheaper day trip (' + F(p.c * 0.25) + ')', { cash: -p.c * 0.25, happy: 6 }], ['Skip it', { happy: -7 }], ['Go, and put it on the card', { debt: p.c, happy: 10, impulse: p.c }]] },
+      t: p => 'Friends are planning a weekend trip: ' + F(p.c) + ' each.', c: (p, x) => [['Go all in!', { cash: -p.c, happy: 12, impulse: p.c * 0.4 }], ['Suggest a cheaper day trip (' + F(p.c * 0.25) + ')', { cash: -p.c * 0.25, happy: 6 }], ['Skip it', { happy: -7 }], [isTeen(x) ? 'Go, and borrow the money from parents' : 'Go, and put it on the card', { debt: p.c, happy: 10, impulse: p.c }]] },
     subscription: { kind: 'temptation', e: '📺', modes: ['first', 'teen', 'custom'], gen: (r, s) => ({ c: nice(s.income * (0.015 + r() * 0.02)) }),
       t: p => 'Streaming + music + gaming bundle: just ' + F(p.c) + '/month!', c: p => [['Subscribe', { sub: p.c, happy: 3, note: 'That is ' + F(p.c * 12) + ' a year.' }], ['No thanks', {}]] },
     eatingOut: { kind: 'temptation', e: '🍕', modes: ['first', 'teen', 'custom'], gen: (r, s) => ({ c: nice(s.income * (0.05 + r() * 0.05)) }),
       t: p => 'Your friends start eating out every Friday (about ' + F(p.c) + '/month).', c: p => [['Join every week', { sub: p.c, happy: 6 }], ['Join every other week', { sub: p.c / 2, happy: 3 }], ['Host cheap potlucks instead', { sub: p.c * 0.15, happy: 4 }]] },
-    gadgetEMI: { kind: 'temptation', e: '🎧', modes: ['first', 'teen', 'custom'], gen: (r, s) => ({ c: nice(s.income * (0.3 + r() * 0.3)) }),
+    gadgetEMI: { kind: 'temptation', e: '🎧', modes: ['first', 'custom'], gen: (r, s) => ({ c: nice(s.income * (0.3 + r() * 0.3)) }),
       t: p => '"No-cost EMI!" Premium headphones for ' + F(p.c) + ' in 6 easy payments (processing fee applies).', c: p => [['Buy on EMI', { emi: { total: p.c * 1.06, months: 6, apr: 0, name: 'Headphones EMI' }, happy: 4, impulse: p.c, note: 'The "processing fee" added ' + F(p.c * 0.06) + '. "No-cost" EMIs often have hidden costs.' }], ['Pay in full', { cash: -p.c, happy: 4, impulse: p.c }], ['My old ones work fine', {}]] },
     borrow: { kind: 'social', e: '🤝', modes: ['first', 'teen', 'custom'], gen: (r, s) => ({ c: nice(s.income * 0.1) }),
       t: p => 'A friend asks to borrow ' + F(p.c) + ' until next month.', c: p => [['Lend it', { cash: -p.c, chance: { p: 0.5, eff: { cash: p.c }, yes: 'They paid you back! 🙌', no: 'They "forgot" to pay you back 😬 Only lend what you can afford to lose.' } }], ['Politely say no', { happy: -2 }]] },
@@ -67,11 +67,33 @@ window.MQ = window.MQ || {};
       t: p => 'A meme coin your friends love is up 300% this month. Everyone is buying.', c: p => [['Buy ' + F(p.c) + ' worth', { cash: -p.c, toHype: p.c, impulse: p.c }], ['Pass', {}]] },
     scamInvest: { kind: 'market', e: '💸', modes: ['first', 'teen', 'custom'], gen: (r, s) => ({ c: nice(s.income * 0.4) }),
       t: p => 'A DM promises "guaranteed 20% a month" if you invest ' + F(p.c) + ' today.', c: p => [['Invest', { cash: -p.c, impulse: p.c, note: 'It was a Ponzi scheme. The money is gone. Guaranteed high returns do not exist.' }], ['Report & block', { happy: 2, note: 'Smart. That was a scam.' }]] },
+    schoolTrip: { kind: 'social', e: '🏔️', modes: ['teen'], gen: (r, s) => ({ c: nice(s.income * (0.3 + r() * 0.3)) }),
+      t: p => 'School trip to the mountains! The deposit is ' + F(p.c) + '.', c: p => [['Pay it myself', { cash: -p.c, happy: 10 }], ['Ask family to split it 50/50', { cash: -p.c / 2, happy: 9, note: 'Asking for help with planned, worthwhile costs is smart, not cheeky.' }], ['Skip the trip', { happy: -8 }]] },
+    tutoring: { kind: 'shock', e: '📚', modes: ['teen'], gen: (r, s) => ({ c: nice(s.income * (0.15 + r() * 0.15)) }),
+      t: p => 'Exams are coming and you are stuck on maths. Extra tutoring costs ' + F(p.c) + ' this month.', c: p => [['Pay for tutoring', { cash: -p.c, happy: 2, note: 'Spending on skills is an investment in future-you.' }], ['Use free online lessons and study groups', { happy: -1, note: 'Free resources can be just as good if you stay disciplined.' }], ['Wing it', { happy: -6 }]] },
+    gameSale: { kind: 'temptation', e: '🕹️', modes: ['teen', 'first'], gen: (r, s) => ({ c: nice(s.income * (0.15 + r() * 0.15)) }),
+      t: p => 'MEGA SALE: a game bundle for ' + F(p.c) + ' (normally double!). Ends tonight.', c: p => [['Buy it now', { cash: -p.c, happy: 5, impulse: p.c }], ['Wishlist it and wait 24 hours', { chance: { p: 0.55, eff: { happy: 0 }, yes: 'You realised you would not play half of it. Saved ' + F(p.c) + '!', no: 'You still wanted it, so you bought it the next day. A considered buy!', noEff: { cash: -p.c, happy: 4 } } }], ['Skip', { happy: -1 }]] },
+    lootBoxes: { kind: 'temptation', e: '🎁', modes: ['teen'], gen: (r, s) => ({ c: nice(s.income * (0.1 + r() * 0.1)) }),
+      t: p => 'New season! 10 loot boxes for ' + F(p.c) + ', with a 1% chance of the legendary skin.', c: p => [['Buy 10 boxes', { cash: -p.c, happy: 1, impulse: p.c, note: 'No legendary. Mostly duplicates. Loot boxes are designed like slot machines.' }], ['Buy just the battle pass (' + F(p.c * 0.35) + ')', { cash: -p.c * 0.35, happy: 3 }], ['Skip this season', { happy: -1 }]] },
+    bdayParty: { kind: 'social', e: '🎂', modes: ['teen'], gen: (r, s) => ({ c: nice(s.income * (0.12 + r() * 0.1)) }),
+      t: p => 'Your best friend\'s birthday: gift + outing ≈ ' + F(p.c) + '.', c: p => [['Big gift and the full outing', { cash: -p.c, happy: 7 }], ['Thoughtful, cheaper gift (' + F(p.c * 0.3) + ')', { cash: -p.c * 0.3, happy: 6, note: 'Thoughtful beats expensive. Friends remember the effort.' }], ['Skip it', { happy: -7 }]] },
+    sellStuff: { kind: 'opportunity', e: '🧺', modes: ['teen'], gen: (r, s) => ({ d: nice(s.income * (0.15 + r() * 0.15)) }),
+      t: p => 'Clear out old games, clothes and gadgets? You could sell them for about ' + F(p.d) + '.', c: p => [['Sell and save the money', { toEF: p.d, happy: 2 }], ['Sell and put it towards my goal', { toGoal: p.d, happy: 2 }], ['Sell and spend it', { cash: p.d, happy: 4 }], ['Keep everything', {}]] },
+    tutorGig: { kind: 'opportunity', e: '🧑‍🏫', modes: ['teen'], gen: (r, s) => ({ d: nice(s.income * (0.15 + r() * 0.1)) }),
+      t: p => 'A neighbour asks you to tutor their kid every week (+' + F(p.d) + '/month).', c: p => [['Accept', { income: p.d, happy: -3, note: 'A regular side income! Try saving it before you get used to spending it.' }], ['Decline. Too busy', { happy: 1 }]] },
+    busPass: { kind: 'shock', e: '🎫', modes: ['teen'], gen: (r, s) => ({ c: nice(s.income * (0.06 + r() * 0.06)) }),
+      t: p => 'You lost your bus pass. A replacement costs ' + F(p.c) + '.', c: p => [['Replace it', { cash: -p.c }], ['Walk and cycle for a while', { happy: -4, note: 'Free and healthy, if a bit tiring.' }]] },
+    freeSkins: { kind: 'market', e: '👾', modes: ['teen'], gen: (r, s) => ({ c: nice(s.income * 0.25) }),
+      t: p => 'A Discord DM: "FREE rare skins! Just log in with your game account here 👉 free-skinz.gg"', c: p => [['Log in and claim', { cash: -p.c, happy: -10, note: 'Scam! Your account was hijacked and the saved card was used for ' + F(p.c) + '. Never log in through links in DMs.' }], ['Report & block', { happy: 2, note: 'Nice. "Free skins" links are one of the most common scams aimed at gamers.' }]] },
+    hoodieDrop: { kind: 'temptation', e: '🧥', modes: ['teen'], gen: (r, s) => ({ c: nice(s.income * (0.2 + r() * 0.15)) }),
+      t: p => 'Everyone at school has the new hoodie drop: ' + F(p.c) + '.', c: p => [['Buy it', { cash: -p.c, happy: 5, impulse: p.c }], ['Find a similar one second-hand (' + F(p.c * 0.3) + ')', { cash: -p.c * 0.3, happy: 4 }], ['Skip the trend', { happy: -2 }]] },
     crash: { kind: 'market', e: '📉', modes: ['first', 'teen', 'custom'], gen: (r) => ({ d: 15 + Math.floor(r() * 10) }),
       t: p => 'Markets crashed ' + p.d + '%! Headlines are screaming. Your investments just dropped.',
       c: p => [['Sell everything before it gets worse', { crash: 'sell' }], ['Hold steady', { crash: 'hold' }], ['Buy more while prices are low', { crash: 'buy' }]] },
     burnout: { kind: 'shock', e: '😫', modes: [], followOnly: true, gen: () => ({}), t: () => 'You are burned out from too little fun. You need a break.', c: (p, s) => [['Take a weekend off (spend a little)', { cash: -s.scn.income * 0.08, happy: 20 }], ['Push through', { happy: 5, note: 'Pushing through works for a while. A budget with zero fun rarely lasts.' }]] }
   };
+
+  function isTeen(x) { return !!(x && x.scn && x.scn.mode === 'teen'); }
 
   // =====================================================================
   //  SCENARIO GENERATION
@@ -103,6 +125,15 @@ window.MQ = window.MQ || {};
       v: 1, seed, country: c.id, mode, months: opts.months || 12, inflation: c.inflation, savingsAPY: c.savingsAPY, cardAPR: c.cardAPR, loanAPR: c.loanAPR + 2,
       indexName: c.indexName
     });
+    if (mode === 'teen') {
+      // Teens can't get credit cards or loans: overspending becomes an interest-free IOU to parents that must be paid back.
+      scn.cardAPR = 0; scn.loanAPR = 0; scn.loanMonths = 6;
+      scn.debtName = 'IOU to your parents';
+      scn.allowance = nice(scn.income * 0.4);
+      scn.exp.rent = nice(scn.income * 0.05);
+      scn.labels = { rent: '✏️ School stuff', food: '🥪 Lunches & snacks', transport: '🚌 Bus & travel', phone: '📱 Phone top-up' };
+      scn.job = scn.job + ' + pocket money';
+    }
     // Personalised event mix: temptations for impulsive players, market drama for risk-lovers, shocks for planners.
     const p = opts.personality;
     const w = { shock: 1.3, opportunity: 1, temptation: 1, social: 0.7, market: 0.6 };
@@ -141,6 +172,7 @@ window.MQ = window.MQ || {};
       mk.hype.push(m <= 3 ? 0.08 + 0.1 * gauss(r) : -0.04 + 0.16 * gauss(r) + rec * 0.03);
     }
     scn.events = events; scn.market = mk;
+    if (mode === 'teen') { scn.cardAPR = 0; scn.loanAPR = 0; }
     return scn;
   }
 
@@ -174,11 +206,12 @@ window.MQ = window.MQ || {};
     take('checking');
     if (need > 0.5) { const x = take('ef'); st.t.efUsed += x; if (x > 0.5 && notes) notes.push('🧯 Your emergency fund covered ' + F(x) + '.'); }
     if (need > 0.5) { const x = take('goalFund'); if (x > 0.5 && notes) notes.push('🎯 ' + F(x) + ' came out of your goal fund.'); }
-    if (need > 0.5) { st.card += need; st.t.carded += need; if (notes) notes.push('💳 ' + F(need) + ' went on your credit card at ' + st.scnCardAPR + '% APR.'); need = 0; }
+    if (need > 0.5) { st.card += need; st.t.carded += need; if (notes) notes.push('💳 ' + F(need) + ' went on ' + st.debtLabel + '.'); need = 0; }
   }
 
   function payday(st, scn) {
     st.scnCardAPR = scn.cardAPR;
+    st.debtLabel = scn.cardAPR ? 'your credit card at ' + scn.cardAPR + '% APR' : 'an ' + (scn.debtName || 'IOU') + ' (no interest, but you must pay it back)';
     st.notes = [];
     if (st.m > 1) { const f = 1 + st.inflation / 1200; st.exp.food *= f; st.exp.transport *= f; }
     const pensionC = st.pension * st.income;
@@ -188,7 +221,9 @@ window.MQ = window.MQ || {};
     const gross = scn.taxRate ? st.income / (1 - scn.taxRate) : 0;
     const led = scn.taxRate ? [['Gross pay', gross], ['✂️ ' + scn.taxLabel, -(gross - st.income)]] : [['Pay (take-home)', st.income]];
     if (pensionC) led.push(['Retirement plan (matched ×2)', -pensionC]);
-    const bills = [['🏠 Rent', st.exp.rent], ['🍲 Food', st.exp.food], ['🚌 Transport', st.exp.transport], ['📱 Phone', st.exp.phone], ['🔁 Subscriptions & habits', st.subs]];
+    const L = scn.labels || { rent: '🏠 Rent', food: '🍲 Food', transport: '🚌 Transport', phone: '📱 Phone' };
+    if (scn.allowance && !scn.taxRate) { led.length = 0; led.push(['🪙 Pocket money', scn.allowance], ['💼 Part-time job', st.income - scn.allowance]); }
+    const bills = [[L.rent, st.exp.rent], [L.food, st.exp.food], [L.transport, st.exp.transport], [L.phone, st.exp.phone], ['🔁 Subscriptions & habits', st.subs]];
     bills.forEach(b => { if (b[1] > 0.5) { pay(st, b[1], st.notes); led.push([b[0], -b[1]]); } });
     st.loans.slice().forEach(l => {
       const interest = l.bal * l.apr / 1200, pmt = Math.min(l.emi, l.bal + interest), principal = pmt - interest;
@@ -197,7 +232,7 @@ window.MQ = window.MQ || {};
       led.push(['🧾 ' + l.name, -pmt]);
       if (l.bal < 1 || l.left <= 0) { st.loans.splice(st.loans.indexOf(l), 1); if (l.big) { st.loanPaidOff = true; st.notes.push('🔓 ' + l.name + ' fully paid off!'); } }
     });
-    if (st.card > 0.5) { const min = Math.min(st.card, Math.max(st.card * 0.05, st.income * 0.01)); st.checking -= min; st.card -= min; if (st.checking < 0) { const d = -st.checking; st.checking = 0; pay(st, d, st.notes); } led.push(['💳 Card minimum payment', -min]); }
+    if (st.card > 0.5) { const min = Math.min(st.card, Math.max(st.card * (scn.cardAPR ? 0.05 : 0.2), st.income * 0.01)); st.checking -= min; st.card -= min; if (st.checking < 0) { const d = -st.checking; st.checking = 0; pay(st, d, st.notes); } led.push([scn.cardAPR ? '💳 Card minimum payment' : '🤝 Paying back parents', -min]); }
     if (st.autoSave > 0) { const x = Math.min(st.autoSave, Math.max(0, st.checking)); st.checking -= x; st.ef += x; st.t.saved += x; led.push(['🤖 Auto-save to emergency fund', -x]); }
     st.ledger = led;
   }
@@ -213,10 +248,11 @@ window.MQ = window.MQ || {};
       const fromChk = Math.min(Math.max(0, st.checking), need); st.checking -= fromChk; need -= fromChk;
       if (need > 0) { st.ef -= need; st.t.efUsed += need; notes.push('🧯 ' + F(need) + ' came out of your emergency fund to complete the purchase.'); }
     } else if (method === 'loan') {
-      const fee = cost * 0.02;
-      pay(st, fee, notes); st.t.fees += fee;
-      st.loans.push({ name: scn.goal.name + ' loan', bal: cost, apr: scn.loanAPR, emi: loanFor(cost, scn.loanAPR, 12), left: 12, big: true });
-      notes.push('🧾 Loan taken: ' + F(loanFor(cost, scn.loanAPR, 12)) + '/month for 12 months at ' + scn.loanAPR + '% APR, plus a ' + F(fee) + ' processing fee.');
+      const n = scn.loanMonths || 12, fee = scn.loanAPR ? cost * 0.02 : 0;
+      if (fee) { pay(st, fee, notes); st.t.fees += fee; }
+      const parents = !scn.loanAPR && scn.mode === 'teen';
+      st.loans.push({ name: parents ? scn.goal.name + ' IOU to parents' : scn.goal.name + ' loan', bal: cost, apr: scn.loanAPR, emi: loanFor(cost, scn.loanAPR, n), left: n, big: true });
+      notes.push(parents ? '🤝 Your parents lent you the money. You pay back ' + F(cost / n) + ' a month for ' + n + ' months.' : '🧾 Loan taken: ' + F(loanFor(cost, scn.loanAPR, n)) + '/month for ' + n + ' months at ' + scn.loanAPR + '% APR, plus a ' + F(fee) + ' processing fee.');
     } else if (method === 'bnpl') {
       st.loans.push({ name: scn.goal.name + ' (BNPL)', bal: cost, apr: 0, emi: cost / 3, left: 3, big: true });
       notes.push('🛍️ Buy Now Pay Later: 3 payments of ' + F(cost / 3) + '. Miss one and it lands on your card.');
@@ -271,7 +307,7 @@ window.MQ = window.MQ || {};
 
   function applyEffect(st, scn, eff, ev, notes) {
     if (eff.cash) { if (eff.cash < 0) pay(st, -eff.cash, notes); else st.checking += eff.cash; }
-    if (eff.debt) { st.card += eff.debt; st.t.carded += eff.debt; notes.push('💳 ' + F(eff.debt) + ' added to your credit card at ' + scn.cardAPR + '% APR.'); }
+    if (eff.debt) { st.card += eff.debt; st.t.carded += eff.debt; notes.push('💳 ' + F(eff.debt) + ' added to ' + (st.debtLabel || 'your debt') + '.'); }
     if (eff.impulse) st.t.impulse += eff.impulse;
     if (eff.happy) st.happy = Math.max(0, Math.min(100, st.happy + eff.happy));
     if (eff.income) st.income += eff.income;
@@ -408,8 +444,9 @@ window.MQ = window.MQ || {};
     const strong = keys.reduce((a, b) => sub[b] > sub[a] ? b : a);
     const weak = keys.reduce((a, b) => sub[b] < sub[a] ? b : a);
     let concept = CONCEPTS[weak] || CONCEPTS.saving;
-    if (weak === 'debt') concept = st.t.carded > st.t.fees * 5 || st.card > 0 ? CONCEPTS.debtCard : CONCEPTS.debtLoan;
+    if (weak === 'debt') concept = scn.mode === 'teen' ? { name: 'Borrowing from friends & family', lesson: 'credit-1' } : st.t.carded > st.t.fees * 5 || st.card > 0 ? CONCEPTS.debtCard : CONCEPTS.debtLoan;
     if (weak === 'investing' && inv < total * 0.03) concept = CONCEPTS.investStart;
+    if (weak === 'spending' && scn.mode === 'teen') concept = { name: 'Gaming & digital spending', lesson: 'teen-2' };
     const growth = (nw - st.startNW) / Math.max(1, st.t.income) * 100;
     return { nw, startNW: st.startNW, savingsRate, efMonths, dti, div: Math.round(div), impulse, impulseShare, sub, score: Math.round(score), strong, weak, concept, growth, owned: st.owned, ownedHow: st.ownedHow, intPaid: st.t.intPaid, intEarned: st.t.intEarned, invGain: st.t.invGain, matched: st.t.matched, happy: Math.round(st.happy), inv, debt: debtTotal(st), sold: st.crashAct === 'sell' };
   }
@@ -520,8 +557,8 @@ window.MQ = window.MQ || {};
   function modeCards() {
     const c = MQ.country();
     return '<div class="mode-grid">' +
-      '<button class="card mode" data-mode="first"><span class="emoji-tile" style="--c:#f59e0b">💼</span><div><h3>First Salary</h3><p class="muted small">Your first full-time job, rent, bills and a big goal. 12 months.</p></div></button>' +
-      '<button class="card mode" data-mode="teen"><span class="emoji-tile" style="--c:#22c55e">🧑‍🎓</span><div><h3>Teen Part-Timer</h3><p class="muted small">Part-time job, living at home, saving for something big.</p></div></button>' +
+      '<button class="card mode" data-mode="teen"><span class="emoji-tile" style="--c:#22c55e">🧑‍🎓</span><div><h3>Teen Life <span class="tag">Start here</span></h3><p class="muted small">Pocket money, a part-time job, school trips, games and friends. Save up for something big in 12 months.</p></div></button>' +
+      '<button class="card mode" data-mode="first"><span class="emoji-tile" style="--c:#f59e0b">🔮</span><div><h3>Future You: First Salary</h3><p class="muted small">Fast-forward to age 22: first full-time job, rent, bills, loans and credit cards.</p></div></button>' +
       '<button class="card mode" data-mode="custom"><span class="emoji-tile" style="--c:#6366f1">✍️</span><div><h3>Custom life</h3><p class="muted small">Type in your own numbers: income, rent, savings, goal.</p></div></button></div>' +
       '<p class="hint">Scenarios use typical ' + esc(c.name) + ' numbers (' + c.flag + '). Change country in Profile → Settings.</p>';
   }
@@ -566,13 +603,14 @@ window.MQ = window.MQ || {};
       '<div class="card char pop"><div class="big-emoji">' + (scn.mode === 'teen' ? '🧑‍🎓' : '🧑‍💼') + '</div><h2>' + esc(scn.name) + ', ' + scn.age + '</h2><p class="muted">' + esc(scn.mode === 'custom' ? 'Your custom life' : 'Works as a ' + scn.job) + '</p>' +
       '<div class="ledger">' + (scn.taxRate ? '<div><span>💼 Gross salary</span><b>' + F(scn.income / (1 - scn.taxRate)) + '/mo</b></div><div><span>✂️ ' + esc(scn.taxLabel) + '</span><b class="down">−' + F(scn.income / (1 - scn.taxRate) - scn.income) + '</b></div>' : '') +
       '<div><span>💰 Take-home pay</span><b class="up">' + F(scn.income) + '/mo</b></div>' +
-      (scn.exp.rent ? '<div><span>🏠 Rent</span><b>' + F(scn.exp.rent) + '</b></div>' : '<div><span>🏠 Rent</span><b>Lives with family</b></div>') +
-      '<div><span>🍲 Food</span><b>' + F(scn.exp.food) + '</b></div><div><span>🚌 Transport & bills</span><b>' + F(scn.exp.transport + scn.exp.phone) + '</b></div>' +
+      (scn.mode === 'teen' ? '<div><span>🏠 Home</span><b>Lives with family</b></div><div><span>✏️ School stuff</span><b>' + F(scn.exp.rent) + '</b></div>' : scn.exp.rent ? '<div><span>🏠 Rent</span><b>' + F(scn.exp.rent) + '</b></div>' : '<div><span>🏠 Rent</span><b>Lives with family</b></div>') +
+      (scn.allowance && !scn.taxRate ? '<div><span>🪙 Pocket money</span><b>' + F(scn.allowance) + '</b></div><div><span>💼 Part-time job</span><b>' + F(scn.income - scn.allowance) + '</b></div>' : '') +
+      '<div><span>' + (scn.labels ? scn.labels.food : '🍲 Food') + '</span><b>' + F(scn.exp.food) + '</b></div><div><span>' + (scn.labels ? '🚌 Travel & phone' : '🚌 Transport & bills') + '</span><b>' + F(scn.exp.transport + scn.exp.phone) + '</b></div>' +
       '<div class="total"><span>Left after essentials</span><b>' + F(scn.income - ess) + '/mo</b></div>' +
       '<div><span>🐷 Savings now</span><b>' + F(scn.savings) + '</b></div><div><span>' + scn.goal.e + ' Wants a ' + esc(scn.goal.name) + '</span><b>' + F(scn.goal.cost) + '</b></div></div></div>' +
       '<div class="card"><h3>How it works</h3><ul class="list"><li>Each payday, essentials are paid first. You split the rest between <b>wants</b>, an <b>emergency fund</b>, your <b>goal fund</b>, <b>investing</b> and <b>paying off debt</b>.</li>' +
-      '<li>Buy your goal any month: <b>cash</b>, a <b>loan</b> (' + scn.loanAPR + '% APR), <b>Buy Now Pay Later</b>, or a <b>credit card</b> (' + scn.cardAPR + '% APR).</li>' +
-      '<li>Surprises happen. If cash runs out, your emergency fund pays first, then your credit card.</li>' +
+      (scn.mode === 'teen' ? '<li>Buy your goal any month with your savings, or <b>borrow from your parents</b> and pay them back.</li>' : '<li>Buy your goal any month: <b>cash</b>, a <b>loan</b> (' + scn.loanAPR + '% APR), <b>Buy Now Pay Later</b>, or a <b>credit card</b> (' + scn.cardAPR + '% APR).</li>') +
+      '<li>Surprises happen. If cash runs out, your emergency fund pays first, then ' + (scn.mode === 'teen' ? 'you have to borrow from your parents' : 'your credit card') + '.</li>' +
       '<li>After ' + scn.months + ' months you get your analytics and can replay "What if…?" versions of your life.</li></ul></div>' +
       '<button class="btn primary block lg" id="go">Start month 1 ▶</button>' +
       (challenge ? '' : '<button class="btn ghost block" id="reroll">🎲 Different character</button>');
@@ -602,15 +640,15 @@ window.MQ = window.MQ || {};
     const foodNow = st.exp.food, food0 = scn.exp.food;
     const beats = {
       1: ['🎉 First payday!', 'Welcome to your first ' + (scn.mode === 'teen' ? 'pay packet' : 'real salary') + '. Needs come first, and they are already paid. Before treating yourself, start an <b>emergency fund</b>: future-you will thank you. Investing and big purchases unlock soon.', 'saving-1'],
-      2: ['🔓 Big purchases unlocked', 'You can now buy your ' + esc(scn.goal.name) + ': cash, loan, Buy Now Pay Later or credit card. Compare the <b>total cost</b>, not the monthly payment. Or keep saving.', 'credit-1'],
-      3: ['🔓 Investing unlocked', 'Money you will not need for years can go into an <b>index fund</b>, which owns hundreds of companies. It goes up and down, so keep emergency money separate.', 'investing-2'],
+      2: ['🔓 Big purchases unlocked', scn.mode === 'teen' ? 'You can now buy your ' + esc(scn.goal.name) + ' with your savings, or borrow from your parents and pay them back monthly. Borrowing gets it sooner, but repayments shrink your spending money for months.' : 'You can now buy your ' + esc(scn.goal.name) + ': cash, loan, Buy Now Pay Later or credit card. Compare the <b>total cost</b>, not the monthly payment. Or keep saving.', scn.mode === 'teen' ? 'teen-4' : 'credit-1'],
+      3: ['🔓 Investing unlocked', (scn.mode === 'teen' ? 'With a parent\'s help (a custodial or junior account), money ' : 'Money ') + 'you will not need for years can go into an <b>index fund</b>, which owns hundreds of companies. It goes up and down, so keep emergency money separate.', 'investing-2'],
       4: ['🔁 Subscription check', 'Look at your bills. Small monthly costs (' + F(st.subs) + '/mo right now) quietly add up to ' + F(st.subs * 12) + ' a year.', 'basics-3'],
       5: ['🧯 Emergency fund target', 'A solid target is 3 months of essentials: ' + F(ess * 3) + '. You have ' + F(st.ef) + ' (' + (st.ef / ess).toFixed(1) + ' months).', 'saving-1'],
       6: ['📈 Halfway there', 'Your net worth went from ' + F(st.startNW) + ' to ' + F(netWorth(st)) + '. Is the line going up? If not, what is leaking?', 'basics-2'],
-      7: ['💳 Credit card rule', 'Only use a card for what you can pay off in full. Card interest here is ' + scn.cardAPR + '% a year.' + (st.card > 1 ? ' You owe ' + F(st.card) + '. Attack it!' : ''), 'credit-2'],
+      7: scn.mode === 'teen' ? ['🤝 Borrowing rule', 'Owing parents or friends is still debt. Agree how and when you will pay it back, and stick to it.' + (st.card > 1 ? ' You currently owe ' + F(st.card) + '.' : ''), 'credit-1'] : ['💳 Credit card rule', 'Only use a card for what you can pay off in full. Card interest here is ' + scn.cardAPR + '% a year.' + (st.card > 1 ? ' You owe ' + F(st.card) + '. Attack it!' : ''), 'credit-2'],
       8: ['🧺 Diversify', 'Do not put everything in one hype stock. Mixing index funds, gold and cash softens crashes.', 'investing-3'],
       9: ['🎈 Inflation check', 'Your food bill went from ' + F(food0) + ' to ' + F(foodNow) + ' a month, with no change in what you eat. That is inflation at ' + st.inflation + '% a year.', 'investing-1'],
-      10: ['🧾 Payslip lesson', scn.taxRate ? 'You earn ' + F(st.income / (1 - scn.taxRate)) + ' gross but take home ' + F(st.income) + '. Deductions like ' + esc(scn.taxLabel) + ' come out first. Always budget with take-home pay.' : 'Your pay is below the tax threshold, so take-home = gross. Once you earn more, tax and deductions come out first. Always budget with take-home pay.', 'earning-1'],
+      10: ['🧾 Payslip lesson', scn.taxRate ? 'You earn ' + F(st.income / (1 - scn.taxRate)) + ' gross but take home ' + F(st.income) + '. Deductions like ' + esc(scn.taxLabel) + ' come out first. Always budget with take-home pay.' : 'Your pay is below the income-tax threshold, so you keep all of it. But you already pay tax: sales tax / VAT / GST is part of the price of most things you buy. Later, when you earn more, tax comes out of your pay first.', 'earning-2'],
       11: ['🎯 SMART goals', 'Specific, measurable, time-bound goals beat "save more". How close are you to your ' + esc(scn.goal.name) + '?', 'saving-1'],
       12: ['🏁 Final month', 'Last payday of the year! After this you will see your analytics and can replay "What if…?" versions of your choices.', null]
     };
@@ -676,7 +714,14 @@ window.MQ = window.MQ || {};
     const scn = l.scn, st = l.st, cost = scn.goal.cost;
     const cashOk = canBuyCash(st, scn);
     const usesEF = st.goalFund + Math.max(0, st.checking) < cost;
-    const emi = loanFor(cost, scn.loanAPR, 12);
+    const emi = loanFor(cost, scn.loanAPR, scn.loanMonths || 12);
+    if (scn.mode === 'teen') {
+      const n = scn.loanMonths || 6;
+      return '<div class="card goal-panel"><h3>' + scn.goal.e + ' Buy the ' + esc(scn.goal.name) + ' (' + F(cost) + ')?</h3><div class="buy-opts">' +
+        '<button class="buy-opt" data-buy="cash" ' + (cashOk ? '' : 'disabled') + '><b>💵 Pay with my savings</b><small>' + (cashOk ? (usesEF ? '⚠️ Dips into your emergency fund' : 'From your goal fund + spending money') : 'Need ' + F(cost - st.goalFund - Math.max(0, st.checking) - st.ef) + ' more') + '</small></button>' +
+        '<button class="buy-opt" data-buy="loan"><b>🤝 Borrow from parents</b><small>Pay back ' + F(cost / n) + '/mo for ' + n + ' months. No interest, but it eats your monthly money</small></button>' +
+        '</div><p class="hint">Under 18s usually cannot get credit cards, loans or Buy Now Pay Later. Or just keep saving: you can buy any month.</p></div>';
+    }
     return '<div class="card goal-panel"><h3>' + scn.goal.e + ' Buy the ' + esc(scn.goal.name) + ' (' + F(cost) + ')?</h3>' +
       '<div class="buy-opts">' +
       '<button class="buy-opt" data-buy="cash" ' + (cashOk ? '' : 'disabled') + '><b>💵 Pay cash</b><small>' + (cashOk ? (usesEF ? '⚠️ Dips into your emergency fund' : 'From your goal fund + checking') : 'Need ' + F(cost - st.goalFund - Math.max(0, st.checking) - st.ef) + ' more') + '</small></button>' +

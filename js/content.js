@@ -4,6 +4,72 @@ window.MQ = window.MQ || {};
 
 MQ.UNITS = [
   {
+    id: 'teen', title: 'Teen Money Life', emoji: '🎒', color: '#ec4899',
+    blurb: 'Pocket money, gaming, friends and saving up for the big stuff. Start here!',
+    lessons: [
+      {
+        id: 'teen-1', title: 'Pocket Money Power', emoji: '🪙', cat: 'budgeting',
+        cards: [
+          { emoji: '💼', title: 'Treat it like a salary', body: 'Pocket money, birthday cash and money from small jobs are all <b>income</b>. Managing a small amount well now is exactly the skill you will use with a big salary later.' },
+          { emoji: '🤝', title: 'Agree what it covers', body: 'Sit down with your parents or guardians and agree: does your money pay for snacks? Phone top-ups? Outings with friends? Knowing this stops arguments and surprise "I\'m broke" moments.' },
+          { emoji: '🫙', title: 'Use three jars', body: 'Split every bit of money into <b>Spend</b>, <b>Save</b> and <b>Give</b> (for example 50% / 40% / 10%). Real jars, separate bank "pots", or a notes app all work.' },
+          { emoji: '📈', title: 'Asking for a raise', body: 'Want more pocket money? Show a simple budget of what you spend and what you are saving for. A plan is much more convincing than "everyone else gets more".' }
+        ],
+        quiz: [
+          { q: 'You get $20 a week. Using 50% spend, 40% save, 10% give, how much goes to SAVE?', options: ['$2', '$8', '$10', '$20'], answer: 1, explain: '40% of $20 = $8.' },
+          { q: 'What is the best first step before your pocket money starts?', options: ['Spend it fast', 'Agree with your family what it has to cover', 'Ask for double', 'Hide it'], answer: 1, explain: 'Knowing what it covers lets you plan.' },
+          { q: 'True or false: birthday money and money from small jobs count as income.', options: ['True', 'False'], answer: 0, explain: 'Any money that comes in is income, even if it is irregular.' },
+          { q: 'The most convincing way to ask for more pocket money is...', options: ['Say all your friends get more', 'Show a budget and a savings goal', 'Ask every day', 'Stop doing chores'], answer: 1, explain: 'A plan shows you can handle more.' }
+        ]
+      },
+      {
+        id: 'teen-2', title: 'Gaming & Digital Spending', emoji: '🎮', cat: 'budgeting',
+        cards: [
+          { emoji: '💎', title: 'Fake money, real price', body: 'Gems, coins, V-Bucks, Robux: in-game currency hides the real price. If 1,000 gems cost $10, that "250-gem skin" is really $2.50. Always convert back to real money.' },
+          { emoji: '🎁', title: 'Loot boxes are designed like gambling', body: 'Random rewards, flashing animations and "almost got it!" moments keep you paying. You usually spend far more than the item you actually wanted would cost.' },
+          { emoji: '🔁', title: 'Battle passes & subscriptions', body: 'A $10 pass every season, plus a gaming subscription, plus a music app adds up fast. List everything that renews automatically and cancel what you do not use.' },
+          { emoji: '🛑', title: 'Set a limit before you play', body: 'Decide a monthly gaming budget in advance and use spending limits or parental controls. Never save a parent\'s card in a game without asking.' }
+        ],
+        quiz: [
+          { q: '1,000 gems cost $10. A skin costs 400 gems. What is its real price?', options: ['$0.40', '$4', '$40', '$400'], answer: 1, explain: '400 ÷ 1,000 × $10 = $4.' },
+          { q: 'Why are loot boxes risky for your wallet?', options: ['They are always cheap', 'Random rewards make you keep paying to "win"', 'They give you real money', 'They are free'], answer: 1, explain: 'They use the same psychology as slot machines.' },
+          { q: 'You pay $10 a month for a game pass, $5 for music and $8 for a season pass. Yearly total?', options: ['$23', '$96', '$276', '$1,000'], answer: 2, explain: '$23 × 12 = $276 a year.' },
+          { q: 'True or false: saving a parent\'s card in a game without asking is fine if you only buy a little.', options: ['True', 'False'], answer: 1, explain: 'Always ask. Small purchases add up and trust matters.' }
+        ]
+      },
+      {
+        id: 'teen-3', title: 'Friends, FOMO & Money', emoji: '🫂', cat: 'budgeting',
+        cards: [
+          { emoji: '😬', title: 'FOMO is expensive', body: 'Fear of missing out makes you say yes to every outing, every drop, every trend. It is fine to skip some things: the real friends will still be there next weekend.' },
+          { emoji: '🗣️', title: 'How to say no', body: 'Try: <i>"I\'m saving for a new phone, can we do something free instead?"</i> Being honest about a goal sounds confident, not cheap. Suggest a park, a movie night at home or a game session.' },
+          { emoji: '🍕', title: 'Splitting the bill fairly', body: 'If you only had a drink, you don\'t have to split a big meal equally. Agree before ordering, or use a split-by-item app. Pay back friends quickly.' },
+          { emoji: '📱', title: 'Social media is a highlight reel', body: 'People post the new sneakers, not the empty bank account. Comparing yourself to influencers who are paid to show off is a fast way to overspend.' }
+        ],
+        quiz: [
+          { q: 'Your friends plan an expensive outing but you are saving. A good response is...', options: ['Borrow money to go', 'Say you\'re saving and suggest a cheaper plan', 'Lie that you are sick', 'Never hang out again'], answer: 1, explain: 'Honest and a fun alternative.' },
+          { q: 'Five friends share a $50 pizza order, but you only had a $4 drink. What is fair?', options: ['You pay $10', 'You pay for what you had, if agreed upfront', 'You pay $50', 'Nothing'], answer: 1, explain: 'Agree how to split before ordering.' },
+          { q: 'True or false: influencers\' posts show what normal life costs.', options: ['True', 'False'], answer: 1, explain: 'Many are sponsored highlight reels.' },
+          { q: 'FOMO mostly makes you...', options: ['Save more', 'Spend on things you did not plan', 'Earn more', 'Pay less tax'], answer: 1, explain: 'It pushes unplanned spending.' }
+        ]
+      },
+      {
+        id: 'teen-4', title: 'Saving for Something Big', emoji: '🎯', cat: 'saving',
+        cards: [
+          { emoji: '🕹️', title: 'Pick one clear goal', body: 'A console, a phone, a trip, a bike. Write down the exact item and its price. A clear goal is much easier to save for than "more money".' },
+          { emoji: '🧮', title: 'Do the maths', body: 'Weeks needed = price ÷ amount saved per week. A $300 console at $15 a week takes <b>20 weeks</b>. Save $20 a week and it takes 15.' },
+          { emoji: '🚀', title: 'Speed it up', body: 'Sell things you no longer use, do extra jobs, ask for money towards your goal instead of gifts, and cut one small habit. Every bit shortens the wait.' },
+          { emoji: '⏳', title: 'Delayed gratification', body: 'Waiting for something makes it feel better when you get it, and you often find a better deal or realise you want something else. That patience is a money superpower.' }
+        ],
+        quiz: [
+          { q: 'A $240 bike, saving $12 a week. How many weeks?', options: ['12', '20', '24', '30'], answer: 1, explain: '$240 ÷ $12 = 20 weeks.' },
+          { q: 'Which goal is easiest to save for?', options: ['"More money"', '"A $300 console by June"', '"Be rich"', '"Some stuff"'], answer: 1, explain: 'Specific item, price and deadline.' },
+          { q: 'Which speeds up reaching your goal?', options: ['Selling things you no longer use', 'Buying snacks daily', 'Loot boxes', 'Waiting for luck'], answer: 0, explain: 'Extra income shortens the wait.' },
+          { q: 'True or false: waiting before buying often leads to a better deal.', options: ['True', 'False'], answer: 0, explain: 'Patience lets you compare prices and wait for sales.' }
+        ]
+      }
+    ]
+  },
+  {
     id: 'basics', title: 'Money Basics', emoji: '💵', color: '#22c55e',
     blurb: 'Needs vs wants, budgeting and where your money actually goes.',
     lessons: [
@@ -28,13 +94,13 @@ MQ.UNITS = [
         cards: [
           { emoji: '🗺️', title: 'A budget is a plan', body: 'A <b>budget</b> is a plan for your money: what comes in (<b>income</b>) and what goes out (<b>expenses</b>). It is not a punishment. It tells your money where to go instead of wondering where it went.' },
           { emoji: '➖', title: 'Income − Expenses', body: 'If income is bigger than expenses you have a <b>surplus</b> (yay, save it). If expenses are bigger you have a <b>deficit</b>, and that gap gets filled with debt or by emptying your savings.' },
-          { emoji: '🥧', title: 'The 50/30/20 rule', body: 'A simple starting split: <b>50%</b> needs, <b>30%</b> wants, <b>20%</b> savings and paying off debt. On $400 a month, that is $200 / $120 / $80.' },
+          { emoji: '🥧', title: 'The 50/30/20 rule', body: 'A simple starting split: <b>50%</b> needs, <b>30%</b> wants, <b>20%</b> savings. If pocket money and a weekend job bring in $200 a month, that is $100 / $60 / $40.' },
           { emoji: '🧑‍🎓', title: 'Teen twist', body: 'If you do not pay rent or bills yet, your "needs" slice is small. That is your superpower: you can save way more than 20% while life is cheap.' }
         ],
         quiz: [
           { q: 'In the 50/30/20 rule, what is the 20% for?', options: ['Wants', 'Savings and debt repayment', 'Rent', 'Taxes'], answer: 1, explain: '50% needs, 30% wants, 20% savings and paying off debt.' },
-          { q: 'You earn $400 a month. Using 50/30/20, how much goes to wants?', options: ['$80', '$120', '$200', '$40'], answer: 1, explain: '30% of $400 = $120.' },
-          { q: 'You earn $250 this month and spend $280. You have a...', options: ['Surplus of $30', 'Deficit of $30', 'Balanced budget', 'Tax refund'], answer: 1, explain: 'Spending more than you earn is a deficit.' },
+          { q: 'You get $200 a month from pocket money and a weekend job. Using 50/30/20, how much goes to wants?', options: ['$40', '$60', '$100', '$20'], answer: 1, explain: '30% of $200 = $60.' },
+          { q: 'You get $250 this month and spend $280. You have a...', options: ['Surplus of $30', 'Deficit of $30', 'Balanced budget', 'Tax refund'], answer: 1, explain: 'Spending more than you earn is a deficit.' },
           { q: 'True or false: budgets are only for people who are bad with money.', options: ['True', 'False'], answer: 1, explain: 'Most people who are good with money use a budget. That is part of why they are good with it.' }
         ]
       },
@@ -79,6 +145,7 @@ MQ.UNITS = [
         cards: [
           { emoji: '🧾', title: 'Current / checking account', body: 'Your everyday account. Your pay goes in, you spend from it with a <b>debit card</b>. Money leaves straight from your account.' },
           { emoji: '🌱', title: 'Savings account', body: 'A separate account that pays you <b>interest</b>, a small reward from the bank for keeping your money there. Look for a good interest rate and no monthly fees.' },
+          { emoji: '🧒', title: 'Accounts for teens', body: 'Many banks offer accounts for under-18s, usually opened with a parent or guardian. They often come with a debit card, spending limits and an app to track every purchase. Ask an adult to help you compare them.' },
           { emoji: '🛡️', title: 'Is my money safe?', body: 'In many countries, government schemes protect bank deposits up to a limit if a bank fails (for example FDIC in the US). Money under your mattress has no such protection and earns zero interest.' },
           { emoji: '⚠️', title: 'Debit vs credit', body: '<b>Debit card</b> = your own money. <b>Credit card</b> = the bank\'s money that you must pay back, often with high interest if you do not pay in full.' }
         ],
@@ -86,6 +153,7 @@ MQ.UNITS = [
           { q: 'Where does money come from when you pay with a debit card?', options: ['The bank\'s money', 'Straight from your own account', 'The shop', 'Your future paycheck'], answer: 1, explain: 'Debit cards spend your own money directly.' },
           { q: 'Why keep savings in a savings account instead of under the mattress?', options: ['It earns interest and is protected', 'It is harder to see', 'Banks pay you to spend', 'There is no reason'], answer: 0, explain: 'Interest plus deposit protection beats a mattress.' },
           { q: 'True or false: a credit card lets you spend the bank\'s money, which you must pay back.', options: ['True', 'False'], answer: 0, explain: 'Credit is borrowing. Pay it back in full to avoid interest.' },
+          { q: 'Who usually helps a 15-year-old open a bank account?', options: ['Nobody, it is not allowed', 'A parent or guardian', 'A friend', 'Their teacher'], answer: 1, explain: 'Most teen accounts are opened with a parent or guardian.' },
           { q: 'What should you look for in a savings account?', options: ['High fees', 'A good interest rate and low or no fees', 'A cool card design', 'The longest name'], answer: 1, explain: 'Fees eat your interest. Compare rates.' }
         ]
       },
@@ -111,8 +179,9 @@ MQ.UNITS = [
     blurb: 'Paychecks, taxes and ways to earn as a teen.',
     lessons: [
       {
-        id: 'earning-1', title: 'Your First Paycheck', emoji: '🧾',
+        id: 'earning-1', title: 'Your First Payslip', emoji: '🧾',
         cards: [
+          { emoji: '🧒', title: 'Your first job', body: 'Babysitting, tutoring, a café shift or a Saturday shop job: your first pay often comes as a teen. Check the local rules on age, hours and minimum wage for young workers.' },
           { emoji: '💰', title: 'Gross pay', body: '<b>Gross pay</b> is what you earn before anything is taken out. 15 hours × $12/hour = $180 gross.' },
           { emoji: '✂️', title: 'Deductions', body: 'Before money reaches you, some is taken out: <b>income tax</b>, social security or national insurance, sometimes pension contributions. These are <b>deductions</b>.' },
           { emoji: '🏁', title: 'Net pay', body: '<b>Net pay</b> (take-home pay) is what actually lands in your account. Always budget with net pay, not gross.' },
@@ -121,19 +190,21 @@ MQ.UNITS = [
         quiz: [
           { q: 'You work 15 hours at $12/hour. What is your gross pay?', options: ['$12', '$150', '$180', '$27'], answer: 2, explain: '15 × $12 = $180.' },
           { q: 'Net pay is...', options: ['Pay before deductions', 'What you take home after deductions', 'Your yearly bonus', 'Money from fishing'], answer: 1, explain: 'Net = gross minus deductions.' },
-          { q: 'Which amount should you build your budget around?', options: ['Gross pay', 'Net pay', 'Your dream salary', 'Your friend\'s pay'], answer: 1, explain: 'Net pay is the money you actually have.' },
+          { q: 'Which amount should you build your budget around?', options: ['Gross pay', 'Net pay', 'The amount you hope to get', 'Your friend\'s pay'], answer: 1, explain: 'Net pay is the money you actually have.' },
           { q: 'True or false: the hourly rate on a job ad is exactly what lands in your bank.', options: ['True', 'False'], answer: 1, explain: 'Deductions usually come out first.' }
         ]
       },
       {
-        id: 'earning-2', title: 'Why Taxes Exist', emoji: '🏛️',
+        id: 'earning-2', title: 'Taxes You Already Pay', emoji: '🏛️',
         cards: [
+          { emoji: '🧋', title: 'You already pay tax!', body: 'Every time you buy a snack, a game or a phone top-up, <b>sales tax / VAT / GST</b> is usually part of the price. Income tax comes later, once you earn above a yearly threshold, which most teens do not reach.' },
           { emoji: '🛣️', title: 'What taxes pay for', body: 'Roads, schools, hospitals, parks, emergency services. Taxes are how a society pays for things everyone shares.' },
           { emoji: '🧮', title: 'Types of tax', body: '<b>Income tax</b> on what you earn. <b>Sales tax / VAT / GST</b> on what you buy. <b>Property tax</b> on homes and land.' },
           { emoji: '🪜', title: 'Tax brackets', body: 'Many countries use <b>progressive</b> tax: higher income is taxed at higher rates, but only the part of income <i>inside</i> each bracket. A raise never makes you take home less overall.' },
           { emoji: '🙅', title: 'Myth busted', body: '"I got a raise into a higher bracket so all my money is taxed more" is <b>false</b>. Only the extra money above the line gets the higher rate.' }
         ],
         quiz: [
+          { q: 'Most teens already pay which tax?', options: ['Income tax on pocket money', 'Sales tax / VAT / GST on things they buy', 'Property tax', 'No tax at all'], answer: 1, explain: 'It is included in (or added to) the price of most purchases.' },
           { q: 'Sales tax / VAT is charged on...', options: ['Your income', 'Things you buy', 'Your house', 'Your savings only'], answer: 1, explain: 'It is added to purchases.' },
           { q: 'True or false: moving into a higher tax bracket means ALL your income is taxed at the higher rate.', options: ['True', 'False'], answer: 1, explain: 'Only the income above the threshold gets the higher rate.' },
           { q: 'Which of these is usually funded by taxes?', options: ['Public schools and roads', 'Your streaming subscription', 'Your friend\'s birthday party', 'Video game skins'], answer: 0, explain: 'Taxes fund shared public services.' },
@@ -164,6 +235,7 @@ MQ.UNITS = [
       {
         id: 'credit-1', title: 'Borrowing 101', emoji: '🤝',
         cards: [
+          { emoji: '🧑‍🤝‍🧑', title: 'Borrowing from friends & family', body: 'Most teen borrowing is from friends or parents. Agree the amount and the payback date, write it down, and pay back on time. Unpaid money is one of the fastest ways to damage a friendship.' },
           { emoji: '📥', title: 'What is debt?', body: '<b>Debt</b> is borrowed money you have to pay back, usually with <b>interest</b> (the cost of borrowing).' },
           { emoji: '📊', title: 'APR', body: 'The <b>APR</b> (annual percentage rate) shows the yearly cost of borrowing. A higher APR means a more expensive loan.' },
           { emoji: '🎓', title: 'Helpful vs harmful debt', body: 'Some debt can help you build value, like a sensible student or business loan. High-interest debt for things that lose value fast (gadgets, clothes, nights out) usually makes you poorer.' },
@@ -173,12 +245,14 @@ MQ.UNITS = [
           { q: 'Interest on a loan is...', options: ['A free gift', 'The cost of borrowing money', 'A type of tax', 'Your credit score'], answer: 1, explain: 'Lenders charge interest for letting you use their money.' },
           { q: 'Which loan is more expensive?', options: ['5% APR', '25% APR', 'They are the same', 'Depends on the colour of the card'], answer: 1, explain: 'Higher APR means more interest paid.' },
           { q: 'True or false: Buy Now, Pay Later is not really debt.', options: ['True', 'False'], answer: 1, explain: 'You owe money you have not paid yet. That is debt.' },
+          { q: 'You borrow $20 from a friend. The best way to handle it is...', options: ['Forget about it', 'Agree a payback date and stick to it', 'Pay it back in a year', 'Borrow more to pay it back'], answer: 1, explain: 'Clear dates keep money and friendships healthy.' },
           { q: 'Which is most likely "harmful" debt?', options: ['A low-rate student loan for a useful degree', 'High-interest credit card debt for a night out', 'A mortgage you can afford', 'A small business loan with a plan'], answer: 1, explain: 'High interest plus something with no lasting value is a bad combo.' }
         ]
       },
       {
-        id: 'credit-2', title: 'The Minimum Payment Trap', emoji: '🪤',
+        id: 'credit-2', title: 'Credit Cards (Future You)', emoji: '🪤',
         cards: [
+          { emoji: '🔞', title: 'Coming at 18', body: 'In most countries you need to be 18 to get your own credit card. Learn how they work now, so the first card offer you get does not catch you out.' },
           { emoji: '🗓️', title: 'How credit cards work', body: 'You spend now and get a bill later. Pay the <b>full balance</b> by the due date and you usually pay <b>no interest</b>.' },
           { emoji: '🐌', title: 'The minimum payment', body: 'Your bill shows a small "minimum payment". Pay only that and the rest of the balance starts collecting interest, often around 20% APR or more.' },
           { emoji: '😱', title: 'Real numbers', body: 'Owe $1,000 at 20% APR and pay $25 a month? It takes over <b>5 years</b> to clear and costs about <b>$650 in interest</b>.' },
@@ -194,7 +268,7 @@ MQ.UNITS = [
       {
         id: 'credit-3', title: 'Credit Scores', emoji: '📈',
         cards: [
-          { emoji: '🔢', title: 'What is a credit score?', body: 'A number lenders use to judge how likely you are to repay. It can affect loans, renting a flat and even some phone contracts. Many countries use credit reports or scores in some form.' },
+          { emoji: '🔢', title: 'What is a credit score?', body: 'From around 18, you start building a credit history. A credit score is a number lenders use to judge how likely you are to repay. It can affect loans, renting a flat and even some phone contracts. Many countries use credit reports or scores in some form.' },
           { emoji: '⏱️', title: 'Payment history matters most', body: 'Paying on time, every time, is the biggest factor. Even one missed payment can hurt.' },
           { emoji: '🥛', title: 'Credit utilization', body: 'How much of your credit limit you use. Using $900 of a $1,000 limit (90%) looks risky. Keeping it under about 30% looks responsible.' },
           { emoji: '🌳', title: 'Time & mix', body: 'A longer history helps, and so does a mix of credit types. Opening lots of new accounts quickly can lower your score.' }
@@ -233,12 +307,14 @@ MQ.UNITS = [
           { emoji: '🧩', title: 'Stocks', body: 'A <b>stock</b> (or share) is a small piece of ownership in a company. If the company grows, your share can be worth more. Some companies also pay <b>dividends</b>.' },
           { emoji: '📜', title: 'Bonds', body: 'A <b>bond</b> is a loan you give to a company or government. They pay you interest and return your money later. Usually less risky than stocks, with lower expected returns.' },
           { emoji: '🧺', title: 'Funds & ETFs', body: 'A <b>fund</b> pools many people\'s money to buy lots of investments at once. An <b>index fund</b> tracks a whole market (like the 500 biggest US companies) for a low fee.' },
+          { emoji: '🧒', title: 'Can teens invest?', body: 'Usually yes, through an account a parent or guardian opens for you (often called a custodial, junior or minor account). Even small amounts invested at 15 have decades to grow.' },
           { emoji: '🎰', title: 'Investing is not gambling', body: 'Buying a broad slice of the economy and holding for years is very different from betting on one hyped stock or coin to "moon" next week.' }
         ],
         quiz: [
           { q: 'Owning a stock means...', options: ['You lent money to a company', 'You own a small part of a company', 'You work for the company', 'You get free products'], answer: 1, explain: 'Stocks are ownership; bonds are loans.' },
           { q: 'A bond is...', options: ['A share of ownership', 'A loan to a company or government', 'A type of savings app', 'A cryptocurrency'], answer: 1, explain: 'You are the lender, and they pay you interest.' },
           { q: 'An index fund...', options: ['Buys one hot stock', 'Tracks a whole market with many companies', 'Guarantees profits', 'Is a bank account'], answer: 1, explain: 'It spreads money across a whole market.' },
+          { q: 'How can most 15-year-olds start investing?', options: ['They cannot', 'Through an account opened with a parent or guardian', 'Only with a credit card', 'By trading options alone'], answer: 1, explain: 'Custodial or junior accounts let adults invest on your behalf.' },
           { q: 'True or false: stocks are usually riskier than bonds.', options: ['True', 'False'], answer: 0, explain: 'Stocks swing more but have higher expected long-term returns.' }
         ]
       },
@@ -321,15 +397,15 @@ MQ.UNITS.forEach(u => u.lessons.forEach(l => l.quiz.forEach(q => MQ.ALL_QUESTION
 
 // ---------- Games data ----------
 MQ.NEEDS_WANTS = [
-  { t: 'Groceries', e: '🥦', need: true }, { t: 'Rent', e: '🏠', need: true }, { t: 'Electricity bill', e: '💡', need: true },
+  { t: 'Groceries', e: '🥦', need: true }, { t: 'School lunch', e: '🥪', need: true }, { t: 'School uniform', e: '👔', need: true },
   { t: 'School supplies', e: '✏️', need: true }, { t: 'Bus pass to school', e: '🚌', need: true }, { t: 'Doctor\'s visit', e: '🩺', need: true },
-  { t: 'Winter coat', e: '🧥', need: true }, { t: 'Medicine', e: '💊', need: true }, { t: 'Water bill', e: '🚰', need: true },
+  { t: 'Winter coat', e: '🧥', need: true }, { t: 'Medicine', e: '💊', need: true }, { t: 'Exam fees', e: '📝', need: true },
   { t: 'Toothpaste', e: '🪥', need: true }, { t: 'Basic school shoes', e: '👞', need: true }, { t: 'Home internet for homework', e: '🌐', need: true },
   { t: 'Concert tickets', e: '🎤', need: false }, { t: 'Game skin', e: '🎮', need: false }, { t: 'Designer hoodie', e: '👕', need: false },
   { t: 'Movie night', e: '🍿', need: false }, { t: 'Bubble tea', e: '🧋', need: false }, { t: 'Third streaming service', e: '📺', need: false },
   { t: 'Limited-edition sneakers', e: '👟', need: false }, { t: 'Newest phone upgrade', e: '📱', need: false }, { t: 'Theme park trip', e: '🎢', need: false },
   { t: 'Takeout pizza', e: '🍕', need: false }, { t: 'Beach holiday', e: '🏖️', need: false }, { t: 'Fancy headphones', e: '🎧', need: false },
-  { t: 'Loot boxes', e: '🎁', need: false }, { t: 'Fidget toys', e: '🌀', need: false }
+  { t: 'Loot boxes', e: '🎁', need: false }, { t: 'Fidget toys', e: '🌀', need: false }, { t: 'Battle pass', e: '🎟️', need: false }, { t: 'Phone case #4', e: '📱', need: false }, { t: 'Trendy water bottle', e: '🥤', need: false }, { t: 'Glasses you need to see', e: '👓', need: true }, { t: 'Calculator for maths', e: '🧮', need: true }
 ];
 
 MQ.SCAMS = [
@@ -346,7 +422,7 @@ MQ.SCAMS = [
   { from: 'Marketplace buyer', msg: 'I\'ll pay $200 extra for the bike. Just send the difference back to my courier.', scam: true, explain: 'Overpayment scams: their payment bounces, and the money you "sent back" is gone.' },
   { from: 'Your bank\'s app settings', msg: 'Tip: turn on two-factor authentication to protect your account.', scam: false, explain: 'Encouraging 2FA inside the real app is good security advice.' },
   { from: 'Email · prizes@luckywinner.biz', msg: 'Congratulations! You won a $1,000 gift card! Pay a $5 processing fee to claim.', scam: true, explain: 'You cannot win a contest you never entered, and real prizes do not need a fee.' },
-  { from: 'Your employer\'s HR system', msg: 'Your payslip for March is available in the staff portal.', scam: false, explain: 'Expected payroll info in a system you already use is legit.' }
+  { from: 'School canteen app', msg: 'Top-up of $10 received. New balance: $14.50.', scam: false, explain: 'A receipt for a top-up you made, asking nothing from you, is normal.' }
 ];
 
 MQ.TIPS = [
@@ -359,5 +435,9 @@ MQ.TIPS = [
   'Your bank will never ask for your PIN or one-time code.',
   'Budget with net pay, not gross pay.',
   'Inflation slowly shrinks what cash can buy.',
-  'Compare unit prices, not pack prices.'
+  'Compare unit prices, not pack prices.',
+  'Convert in-game currency back to real money before you buy.',
+  'Saying "I\'m saving for something" is a perfectly good reason to skip.',
+  'Weeks to your goal = price ÷ weekly savings.',
+  'Use Spend / Save / Give jars for every bit of money you get.'
 ];

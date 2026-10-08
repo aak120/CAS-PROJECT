@@ -19,24 +19,26 @@ window.MQ = window.MQ || {};
   // =====================================================================
   function budgetBattle(main, g) {
     intro(main, g, () => {
-      const P = A(1800);
+      const P = A(300);
       let bal = P, wb = 70, turn = 0, pending = 0;
       const essentials = [
-        { e: '🛒', t: 'Weekly food shop', c: [['Big supermarket shop', -0.12, 0], ['Budget store + cook at home', -0.07, -2], ['Skip it, order takeout all week', -0.2, 4]] },
-        { e: '🚌', t: 'Getting around this month', c: [['Monthly bus pass', -0.06, 0], ['Taxis everywhere', -0.15, 4], ['Walk and cycle', 0, -1]] },
-        { e: '📱', t: 'Phone bill is due', c: [['Pay it now', -0.04, 0], ['Pay late (late fee)', -0.06, -2]] }
+        { e: '🥪', t: 'School lunches this month', c: [['Canteen every day', -0.2, 2], ['Pack lunch most days', -0.08, 0], ['Skip lunch and buy snacks', -0.14, -4]] },
+        { e: '🚌', t: 'Getting to school and back', c: [['Monthly bus pass', -0.1, 0], ['Ride-shares when you\'re late', -0.22, 3], ['Walk and cycle', 0, -1]] },
+        { e: '📱', t: 'Phone top-up time', c: [['Normal data pack', -0.08, 0], ['Unlimited data pack', -0.15, 3], ['Smallest pack + use Wi-Fi', -0.04, -2]] }
       ];
       const extras = [
         { e: '🎂', t: 'Your friend\'s birthday', c: [['Nice gift', -0.06, 6], ['Handmade card + baking', -0.01, 4], ['Skip the party', 0, -6]] },
         { e: '👟', t: 'FLASH SALE: 50% off trainers', c: [['Buy them', -0.12, 6], ['Walk away', 0, -1]] },
-        { e: '💡', t: 'Surprise electricity bill', c: [['Pay it in full', -0.08, 0], ['Ask for a payment plan (half now, half later + fee)', -0.04, -1, 0.05]] },
+        { e: '🎒', t: 'School trip deposit is due', c: [['Pay it in full', -0.2, 6], ['Ask to pay in two parts (half now, half later)', -0.1, 4, 0.1], ['Skip the trip', 0, -6]] },
         { e: '🎬', t: 'Weekend plans', c: [['Movie + dinner out', -0.07, 8], ['Picnic in the park', -0.015, 5], ['Stay in all weekend', 0, -4]] },
         { e: '📺', t: 'Streaming subscription renews', c: [['Keep it', -0.02, 2], ['Cancel it', 0, -1]] },
         { e: '📱', t: 'You cracked your phone screen', c: [['Repair it', -0.14, 2], ['Live with the crack', 0, -6], ['Buy a screen protector kit + DIY', -0.03, -2]] },
-        { e: '🏋️', t: 'Gym membership offer', c: [['Join the gym', -0.05, 5], ['Run outside for free', 0, 3]] },
+        { e: '⚽', t: 'Sports club season fee', c: [['Join the club', -0.12, 6], ['Play in the park for free', 0, 3]] },
+        { e: '🎁', t: 'New season loot boxes in your favourite game', c: [['Buy 10 boxes', -0.15, 1], ['Just the battle pass', -0.05, 3], ['Skip', 0, -1]] },
+        { e: '🧋', t: 'Bubble tea after school with friends', c: [['Every day this week', -0.1, 5], ['Once this week', -0.02, 3], ['Bring a drink from home', 0, 0]] },
         { e: '🎤', t: 'Concert announced!', c: [['Buy a ticket', -0.11, 10], ['Watch the livestream', 0, -2]] },
-        { e: '👶', t: 'A neighbour offers babysitting work', c: [['Take it (+money, tired)', 0.08, -3], ['Decline', 0, 1]] },
-        { e: '☕', t: 'Daily coffee habit', c: [['Coffee shop every day', -0.06, 4], ['Make it at home', -0.01, 0]] },
+        { e: '👶', t: 'A neighbour offers babysitting work', c: [['Take it (+money, tired)', 0.15, -3], ['Decline', 0, 1]] },
+        { e: '🧺', t: 'Sell old games and clothes online?', c: [['Sell them', 0.1, 1], ['Keep them', 0, 0]] },
         { e: '🎁', t: 'You find money in an old jacket!', c: [['Nice!', 0.03, 3]] },
         { e: '🍕', t: 'Friends order pizza at movie night', c: [['Chip in', -0.025, 4], ['Bring snacks from home', -0.008, 2]] }
       ];
@@ -82,7 +84,7 @@ window.MQ = window.MQ || {};
   // =====================================================================
   function compoundRace(main, g) {
     intro(main, g, () => {
-      const target = A(100000), inc = A(3500);
+      const target = A(100000), inc = A(1500);
       const accounts = { mattress: { n: '🛏️ Under the mattress', r: 0 }, savings: { n: '🏦 Savings account', r: 4 }, bonds: { n: '📜 Bond fund', r: 5 }, index: { n: '📊 Index fund (avg ~8%, bumpy)', r: 8, vol: 15 } };
       const me = { amt: MQ.roundNice(inc * 0.1), acct: 'index', age: 16 };
       function setup() {
@@ -235,7 +237,7 @@ window.MQ = window.MQ || {};
       function show() {
         if (month >= months.length) return done();
         const ev = months[month];
-        main.innerHTML = hud('Month ' + (month + 1) + '/' + months.length, 0, '') + '<div class="card">' + gauge(score()) +
+        main.innerHTML = hud('Month ' + (month + 1) + '/' + months.length, 0, '') + (month === 0 ? '<p class="tip-line">⏩ Fast-forward: you just turned 18 and got your first credit card. Your choices this year build your credit history.</p>' : '') + '<div class="card">' + gauge(score()) +
           (lastDelta !== null ? '<p class="small ' + (lastDelta >= 0 ? 'up' : 'down') + '"><b>' + (lastDelta >= 0 ? '+' : '') + lastDelta + '</b> · ' + esc(lastWhy) + '</p>' : '') + '</div>' +
           '<div class="card event pop"><div class="big-emoji">' + ev.e + '</div><h2>' + esc(ev.t) + '</h2><div class="opts">' + ev.c.map((c, i) => '<button class="opt" data-i="' + i + '">' + esc(c[0]) + '</button>').join('') + '</div></div>' +
           '<details class="card"><summary><b>What makes up the score?</b></summary>' + factors() + '<p class="hint">Fictional model based on commonly published weightings. Real scoring formulas are secret and differ by country and agency.</p></details>';
@@ -293,7 +295,7 @@ window.MQ = window.MQ || {};
         const it = MQ.pick(Math.random, items), P = A(MQ.pick(Math.random, [600, 900, 1200, 1500, 2000]));
         const os = offers(P), best = os.reduce((a, b) => b.total < a.total ? b : a);
         main.innerHTML = hud('Case ' + (round + 1) + '/' + ROUNDS, 0, '🔍 ' + correct) +
-          '<div class="card"><div class="big-emoji">' + it[0] + '</div><h2>You need to borrow ' + F(P) + ' for a ' + it[1] + '.</h2><p class="muted">Which offer costs the LEAST in total? Watch out for fees, long terms and "flat" rates.</p></div>' +
+          '<div class="card"><div class="big-emoji">' + it[0] + '</div><div class="kicker">' + (round === 0 ? 'Help your family compare offers' : 'Case file') + '</div><h2>Your family needs to borrow ' + F(P) + ' for a ' + it[1] + '.</h2><p class="muted">Which offer costs the LEAST in total? Watch out for fees, long terms and "flat" rates.</p></div>' +
           os.map((o, i) => '<button class="card loan-opt" data-i="' + i + '"><b>' + esc(o.name) + '</b><p class="muted small">' + esc(o.desc) + '</p><div class="small">Monthly payment: <b>' + F(o.m) + '</b></div><div class="reveal"></div></button>').join('');
         $$('.loan-opt', main).forEach(b => b.onclick = () => {
           const o = os[+b.dataset.i], ok = o === best;
@@ -336,9 +338,9 @@ window.MQ = window.MQ || {};
         { id: 'cash', e: '💵', n: 'Cash', mu: 3, sd: 1, b: 0 }, { id: 'realestate', e: '🏠', n: 'Real estate', mu: 6, sd: 10, b: 0.5 }
       ];
       const goals = shuffle([
-        { e: '🚗', t: 'Saving for a car in 2 years', h: 2, tol: 5, target: 3, tip: 'Short goal: you cannot wait for a crash to recover, so safety matters most.' },
-        { e: '🎓', t: 'University fund in 7 years', h: 7, tol: 15, target: 5, tip: 'Medium goal: some growth, but limit how much you could lose.' },
-        { e: '🏖️', t: 'Retirement in 40 years', h: 40, tol: 40, target: 7, tip: 'Very long goal: you have time to ride out crashes, so growth matters most.' }
+        { e: '🎮', t: 'Gaming PC in 2 years', h: 2, tol: 5, target: 3, tip: 'Short goal: you cannot wait for a crash to recover, so safety matters most.' },
+        { e: '🎓', t: 'University fund in 5 years', h: 5, tol: 15, target: 5, tip: 'Medium goal: some growth, but limit how much you could lose.' },
+        { e: '🏖️', t: 'Money you won\'t touch until you\'re 60', h: 45, tol: 40, target: 7, tip: 'Very long goal: you have time to ride out crashes, so growth matters most.' }
       ]);
       let round = 0, total = 0;
       function show() {
@@ -397,11 +399,11 @@ window.MQ = window.MQ || {};
   }
 
   MQ.GAMES.push(
-    { id: 'budget', e: '⚔️', title: 'Budget Battle', sub: 'Survive a whole month on a limited budget. Every day brings a new choice.', color: '#f97316', cat: 'budgeting', fn: budgetBattle },
+    { id: 'budget', e: '⚔️', title: 'Budget Battle', sub: 'Survive a month of school life on your pocket money. Every few days brings a new choice.', color: '#f97316', cat: 'budgeting', fn: budgetBattle },
     { id: 'race', e: '🏁', title: 'Compound Interest Race', sub: 'Pick your saving strategy and race 3 rivals to a big target. Who gets there first?', color: '#22c55e', cat: 'saving', fn: compoundRace },
     { id: 'inflation', e: '🎈', title: 'Inflation Dodge', sub: 'Prices keep rising. Move your money each year to protect how many pizzas it can buy.', color: '#ec4899', cat: 'investing', fn: inflationDodge },
-    { id: 'credit', e: '💳', title: 'Credit Score Challenge', sub: 'A year of credit decisions. Build a fictional credit score from scratch.', color: '#ef4444', cat: 'credit', fn: creditChallenge },
-    { id: 'loan', e: '🔍', title: 'Loan Detective', sub: 'Compare loan offers and find the true cheapest one. Beware of hidden fees!', color: '#0ea5e9', cat: 'credit', fn: loanDetective },
+    { id: 'credit', e: '💳', title: 'Credit Score Challenge', sub: 'Fast-forward to 18 and your first credit card. Build a fictional credit score from scratch.', color: '#ef4444', cat: 'credit', fn: creditChallenge },
+    { id: 'loan', e: '🔍', title: 'Loan Detective', sub: 'Help your family compare loan offers and find the true cheapest one. Beware of hidden fees!', color: '#0ea5e9', cat: 'credit', fn: loanDetective },
     { id: 'diversify', e: '🧺', title: 'Diversification Challenge', sub: 'Build a portfolio for different goals and test it against 500 possible futures.', color: '#8b5cf6', cat: 'risk', fn: diversification }
   );
 })(window.MQ);
