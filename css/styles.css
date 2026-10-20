@@ -91,7 +91,7 @@ button.card { cursor: pointer; }
 .continue { border: 2px solid color-mix(in srgb, var(--c) 45%, transparent); }
 .game-card { align-items: flex-start; }
 .game-card h3 { margin-bottom: 2px; }
-.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
 .tile { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 2px; transition: transform .1s; }
 .tile:active, .card:active { transform: scale(.98); }
 .tile .te { font-size: 30px; }
@@ -510,13 +510,20 @@ h4 { margin: 10px 0 4px; }
   .lesson-card { min-height: 0; padding-block: 24px; }
 
   /* Dashboard-style pages flow into two balanced columns (masonry-style) */
-  .screen-home, .screen-learn, .screen-play { columns: 2; column-gap: 18px; }
-  .screen-home > *, .screen-learn > *, .screen-play > * { break-inside: avoid; }
-  .screen-home > h1, .screen-home > .sub, .screen-home > .section, .screen-home > .grid2,
+  .screen-learn, .screen-play { columns: 2; column-gap: 18px; }
+  .screen-learn > *, .screen-play > * { break-inside: avoid; }
   .screen-learn > h1, .screen-learn > .sub, .screen-learn > .card:first-of-type,
   .screen-play > h1, .screen-play > .sub { column-span: all; }
-  .screen-home > .section { margin-top: 16px; }
-  .screen-home > #challenge, .screen-learn > .unit { display: block; }
+  .screen-learn > .unit, .game-group { display: block; }
+  .game-group { padding-bottom: 6px; }
+  .game-group > .section:first-child { margin-top: 0; padding-top: 4px; }
+  .home-cols { display: grid; grid-template-columns: 1fr 1fr; column-gap: 18px; align-items: start; }
+  .home-cols > .col { min-width: 0; }
+
+  /* Focus mode (personality quiz): no sidebar, centred on the whole screen */
+  .app.focus { grid-template-columns: minmax(0, 1fr); grid-template-areas: "top" "main"; }
+  .app.focus #tabs { display: none !important; }
+  .app.focus .screen-personality { max-width: 760px; justify-self: center; }
 
   .stat-grid { grid-template-columns: repeat(6, 1fr); }
   .badges { grid-template-columns: repeat(5, 1fr); }

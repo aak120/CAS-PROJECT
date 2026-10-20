@@ -26,6 +26,7 @@ window.MQ = window.MQ || {};
     const main = $('#main');
     main.innerHTML = '';
     main.className = 'screen screen-' + parts[0];
+    $('.app').classList.toggle('focus', parts[0] === 'personality');
     fn(main, parts.slice(1));
     renderHeader();
     renderTabs(parts[0]);
@@ -113,23 +114,22 @@ window.MQ = window.MQ || {};
     main.innerHTML =
       '<h1 class="greet">Hey ' + esc(S.profile.name) + ' 👋</h1>' +
       '<p class="sub">' + (st.today ? 'You learned something today. Nice!' : st.atRisk ? 'Learn one thing today to keep your ' + st.count + '-day learning streak.' : 'Finish a lesson, game or simulation to start a learning streak.') + '</p>' +
-      homeNudges() +
+      '<div class="home-cols"><div class="col">' + homeNudges() +
       '<div class="card goal-card">' + ring(tx / S.goal, 92, Math.min(tx, S.goal) + '/' + S.goal) +
       '<div><div class="kicker">Daily goal</div><h3>' + (tx >= S.goal ? 'Goal smashed! 🎯' : (S.goal - tx) + ' XP to go') + '</h3>' +
       '<div class="week">' + days.join('') + '</div></div></div>' +
       (next ? '<a class="card continue" href="#/lesson/' + next.id + '" style="--c:' + unitOf(next).color + '"><div class="emoji-tile">' + next.emoji + '</div><div><div class="kicker">' + (ST.countDone(S) ? 'Continue learning' : 'Start here') + ' · ' + esc(unitOf(next).title) + '</div><h3>' + esc(next.title) + '</h3></div><span class="go">▶</span></a>'
         : '<div class="card"><h3>🏆 All lessons complete!</h3><p class="muted">Replay lessons for practice, or try the simulations.</p></div>') +
-      '<div id="challenge"></div>' +
-      '<a class="card league-mini" href="#/ranks"><span class="tier-badge" style="--tc:' + tier.color + '">' + tier.e + '</span><div><div class="kicker">' + tier.name + ' League</div><h3>You are #' + rank + ' this week</h3></div><span class="go">›</span></a>' +
+      '<a class="card league-mini" href="#/ranks"><span class="tier-badge" style="--tc:' + tier.color + '">' + tier.e + '</span><div><div class="kicker">' + tier.name + ' League</div><h3>You are #' + rank + ' this week</h3></div><span class="go">›</span></a></div><div class="col"><div id="challenge"></div></div></div>' +
       '<h2 class="section">Simulate & play</h2><div class="grid2">' +
       tile('#/sim/life', '🏙️', 'Life Simulator', 'A year of teen money life') +
       tile('#/sim/portfolio', '🧺', 'Portfolio Sim', 'Invest through history') +
       tile('#/game/scam', '🚨', 'Scam Simulator', 'Spot the red flags') +
       tile('#/game/budget', '⚔️', 'Budget Battle', 'Survive the month') + '</div>' +
-      '<div class="card lit-mini"><div class="kicker">🧠 Financial Literacy Score</div><h3>' + (MQ.adaptive.overall() ? Math.round(MQ.adaptive.overall() * 100) + '%' : 'Answer a few questions to unlock') + '</h3>' + MQ.adaptive.scoreTable() + '<p class="hint">Tap a topic for a 3-minute adaptive challenge.</p></div>' +
+      '<div class="home-cols"><div class="col"><div class="card lit-mini"><div class="kicker">🧠 Financial Literacy Score</div><h3>' + (MQ.adaptive.overall() ? Math.round(MQ.adaptive.overall() * 100) + '%' : 'Answer a few questions to unlock') + '</h3>' + MQ.adaptive.scoreTable() + '<p class="hint">Tap a topic for a 3-minute adaptive challenge.</p></div></div><div class="col">' +
       '<div class="card tip"><b>💡 Tip of the day</b><p>' + esc(money(tip)) + '</p></div>' +
       '<div class="card level-card"><div class="row"><div><div class="kicker">Level ' + lv.level + '</div><h3>' + lv.title + '</h3></div><div class="muted">' + S.xp + ' XP</div></div>' +
-      '<div class="bar"><i style="width:' + (lv.pct * 100).toFixed(1) + '%"></i></div><div class="muted small">' + (lv.need - lv.into) + ' XP to level ' + (lv.level + 1) + '</div></div>';
+      '<div class="bar"><i style="width:' + (lv.pct * 100).toFixed(1) + '%"></i></div><div class="muted small">' + (lv.need - lv.into) + ' XP to level ' + (lv.level + 1) + '</div></div></div></div>';
     renderChallenge($('#challenge', main));
 
     if (S.league.result && !S.league.result.seen) showLeagueResult();

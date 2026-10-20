@@ -20,11 +20,11 @@ window.MQ = window.MQ || {};
     const S = app.S;
     const cats = Object.keys(CAT_NAMES).filter(c => GAMES.some(g => g.cat === c));
     main.innerHTML = '<h1>Play</h1><p class="sub">' + GAMES.length + ' games, each one teaching a money concept. They earn XP and boost your Literacy Score.</p>' +
-      cats.map(c => '<h2 class="section">' + (MQ.adaptive ? MQ.adaptive.BY[c].e + ' ' : '') + CAT_NAMES[c] + '</h2>' + GAMES.filter(g => g.cat === c).map(g => {
+      cats.map(c => '<section class="game-group"><h2 class="section">' + (MQ.adaptive ? MQ.adaptive.BY[c].e + ' ' : '') + CAT_NAMES[c] + '</h2>' + GAMES.filter(g => g.cat === c).map(g => {
         const rec = S.games[g.id] || {};
         return '<a class="card game-card" href="#/game/' + g.id + '" style="--c:' + g.color + '"><span class="emoji-tile">' + g.e + '</span><div><h3>' + g.title + '</h3><p class="muted">' + g.sub + '</p>' +
           '<div class="small">' + (rec.plays ? '🏅 Best: ' + rec.best + ' · Played ' + rec.plays + '×' : '✨ New') + '</div></div></a>';
-      }).join('')).join('');
+      }).join('') + '</section>').join('');
   });
 
   function record(id, score, extra) {
