@@ -154,16 +154,14 @@ window.MQ = window.MQ || {};
   }
 
   // Render both into a container and keep them live
-  // On wide screens, drop each card into whichever Home column is shorter, so neither side has a big gap.
   function balance() {
     const qw = document.getElementById('x-quests'), jw = document.getElementById('x-jar'), home = document.querySelector('.screen-home .home-cols');
     if (!qw || !jw || !home) return;
     const cols = Array.from(home.children);
     if (window.innerWidth < 960 || cols.length < 2) { cols[cols.length - 1].append(qw, jw); return; }
-    [qw, jw].forEach(w => {
-      const h = c => c.offsetHeight - (w.parentElement === c ? w.offsetHeight : 0);
-      (h(cols[0]) < h(cols[1]) ? cols[0] : cols[1]).appendChild(w);
-    });
+    // Fixed positions on wide screens: savings jar on the left, weekly quests on the right.
+    cols[0].appendChild(jw);
+    cols[1].appendChild(qw);
   }
   function mount(el) {
     el.innerHTML = '<div id="x-quests"></div><div id="x-jar"></div>';
