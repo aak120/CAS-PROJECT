@@ -1,4 +1,4 @@
-# Netlify config: MoneyQuest is a static site, so there is no build step.
+# Netlify config: FiQuo is a static site, so there is no build step.
 [build]
   publish = "."
   command = ""

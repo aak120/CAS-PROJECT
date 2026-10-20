@@ -1,6 +1,6 @@
 {
-  "name": "MoneyQuest: Money Skills for Teens",
-  "short_name": "MoneyQuest",
+  "name": "FiQuo: Money Skills for Teens",
+  "short_name": "FiQuo",
   "description": "Free financial literacy game for teens: lessons, games, streaks, leaderboards and life simulations.",
   "start_url": "./index.html",
   "scope": "./",

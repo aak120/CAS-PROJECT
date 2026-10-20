@@ -68,7 +68,7 @@ window.MQ = window.MQ || {};
     main.className = 'screen onboarding';
     let avatar = FREE_AVATARS[0], goal = 30, country = guessCountry();
     main.innerHTML =
-      '<div class="hero"><div class="logo">💸</div><h1>MoneyQuest</h1><p>Level up your money skills with bite-sized lessons, games and simulations. No real money involved, ever.</p></div>' +
+      '<div class="hero"><div class="logo">💸</div><h1>FiQuo</h1><p>Level up your money skills with bite-sized lessons, games and simulations. No real money involved, ever.</p></div>' +
       '<div class="card"><label class="label" for="name">What should we call you?</label><input id="name" class="input" maxlength="16" placeholder="Your nickname" autocomplete="off">' +
       '<p class="hint">Use a nickname, not your full name. Your progress stays on this device.</p>' +
       '<div class="label">Pick an avatar</div><div class="avatar-grid">' + FREE_AVATARS.map(a => '<button class="avatar-pick ' + (a === avatar ? 'sel' : '') + '" data-a="' + a + '">' + a + '</button>').join('') + '</div>' +
@@ -335,7 +335,7 @@ window.MQ = window.MQ || {};
     const rows = S.friends.map(f => Object.assign({}, f)).concat(showBots ? bots : [], [me]).sort((a, b) => val(b) - val(a));
     el.innerHTML = '<div class="card"><h3>🤝 Compete with friends</h3><p class="muted">Share your friend code with classmates (chat, email, anything). Paste theirs below to add them. Codes are snapshots, so swap new ones to update the board.</p>' +
       '<label class="label">Your friend code</label><div class="code-row"><input class="input mono" readonly id="mycode" value="' + esc(ST.friendCode()) + '"><button class="btn" id="copy">Copy</button></div>' +
-      '<label class="label" for="fc">Add a friend</label><div class="code-row"><input class="input mono" id="fc" placeholder="Paste MQ2-… code"><button class="btn primary" id="add">Add</button></div></div>' +
+      '<label class="label" for="fc">Add a friend</label><div class="code-row"><input class="input mono" id="fc" placeholder="Paste FQ2-… code"><button class="btn primary" id="add">Add</button></div></div>' +
       '<div class="chips board-cats">' + BOARD_CATS.map(c => '<a class="chip ' + (c.id === cat.id ? 'on' : '') + '" href="#/ranks/friends/' + c.id + '">' + c.name + '</a>').join('') + '</div>' +
       '<p class="hint">' + esc(cat.hint || 'Different boards reward different skills, not just grinding.') + '</p>' +
       '<label class="set-row small"><span>Include simulated rivals 🤖</span><input type="checkbox" id="bots" ' + (showBots ? 'checked' : '') + '></label>' +
@@ -409,7 +409,7 @@ window.MQ = window.MQ || {};
       '<label class="set-row"><span>Theme</span><select id="s-theme">' + [['auto', 'Match device'], ['light', 'Light'], ['dark', 'Dark']].map(t => '<option value="' + t[0] + '" ' + (S.settings.theme === t[0] ? 'selected' : '') + '>' + t[1] + '</option>').join('') + '</select></label>' +
       '<label class="set-row"><span>Sound effects</span><input type="checkbox" id="s-sound" ' + (S.settings.sound ? 'checked' : '') + '></label>' +
       '<button class="btn danger ghost block" id="reset">Reset all progress</button></div>' +
-      '<p class="hint center">MoneyQuest is an educational game. All money, stocks and events are simulated. Not financial advice.</p>';
+      '<p class="hint center">FiQuo is an educational game. All money, stocks and events are simulated. Not financial advice.</p>';
 
     $('#buy-freeze').onclick = () => {
       if (S.coins < 50) { toast('Not enough coins. Earn XP to get more 🪙', 'bad'); return; }

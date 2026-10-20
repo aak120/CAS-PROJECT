@@ -1,6 +1,6 @@
-// Offline support: cache the app shell so MoneyQuest works without internet once loaded.
+// Offline support: cache the app shell so FiQuo works without internet once loaded.
 // Bump VERSION whenever you change any file so phones pick up the update.
-const VERSION = 'mq-v11';
+const VERSION = 'fiquo-v12';
 const FILES = [
   './', './index.html', './manifest.webmanifest', './css/styles.css',
   './js/content.js', './js/country.js', './js/ui.js', './js/state.js', './js/app.js', './js/extras.js', './js/adaptive.js', './js/personality.js',

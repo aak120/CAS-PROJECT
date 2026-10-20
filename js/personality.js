@@ -77,7 +77,7 @@ window.MQ = window.MQ || {};
       ST.checkBadges();
       MQ.ui.confetti();
       main.innerHTML = resultCard(S.personality, false) +
-        '<div class="card"><h3>How MoneyQuest adapts to you</h3><ul class="list">' +
+        '<div class="card"><h3>How FiQuo adapts to you</h3><ul class="list">' +
         (S.personality.impulseLevel !== 'low' ? '<li>Life Sim will throw more <b>temptations</b> at you (sales, hype, FOMO) to practise saying no.</li>' : '<li>Life Sim will test your <b>resilience</b> with more surprise costs.</li>') +
         (S.personality.riskLevel === 'high' ? '<li>You will meet more <b>hype investments and crashes</b> to stress-test your risk appetite.</li>' : '<li>The Portfolio Sim will suggest a <b>' + (S.personality.riskLevel === 'low' ? 'cautious' : 'balanced') + '</b> starting mix and show you what extra risk could do.</li>') +
         '</ul></div><a class="btn primary block lg" href="#/home">' + (onboard ? 'Start learning 🚀' : 'Done') + '</a>';

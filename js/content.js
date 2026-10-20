@@ -1,4 +1,4 @@
-// MoneyQuest learning content.
+// FiQuo learning content.
 // Amounts are written with "$" and swapped for the player's chosen currency symbol at render time.
 window.MQ = window.MQ || {};
 

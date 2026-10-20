@@ -497,20 +497,21 @@ window.MQ = window.MQ || {};
   function unsummary(r) { return { nw: r.nw, score: r.sc, savingsRate: r.sr, efMonths: r.ef, dti: r.dti, intPaid: r.ip, invGain: r.ig, owned: !!r.ow, ownedHow: r.how || null, sold: !!r.sold, happy: r.hp, matched: r.mt || 0, div: r.dv }; }
   function challengeCode(L, m) {
     const S = ST.get();
-    return 'MQC1-' + ST.b64encode(JSON.stringify({ scn: L.scn, by: S.profile.name, r: summary(m) }));
+    return 'FQC1-' + ST.b64encode(JSON.stringify({ scn: L.scn, by: S.profile.name, r: summary(m) }));
   }
   function resultCode(L, m) {
     const S = ST.get();
-    return 'MQR1-' + ST.b64encode(JSON.stringify({ seed: L.scn.seed, by: S.profile.name, r: summary(m) }));
+    return 'FQR1-' + ST.b64encode(JSON.stringify({ seed: L.scn.seed, by: S.profile.name, r: summary(m) }));
   }
   function parseCode(code) {
     code = (code || '').trim();
-    const m = code.match(/^(MQC1|MQR1)-(.+)$/);
-    if (!m) throw new Error('That is not a MoneyQuest challenge or result code.');
+    const m = code.match(/^(FQC1|FQR1|MQC1|MQR1)-(.+)$/);
+    if (!m) throw new Error('That is not a FiQuo challenge or result code.');
+    const kind = m[1].slice(2); // 'C1' = challenge, 'R1' = result (old MQ codes still work)
     let d;
     try { d = JSON.parse(ST.b64decode(m[2])); } catch (e) { throw new Error('That code is damaged. Ask your friend to copy it again.'); }
-    if (m[1] === 'MQC1' && (!d.scn || !d.scn.events || !d.scn.market)) throw new Error('That challenge code is missing its scenario.');
-    return { kind: m[1], data: d };
+    if (kind === 'C1' && (!d.scn || !d.scn.events || !d.scn.market)) throw new Error('That challenge code is missing its scenario.');
+    return { kind: kind === 'C1' ? 'challenge' : 'result', data: d };
   }
 
   // =====================================================================
@@ -546,13 +547,13 @@ window.MQ = window.MQ || {};
       '<p class="sub">Live a fictional financial life. Every character, price and surprise is generated for you, and your choices decide what happens next.</p>' +
       (past ? '<a class="card game-card" href="#/sim/life/result" style="--c:#f59e0b"><span class="emoji-tile">📊</span><div><h3>Last run: ' + esc(cur.scn.name) + ' · Grade ' + grade(past.score) + '</h3><p class="muted">Open your analytics and What-If replays.</p></div></a>' : '') +
       modeCards() +
-      '<h2 class="section">⚔️ Multiplayer challenge</h2><div class="card"><p class="muted">Paste a friend\'s challenge code to play their exact scenario: same character, same events, same market. Or paste a result code to compare.</p><div class="code-row"><input class="input mono" id="ccode" placeholder="MQC1-… or MQR1-…"><button class="btn primary" id="cgo">Go</button></div></div>' +
+      '<h2 class="section">⚔️ Multiplayer challenge</h2><div class="card"><p class="muted">Paste a friend\'s challenge code to play their exact scenario: same character, same events, same market. Or paste a result code to compare.</p><div class="code-row"><input class="input mono" id="ccode" placeholder="FQC1-… or FQR1-…"><button class="btn primary" id="cgo">Go</button></div></div>' +
       challengeHistory();
     bindModes(main);
     $('#cgo').onclick = () => {
       try {
         const p = parseCode($('#ccode').value);
-        if (p.kind === 'MQC1') { startRun(p.data.scn, { by: p.data.by, r: p.data.r }); }
+        if (p.kind === 'challenge') { startRun(p.data.scn, { by: p.data.by, r: p.data.r }); }
         else compareResult(main, p.data);
       } catch (e) { toast(e.message, 'bad'); }
     };

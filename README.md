@@ -1,8 +1,8 @@
-# 💸 MoneyQuest: Money Skills for Teens
+# 💸 FiQuo: Money Skills for Teens
 
 A fun, game-style financial literacy app built for my CAS project. Teens learn money concepts through bite-sized lessons and quizzes, mini-games, streaks, leaderboards and **simulated** scenarios: a live fake stock market and a 12-month "first paycheck" life simulator.
 
-> Everything in MoneyQuest is simulated and educational. No real money, real markets or financial advice.
+> Everything in FiQuo is simulated and educational. No real money, real markets or financial advice.
 
 ## Features
 
@@ -73,7 +73,7 @@ It's a plain HTML/CSS/JavaScript app with no build step and nothing to install.
 
 ## Put it online (free)
 
-MoneyQuest is a static website with no build step, so it works on any static host. It adapts to every screen:
+FiQuo is a static website with no build step, so it works on any static host. It adapts to every screen:
 - **Phones:** bottom tab bar.
 - **Tablets:** wider single column.
 - **Laptops and desktops:** sidebar navigation with two-column dashboards.
@@ -153,4 +153,4 @@ Open `js/content.js`, find a unit and add an object to its `lessons` array:
 
 ## Disclaimer
 
-MoneyQuest is an educational game. All companies, prices, events and money are fictional. It is not financial advice.
+FiQuo is an educational game. All companies, prices, events and money are fictional. It is not financial advice.

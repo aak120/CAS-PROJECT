@@ -3,7 +3,8 @@
 window.MQ = window.MQ || {};
 
 (function (MQ) {
-  const KEY = 'moneyquest.v1';
+  const KEY = 'fiquo.v1';
+  const LEGACY_KEYS = ['moneyquest.v1']; // the app's previous name; progress saved there is moved over once
 
   // ---------- Date helpers ----------
   function dateKey(d) {
@@ -75,7 +76,13 @@ window.MQ = window.MQ || {};
   let S;
   function load() {
     try {
-      const raw = localStorage.getItem(KEY);
+      let raw = localStorage.getItem(KEY);
+      if (!raw) {
+        for (const k of LEGACY_KEYS) {
+          const old = localStorage.getItem(k);
+          if (old) { raw = old; localStorage.setItem(KEY, old); localStorage.removeItem(k); break; }
+        }
+      }
       S = raw ? Object.assign(fresh(), JSON.parse(raw)) : fresh();
     } catch (e) { S = fresh(); }
     S.settings = Object.assign(fresh().settings, S.settings || {});
@@ -287,11 +294,11 @@ window.MQ = window.MQ || {};
   function friendCode() {
     const p = S.profile || { name: 'Player', avatar: '🙂' };
     const data = { n: p.name, a: p.avatar, x: S.xp, s: streakNow().count, l: countDone(S), d: dateKey(), id: p.id, st: myStats() };
-    return 'MQ2-' + b64encode(JSON.stringify(data));
+    return 'FQ2-' + b64encode(JSON.stringify(data));
   }
   function addFriend(code) {
     code = (code || '').trim();
-    if (!/^MQ[12]-/.test(code)) throw new Error('That does not look like a MoneyQuest friend code.');
+    if (!/^(FQ2|MQ[12])-/.test(code)) throw new Error('That does not look like a FiQuo friend code.');
     let d;
     try { d = JSON.parse(b64decode(code.slice(4))); } catch (e) { throw new Error('That code is damaged. Ask your friend to copy it again.'); }
     if (!d || typeof d.n !== 'string' || typeof d.x !== 'number') throw new Error('That code is missing information.');
