@@ -564,3 +564,8 @@ h4 { margin: 10px 0 4px; }
 .jar-num small { color: var(--muted); font-weight: 700; margin-left: 6px; }
 .jar-add { display: flex; flex-wrap: wrap; gap: 6px; }
 .error-msg { color: var(--bad); font-weight: 700; font-size: 14px; min-height: 1em; }
+
+/* Static intro shown to search engines / before the app loads */
+.seo-intro { max-width: 640px; margin: 24px auto; line-height: 1.6; }
+.seo-intro h1 { font-size: 30px; }
+.seo-intro h2 { font-size: 20px; margin-top: 18px; }

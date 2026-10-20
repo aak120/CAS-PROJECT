@@ -1,7 +1,7 @@
 {
   "name": "MoneyQuest: Money Skills for Teens",
   "short_name": "MoneyQuest",
-  "description": "Learn money skills with lessons, games, streaks, leaderboards and simulations.",
+  "description": "Free financial literacy game for teens: lessons, games, streaks, leaderboards and life simulations.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
