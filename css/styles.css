@@ -539,3 +539,28 @@ h4 { margin: 10px 0 4px; }
   }
   a.card, button.card, .tile, .opt { transition: transform .12s, border-color .12s; }
 }
+
+/* ---------- Weekly quests & real savings jar ---------- */
+.quests .quest { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px dashed var(--line); }
+.quest .qe { font-size: 24px; width: 32px; text-align: center; flex: none; }
+.quest .qb { flex: 1; min-width: 0; }
+.quest .qt { display: flex; justify-content: space-between; gap: 8px; }
+.quest .qt small { color: var(--muted); font-weight: 800; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.quest .bar { margin: 6px 0 0; height: 8px; }
+.quest.ready .bar i { background: var(--gold); }
+.quest.claimed { opacity: .6; }
+.quest .qdone { color: var(--good); font-weight: 900; font-size: 20px; width: 56px; text-align: center; }
+.quest .btn { flex: none; min-width: 56px; }
+.quest-bonus { display: flex; gap: 10px; align-items: center; padding-top: 10px; color: var(--muted); font-weight: 700; }
+.quest-bonus span { font-size: 22px; }
+.quest-bonus.claimed { color: var(--good); }
+.jar .jar-art { font-size: 36px; }
+.jar-body { display: flex; gap: 16px; align-items: center; margin-top: 8px; }
+.jar-vis { position: relative; flex: none; width: 76px; height: 96px; border: 3px solid var(--line); border-top-width: 8px; border-radius: 12px 12px 18px 18px; overflow: hidden; background: var(--card2); display: grid; place-items: center; }
+.jar-fill { position: absolute; left: 0; right: 0; bottom: 0; background: linear-gradient(var(--gold), color-mix(in srgb, var(--gold) 70%, var(--accent))); transition: height .6s ease; }
+.jar-vis span { position: relative; font-weight: 900; font-size: 15px; color: var(--text); }
+.jar-info { flex: 1; min-width: 0; }
+.jar-num b { font-size: 24px; font-weight: 900; font-variant-numeric: tabular-nums; }
+.jar-num small { color: var(--muted); font-weight: 700; margin-left: 6px; }
+.jar-add { display: flex; flex-wrap: wrap; gap: 6px; }
+.error-msg { color: var(--bad); font-weight: 700; font-size: 14px; min-height: 1em; }

@@ -120,7 +120,7 @@ window.MQ = window.MQ || {};
       '<div class="week">' + days.join('') + '</div></div></div>' +
       (next ? '<a class="card continue" href="#/lesson/' + next.id + '" style="--c:' + unitOf(next).color + '"><div class="emoji-tile">' + next.emoji + '</div><div><div class="kicker">' + (ST.countDone(S) ? 'Continue learning' : 'Start here') + ' · ' + esc(unitOf(next).title) + '</div><h3>' + esc(next.title) + '</h3></div><span class="go">▶</span></a>'
         : '<div class="card"><h3>🏆 All lessons complete!</h3><p class="muted">Replay lessons for practice, or try the simulations.</p></div>') +
-      '<a class="card league-mini" href="#/ranks"><span class="tier-badge" style="--tc:' + tier.color + '">' + tier.e + '</span><div><div class="kicker">' + tier.name + ' League</div><h3>You are #' + rank + ' this week</h3></div><span class="go">›</span></a></div><div class="col"><div id="challenge"></div></div></div>' +
+      '<a class="card league-mini" href="#/ranks"><span class="tier-badge" style="--tc:' + tier.color + '">' + tier.e + '</span><div><div class="kicker">' + tier.name + ' League</div><h3>You are #' + rank + ' this week</h3></div><span class="go">›</span></a></div><div class="col"><div id="challenge"></div><div id="extras"></div></div></div>' +
       '<h2 class="section">Simulate & play</h2><div class="grid2">' +
       tile('#/sim/life', '🏙️', 'Life Simulator', 'A year of teen money life') +
       tile('#/sim/portfolio', '🧺', 'Portfolio Sim', 'Invest through history') +
@@ -131,6 +131,7 @@ window.MQ = window.MQ || {};
       '<div class="card level-card"><div class="row"><div><div class="kicker">Level ' + lv.level + '</div><h3>' + lv.title + '</h3></div><div class="muted">' + S.xp + ' XP</div></div>' +
       '<div class="bar"><i style="width:' + (lv.pct * 100).toFixed(1) + '%"></i></div><div class="muted small">' + (lv.need - lv.into) + ' XP to level ' + (lv.level + 1) + '</div></div></div></div>';
     renderChallenge($('#challenge', main));
+    MQ.extras.mount($('#extras', main));
 
     if (S.league.result && !S.league.result.seen) showLeagueResult();
   });
@@ -173,6 +174,7 @@ window.MQ = window.MQ || {};
       sound(ok ? 'good' : 'bad');
       ST.addXP(ok ? 15 : 3, 'Daily challenge');
       renderHeader();
+      if (MQ.extras) MQ.extras.balance();
     });
   }
 

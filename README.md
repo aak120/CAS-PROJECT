@@ -46,6 +46,10 @@ Split ₹10 lakh / $10,000 / £10,000 across **Stocks, Bonds, ETFs, Gold, Cash, 
 ### 🧩 Money personality
 A scenario quiz at onboarding ("You have ₹10,000 left at the end of the month…") gives a profile such as 🟢 Planner · 🟡 Moderate risk · 🔴 Impulsive spending. It tailors the simulations and comes with a clear note that it is not a diagnosis or professional assessment.
 
+### 🗺️ Weekly quests & 🫙 real savings jar
+- **Weekly quests:** three new quests every Monday (finish lessons, play games, run a simulation…), each with a coin reward, plus a bonus chest for finishing all three.
+- **Real savings jar:** set a real-life goal, log money as you actually save it, and see progress and weeks to go. It's stored only on your device.
+
 ### 🏆 Leaderboards, streaks and achievements
 - A weekly league plus boards by **category** (friends + optional simulated rivals): weekly XP, best simulator, best decisions, longest streak, most improved, best diversification.
 - Streaks reward *learning*, with milestone badges at 7 / 30 / 100 days ("Financial Scholar") and streak freezes.
@@ -111,6 +115,7 @@ js/games2.js          Budget Battle, Race, Inflation, Credit, Loan, Diversificat
 js/state.js           XP, levels, streaks, badges, leagues, friend codes (saved in localStorage)
 js/ui.js              Toasts, confetti, sounds, charts, formatting helpers
 js/app.js             Router and Home / Learn / Lesson / Ranks / Profile screens
+js/extras.js          Weekly quests and the real-life savings jar
 js/games.js           Game registry, Needs vs Wants, Scam Simulator, Interest Showdown
 js/sims.js            Simulate hub + Market Mania
 sw.js                 Offline caching (bump VERSION when you change files)

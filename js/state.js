@@ -147,6 +147,7 @@ window.MQ = window.MQ || {};
     const k = dateKey();
     S.xpLog[k] = (S.xpLog[k] || 0) + amount;
     S.league.weekXp += amount;
+    if (MQ.extras) MQ.extras.track(amount, why);
     // keep the log small
     const keys = Object.keys(S.xpLog).sort();
     while (keys.length > 60) delete S.xpLog[keys.shift()];
@@ -189,6 +190,8 @@ window.MQ = window.MQ || {};
     { id: 'budget-survivor', e: '⚔️', name: 'Budget Battler', desc: 'Survive a month in Budget Battle', test: s => flagOn(s, 'budgetWin') },
     { id: 'self-aware', e: '🧩', name: 'Know Thyself', desc: 'Discover your money personality', test: s => !!s.personality },
     { id: 'challenger', e: '⚔️', name: 'Challenger', desc: 'Finish a multiplayer challenge', test: s => s.challenges.length >= 1 },
+    { id: 'quest-master', e: '🗺️', name: 'Quest Master', desc: 'Complete all 3 weekly quests', test: s => flagOn(s, 'questMaster') },
+    { id: 'real-saver', e: '🫙', name: 'Real Saver', desc: 'Reach a real-life savings goal', test: s => flagOn(s, 'realSaver') },
     { id: 'literate', e: '🧠', name: 'Money Brain', desc: 'Reach 70%+ Literacy Score in every category', test: s => MQ.adaptive && MQ.adaptive.allAbove(0.7) },
     { id: 'first-trade', e: '📈', name: 'First Trade', desc: 'Buy your first stock in the Market Sim', test: s => s.badgeFlags && s.badgeFlags.trade },
     { id: 'diversified', e: '🧺', name: 'Diversified', desc: 'Hold 4+ different investments at once', test: s => s.badgeFlags && s.badgeFlags.diversified },
