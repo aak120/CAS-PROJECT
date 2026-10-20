@@ -522,6 +522,9 @@ window.MQ = window.MQ || {};
 
   function screen(main, args) {
     const sub = args[1];
+    const active = L();
+    MQ.countryOverride = active && active.scn && active.phase !== 'done' || (active && sub === 'result') ? active.scn.country : null;
+    MQ.app.onLeave(() => { MQ.countryOverride = null; });
     if (sub === 'new') return chooseMode(main);
     const cur = L();
     if (!cur || cur.phase === 'done' && sub !== 'result') return hub(main);

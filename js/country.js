@@ -60,6 +60,8 @@ window.MQ = window.MQ || {};
     goals: { first: MQ.COUNTRIES.US.goals.first, teen: [{ e: '🎧', name: 'pair of wireless earbuds', cost: [80, 150] }, { e: '🚲', name: 'new bike', cost: [200, 350] }, { e: '🎒', name: 'school trip', cost: [150, 300] }, { e: '🎮', name: 'game controller', cost: [60, 90] }] } });
 
   MQ.country = function () {
+    // While a Life Sim scenario from another country is on screen (e.g. a friend's challenge), show its currency.
+    if (MQ.countryOverride && MQ.COUNTRIES[MQ.countryOverride]) return MQ.COUNTRIES[MQ.countryOverride];
     const S = MQ.state && MQ.state.get();
     return MQ.COUNTRIES[(S && S.settings.country) || 'GL'] || MQ.COUNTRIES.GL;
   };
