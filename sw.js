@@ -1,6 +1,6 @@
 // Offline support: cache the app shell so FiQuo works without internet once loaded.
 // Bump VERSION whenever you change any file so phones pick up the update.
-const VERSION = 'fiquo-v13';
+const VERSION = 'fiquo-v14';
 const FILES = [
   './', './index.html', './manifest.webmanifest', './css/styles.css',
   './js/content.js', './js/country.js', './js/ui.js', './js/state.js', './js/app.js', './js/extras.js', './js/adaptive.js', './js/personality.js',
@@ -19,6 +19,7 @@ self.addEventListener('activate', e => {
 // Network first (so updates show up), falling back to the cache when offline.
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
+  if (new URL(e.request.url).origin !== location.origin) return; // analytics, fonts, etc. go straight to the network
   e.respondWith(
     fetch(e.request)
       .then(res => {

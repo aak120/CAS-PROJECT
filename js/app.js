@@ -27,12 +27,26 @@ window.MQ = window.MQ || {};
     main.innerHTML = '';
     main.className = 'screen screen-' + parts[0];
     $('.app').classList.toggle('focus', parts[0] === 'personality');
+    trackScreen(parts);
     fn(main, parts.slice(1));
     renderHeader();
     renderTabs(parts[0]);
     window.scrollTo(0, 0);
   }
   function onLeave(fn) { cleanup = fn; }
+
+  // Google Analytics: report each screen as a page view, e.g. /learn or /game/scam.
+  // Only the screen name is sent, never names or answers.
+  let lastScreen = null, firstScreen = true;
+  function trackScreen(parts) {
+    if (typeof window.gtag !== 'function') return;
+    const path = '/' + parts.filter(Boolean).slice(0, 2).join('/');
+    if (path === lastScreen) return;
+    lastScreen = path;
+    // The first load is already counted by the Google tag itself.
+    if (firstScreen) { firstScreen = false; return; }
+    window.gtag('event', 'page_view', { page_title: 'FiQuo ' + path, page_location: location.origin + path, page_path: path });
+  }
 
   let themeSetByApp = false;
   function applyTheme() {
@@ -409,6 +423,7 @@ window.MQ = window.MQ || {};
       '<label class="set-row"><span>Theme</span><select id="s-theme">' + [['auto', 'Match device'], ['light', 'Light'], ['dark', 'Dark']].map(t => '<option value="' + t[0] + '" ' + (S.settings.theme === t[0] ? 'selected' : '') + '>' + t[1] + '</option>').join('') + '</select></label>' +
       '<label class="set-row"><span>Sound effects</span><input type="checkbox" id="s-sound" ' + (S.settings.sound ? 'checked' : '') + '></label>' +
       '<button class="btn danger ghost block" id="reset">Reset all progress</button></div>' +
+      '<p class="hint center">FiQuo uses Google Analytics to count anonymous visits and which features are used. Your name, answers and progress stay on this device.</p>' +
       '<p class="hint center">FiQuo is an educational game. All money, stocks and events are simulated. Not financial advice.</p>';
 
     $('#buy-freeze').onclick = () => {

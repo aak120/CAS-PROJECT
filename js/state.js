@@ -155,6 +155,7 @@ window.MQ = window.MQ || {};
     S.xpLog[k] = (S.xpLog[k] || 0) + amount;
     S.league.weekXp += amount;
     if (MQ.extras) MQ.extras.track(amount, why);
+    trackEvent(why);
     // keep the log small
     const keys = Object.keys(S.xpLog).sort();
     while (keys.length > 60) delete S.xpLog[keys.shift()];
@@ -168,6 +169,21 @@ window.MQ = window.MQ || {};
       MQ.ui.celebrate('Level ' + after.level + '!', after.title + ' · +25 🪙 bonus');
     }
     checkBadges();
+  }
+
+  // Anonymous Google Analytics events for finished activities (no names or personal data).
+  function trackEvent(why) {
+    if (typeof window.gtag !== 'function' || !why) return;
+    let name = null, params = {};
+    if (why === 'Lesson') name = 'lesson_complete';
+    else if (why === 'Practice') name = 'practice_complete';
+    else if (why === 'Daily challenge') name = 'daily_challenge';
+    else if (why === 'Personality') name = 'personality_quiz';
+    else if (/Life Sim|Portfolio Sim|Market year/.test(why)) { name = 'simulation_complete'; params.simulation = why; }
+    else if ((MQ.GAMES || []).some(g => g.title === why)) { name = 'game_complete'; params.game = why; }
+    if (!name) return;
+    params.country_mode = (S && S.settings.country) || 'GL';
+    try { window.gtag('event', name, params); } catch (e) {}
   }
 
   // ---------- Badges ----------
