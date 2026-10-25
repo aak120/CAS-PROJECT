@@ -19,7 +19,7 @@ window.MQ = window.MQ || {};
   // =====================================================================
   function budgetBattle(main, g) {
     intro(main, g, () => {
-      const P = A(300);
+      const P = MQ.roundNice(A(300) * MQ.diff(1.25, 1, 0.8));
       let bal = P, wb = 70, turn = 0, pending = 0;
       const essentials = [
         { e: '🥪', t: 'School lunches this month', c: [['Canteen every day', -0.2, 2], ['Pack lunch most days', -0.08, 0], ['Skip lunch and buy snacks', -0.14, -4]] },
@@ -51,7 +51,7 @@ window.MQ = window.MQ || {};
         if (day >= 20 && pending) { bal -= pending * P; toast('Payment plan instalment: −' + F(pending * P)); pending = 0; if (bal < 0) return done(false, day); }
         main.innerHTML = hud('Day ' + day + '/30', 0, '') +
           '<div class="card bb-stats"><div><span class="kicker">Money left</span><b class="' + (bal < P * 0.2 ? 'down' : '') + '">' + F(bal) + '</b><div class="bar"><i style="width:' + Math.max(0, bal / P * 100) + '%"></i></div></div><div><span class="kicker">Wellbeing</span><b>' + Math.round(wb) + '</b><div class="bar"><i style="width:' + wb + '%;background:var(--accent2)"></i></div></div></div>' +
-          '<p class="muted small center">Survive to day 30 without running out of money or letting wellbeing drop below 30.</p>' +
+          '<p class="muted small center">Survive to day 30 without running out of money or letting wellbeing drop below ' + MQ.diff(25, 30, 40) + '.</p>' +
           '<div class="card event pop"><div class="big-emoji">' + ev.e + '</div><h2>' + esc(ev.t) + '</h2><div class="opts">' +
           ev.c.map((c, i) => '<button class="opt" data-i="' + i + '">' + esc(c[0]) + ' <small class="' + (c[1] < 0 ? 'down' : c[1] > 0 ? 'up' : 'muted') + '">' + (c[1] ? (c[1] > 0 ? '+' : '−') + F(Math.abs(c[1]) * P) : 'free') + '</small></button>').join('') + '</div></div>';
         $$('.opt', main).forEach(b => b.onclick = () => {
@@ -66,7 +66,7 @@ window.MQ = window.MQ || {};
       }
       function done(survived, day) {
         if (pending) { bal -= pending * P; pending = 0; if (bal < 0) survived = false; }
-        const win = survived && wb >= 30;
+        const win = survived && wb >= MQ.diff(25, 30, 40);
         const score = win ? Math.round(bal / P * 100) + Math.round(wb) : 0;
         record('budget', score);
         if (win) ST.flag('budgetWin');
@@ -105,7 +105,7 @@ window.MQ = window.MQ || {};
           { name: names[0] + ' (starts late, saves big)', amt: MQ.roundNice(inc * 0.25), acct: 'index', age: 30 },
           { name: names[1] + ' (plays it safe)', amt: MQ.roundNice(inc * 0.12), acct: 'savings', age: 18 },
           { name: names[2] + ' (cash under the bed)', amt: MQ.roundNice(inc * 0.15), acct: 'mattress', age: 16 }
-        ].map(x => Object.assign(x, { amt: Math.max(1, Math.round(x.amt * (0.8 + Math.random() * 0.4))) }));
+        ].map(x => Object.assign(x, { amt: Math.max(1, Math.round(x.amt * MQ.diff(0.8, 1, 1.3) * (0.8 + Math.random() * 0.4))) }));
         const racers = [Object.assign({ name: 'You', you: true }, me)].concat(rivals).map(x => Object.assign(x, { bal: 0, done: null }));
         const yearsR = []; for (let i = 0; i < 60; i++) yearsR.push(8 + 15 * gauss());
         main.innerHTML = hud('Racing…', 0, '<span id="age">Age 16</span>') + '<div class="card race">' + racers.map((r, i) => '<div class="lane ' + (r.you ? 'you' : '') + '"><div class="lane-top"><b>' + esc(r.name) + '</b><small>' + F(r.amt) + '/mo · ' + accounts[r.acct].n.split(' ')[0] + ' · from ' + r.age + '</small></div><div class="bar"><i id="ln' + i + '" style="width:0%"></i></div><small id="lv' + i + '"></small></div>').join('') + '</div><div id="race-end"></div>';
@@ -159,7 +159,7 @@ window.MQ = window.MQ || {};
         const r = regime === 'spike' ? { mattress: 0, savings: infl - 4 + Math.random() * 2, bonds: -8 - Math.random() * 6, index: -6 + gauss() * 12, gold: 12 + Math.random() * 12 }
           : regime === 'recession' ? { mattress: 0, savings: 2 + Math.random(), bonds: 6 + Math.random() * 4, index: -18 + gauss() * 8, gold: 6 + Math.random() * 8 }
             : { mattress: 0, savings: 3 + Math.random() * 1.5, bonds: 3 + gauss() * 3, index: 10 + gauss() * 10, gold: 2 + gauss() * 8 };
-        const right = Math.random() < 0.7;
+        const right = Math.random() < MQ.diff(0.85, 0.7, 0.5);
         const shown = right ? regime : MQ.pick(Math.random, ['spike', 'recession', 'normal'].filter(x => x !== regime));
         const headline = { spike: '📰 "Prices are rising fast! Energy and food costs soar."', recession: '📰 "Economy slowing, companies cut jobs."', normal: '📰 "Steady growth, nothing dramatic."' }[shown];
         return { regime, infl, r, headline };
@@ -170,7 +170,7 @@ window.MQ = window.MQ || {};
         const pizzas = money / price;
         main.innerHTML = hud('Year ' + (year + 1) + '/' + YEARS, 0, '🍕 ' + pizzas.toFixed(0)) +
           '<div class="card"><div class="ledger"><div><span>Your money</span><b>' + F(money) + '</b></div><div><span>Price of a pizza</span><b>' + fmt(price, 2) + '</b></div><div class="total"><span>Buying power</span><b>' + pizzas.toFixed(1) + ' pizzas</b></div></div></div>' +
-          '<div class="card"><p>' + esc(Y.headline) + '</p><p class="muted small">Headlines are right about 70% of the time. Where do you keep your money for the next year?</p><div class="opts">' +
+          '<div class="card"><p>' + esc(Y.headline) + '</p><p class="muted small">Headlines are right about ' + MQ.diff(85, 70, 50) + '% of the time. Where do you keep your money for the next year?</p><div class="opts">' +
           Object.keys(opts).map(k => '<button class="opt" data-k="' + k + '">' + opts[k] + '</button>').join('') + '</div></div>';
         $$('.opt', main).forEach(b => b.onclick = () => {
           const k = b.dataset.k, ret = Y.r[k];
@@ -205,7 +205,7 @@ window.MQ = window.MQ || {};
   function creditChallenge(main, g) {
     intro(main, g, () => {
       const C = MQ.country().credit;
-      const f = { pay: 0.7, util: 0.75, age: 0.2, newc: 1, mix: 0.3 };
+      const f = { pay: MQ.diff(0.8, 0.7, 0.6), util: MQ.diff(0.85, 0.75, 0.6), age: 0.2, newc: 1, mix: 0.3 };
       let autopay = false, month = 0, lastDelta = null, lastWhy = '';
       const score = () => Math.round(C.min + (C.max - C.min) * (0.35 * f.pay + 0.3 * f.util + 0.15 * f.age + 0.1 * f.newc + 0.1 * f.mix));
       const cl = v => Math.max(0, Math.min(1, v));
@@ -288,14 +288,14 @@ window.MQ = window.MQ || {};
           { name: '😌 "Low monthly payments!"', desc: a3 + '% APR for ' + n3 + ' months', m: emi(P, a3, n3), n: n3, fees: 0 },
           { name: '🏷️ "Only ' + flat + '% flat interest"', desc: flat + '% flat per year for 24 months (charged on the full amount every year)', m: (P + P * flat / 100 * 2) / n4, n: n4, fees: 0 }
         ];
-        return shuffle(list).slice(0, 3).map(o => Object.assign(o, { total: o.m * o.n + o.fees }));
+        return shuffle(list).slice(0, MQ.diff(3, 3, 4)).map(o => Object.assign(o, { total: o.m * o.n + o.fees }));
       }
       function show() {
         if (round >= ROUNDS) return done();
         const it = MQ.pick(Math.random, items), P = A(MQ.pick(Math.random, [600, 900, 1200, 1500, 2000]));
         const os = offers(P), best = os.reduce((a, b) => b.total < a.total ? b : a);
         main.innerHTML = hud('Case ' + (round + 1) + '/' + ROUNDS, 0, '🔍 ' + correct) +
-          '<div class="card"><div class="big-emoji">' + it[0] + '</div><div class="kicker">' + (round === 0 ? 'Help your family compare offers' : 'Case file') + '</div><h2>Your family needs to borrow ' + F(P) + ' for a ' + it[1] + '.</h2><p class="muted">Which offer costs the LEAST in total? Watch out for fees, long terms and "flat" rates.</p></div>' +
+          '<div class="card"><div class="big-emoji">' + it[0] + '</div><div class="kicker">' + (round === 0 ? 'Help your family compare offers' : 'Case file') + '</div><h2>Your family needs to borrow ' + F(P) + ' for a ' + it[1] + '.</h2><p class="muted">Which offer costs the LEAST in total? Watch out for fees, long terms and "flat" rates.</p>' + (MQ.difficulty().id === 'easy' ? '<p class="tip-line">💡 Hint: total cost = monthly payment × number of months + any fees.</p>' : '') + '</div>' +
           os.map((o, i) => '<button class="card loan-opt" data-i="' + i + '"><b>' + esc(o.name) + '</b><p class="muted small">' + esc(o.desc) + '</p><div class="small">Monthly payment: <b>' + F(o.m) + '</b></div><div class="reveal"></div></button>').join('');
         $$('.loan-opt', main).forEach(b => b.onclick = () => {
           const o = os[+b.dataset.i], ok = o === best;
@@ -376,8 +376,9 @@ window.MQ = window.MQ || {};
         const medCagr = Math.pow(med, 1 / G.h) - 1, loss10 = Math.min(0, p10 - 1);
         const alloc = {}; AS.forEach(a => alloc[a.id] = w[a.id] * 10);
         const div = MQ.portfolio ? MQ.portfolio.divScore(alloc) : 50;
-        const safety = Math.max(0, 1 - Math.max(0, -loss10 * 100 - G.tol) / G.tol);
-        const growth = Math.max(0, Math.min(1, medCagr * 100 / G.target));
+        const tol = G.tol * MQ.diff(1.3, 1, 0.7);
+        const safety = Math.max(0, 1 - Math.max(0, -loss10 * 100 - tol) / tol);
+        const growth = Math.max(0, Math.min(1, medCagr * 100 / (G.target + MQ.diff(-1, 0, 1))));
         const pts = Math.round(40 * safety + 40 * growth + 20 * div / 100);
         total += pts;
         main.innerHTML = hud('Goal ' + (round + 1) + '/' + goals.length, 0, '⭐ ' + total) +

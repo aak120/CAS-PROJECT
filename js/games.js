@@ -65,9 +65,10 @@ window.MQ = window.MQ || {};
   // ---------- Needs vs Wants ----------
   function needsGame(main, g) {
     intro(main, g, () => {
-      let time = 45, score = 0, combo = 0, correct = 0, wrong = 0, deck = [], item, timer, locked = false;
+      const penalty = MQ.diff(1, 2, 3);
+      let time = MQ.diff(60, 45, 35), score = 0, combo = 0, correct = 0, wrong = 0, deck = [], item, timer, locked = false;
       const draw = () => { if (!deck.length) deck = shuffle(MQ.NEEDS_WANTS); item = deck.pop(); };
-      main.innerHTML = '<div class="game-hud"><a href="#/play" class="x">✕</a><span class="timer">⏱ <b id="t">45</b>s</span><span>Score <b id="sc">0</b></span><span class="combo" id="cb"></span></div>' +
+      main.innerHTML = '<div class="game-hud"><a href="#/play" class="x">✕</a><span class="timer">⏱ <b id="t">' + time + '</b>s</span><span>Score <b id="sc">0</b></span><span class="combo" id="cb"></span></div>' +
         '<div class="nw-stage"><div class="nw-card" id="card"></div></div><p class="nw-fb" id="nfb">&nbsp;</p>' +
         '<div class="nw-buttons"><button class="btn need" id="bn">⬅ NEED</button><button class="btn want" id="bw">WANT ➡</button></div><p class="hint center">Tip: swipe the card, tap a button, or use your arrow keys.</p>';
       const card = $('#card');
@@ -76,9 +77,9 @@ window.MQ = window.MQ || {};
         if (locked || time <= 0) return;
         const ok = need === item.need;
         if (ok) { combo++; correct++; const mult = combo >= 6 ? 3 : combo >= 3 ? 2 : 1; score += 10 * mult; sound('good'); }
-        else { combo = 0; wrong++; time = Math.max(0, time - 2); sound('bad'); }
+        else { combo = 0; wrong++; time = Math.max(0, time - penalty); sound('bad'); }
         $('#nfb').className = 'nw-fb ' + (ok ? 'good' : 'bad');
-        $('#nfb').textContent = ok ? '✅ ' + item.t + ' is a ' + (item.need ? 'need' : 'want') : '❌ ' + item.t + ' is a ' + (item.need ? 'need' : 'want') + ' (−2s)';
+        $('#nfb').textContent = ok ? '✅ ' + item.t + ' is a ' + (item.need ? 'need' : 'want') : '❌ ' + item.t + ' is a ' + (item.need ? 'need' : 'want') + ' (−' + penalty + 's)';
         $('#sc').textContent = score;
         $('#t').textContent = time;
         $('#cb').textContent = combo >= 3 ? '🔥 x' + (combo >= 6 ? 3 : 2) : '';
@@ -159,8 +160,8 @@ window.MQ = window.MQ || {};
   function scamGame(main, g) {
     intro(main, g, () => {
       const pool = shuffle(scamPool());
-      const legit = pool.filter(x => x.v === 'legit').slice(0, 2), sus = pool.filter(x => x.v === 'suspicious').slice(0, 2), scams = pool.filter(x => x.v === 'scam').slice(0, 6);
-      const rounds = shuffle(legit.concat(sus, scams)).slice(0, 8);
+      const legit = pool.filter(x => x.v === 'legit').slice(0, MQ.diff(2, 2, 3)), sus = pool.filter(x => x.v === 'suspicious').slice(0, MQ.diff(1, 2, 3)), scams = pool.filter(x => x.v === 'scam').slice(0, MQ.diff(5, 6, 8));
+      const rounds = shuffle(legit.concat(sus, scams)).slice(0, MQ.diff(6, 8, 10));
       let i = 0, points = 0, exact = 0, spotted = 0;
       const V = { legit: '✅ Legit', suspicious: '⚠️ Suspicious', scam: '🚩 Scam' };
       function show() {
@@ -185,7 +186,7 @@ window.MQ = window.MQ || {};
           return;
         }
         // Step 2: spot the red flags
-        const decoys = shuffle(Object.keys(FLAGS).filter(f => !r.f.includes(f))).slice(0, Math.max(2, 5 - r.f.length));
+        const decoys = shuffle(Object.keys(FLAGS).filter(f => !r.f.includes(f))).slice(0, Math.max(2, MQ.diff(4, 5, 7) - r.f.length));
         const chips = shuffle(r.f.concat(decoys));
         const picked = new Set();
         $('#fb').innerHTML = '<div class="card flagbox"><div class="fb-text">' + head + '</div><p class="muted small">Now tap every red flag you can see in this message:</p><div class="chips">' +
@@ -222,7 +223,7 @@ window.MQ = window.MQ || {};
   // ---------- Interest Showdown ----------
   function interestGame(main, g) {
     intro(main, g, () => {
-      const ROUNDS = 8, LIMIT = 15;
+      const ROUNDS = 8, LIMIT = MQ.diff(25, 15, 8), GAP = MQ.diff(0.12, 0.06, 0.03);
       let round = 0, score = 0, correct = 0, timer;
       const fv = o => o.p * Math.pow(1 + o.r / 100, o.t);
       function option() {
@@ -233,7 +234,7 @@ window.MQ = window.MQ || {};
           const a = option(), b = option();
           const fa = fv(a), fb = fv(b);
           // Avoid near-ties and make "bigger start" not always the answer.
-          if (Math.abs(fa - fb) / Math.max(fa, fb) > 0.06 && (a.p !== b.p || a.r !== b.r || a.t !== b.t)) return [a, b];
+          if (Math.abs(fa - fb) / Math.max(fa, fb) > GAP && (a.p !== b.p || a.r !== b.r || a.t !== b.t)) return [a, b];
         }
       }
       function show() {

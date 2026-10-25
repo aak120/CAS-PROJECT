@@ -60,14 +60,14 @@ window.MQ = window.MQ || {};
   function renderHeader() {
     const st = ST.streakNow(), lv = ST.levelInfo(S.xp);
     $('#topbar').innerHTML =
-      '<a href="#/profile" class="me" aria-label="Profile"><span class="avatar sm">' + esc(S.profile.avatar) + '</span><span class="lvl">Lv ' + lv.level + '</span></a>' +
+      '<div class="me"><a href="#/profile" aria-label="Profile"><span class="avatar sm">' + esc(S.profile.avatar) + '</span></a><a href="#/how" class="lvl" title="How XP and levels work">Lv ' + lv.level + ' <span class="lvl-q">?</span></a>' + (MQ.difficulty().id !== 'normal' ? '<span class="lvl diff-pill" title="' + MQ.difficulty().name + ' difficulty">' + MQ.difficulty().e + '</span>' : '') + '</div>' +
       '<div class="stats">' +
       '<a href="#/profile" class="pill streak ' + (st.today ? 'lit' : '') + '" title="Day streak">🔥 ' + st.count + '</a>' +
       '<a href="#/profile" class="pill coins" title="Coins">🪙 ' + S.coins + '</a>' +
       '</div>';
   }
   function renderTabs(active) {
-    const map = { lesson: 'learn', practice: 'learn', game: 'play', sim: 'sim', personality: 'home' };
+    const map = { lesson: 'learn', practice: 'learn', game: 'play', sim: 'sim', personality: 'home', how: 'home' };
     active = map[active] || active;
     const tabs = [['home', '🏠', 'Home'], ['learn', '📚', 'Learn'], ['play', '🎮', 'Play'], ['sim', '📈', 'Simulate'], ['ranks', '🏆', 'Ranks']];
     $('#tabs').innerHTML = tabs.map(t => '<a href="#/' + t[0] + '" class="tab ' + (active === t[0] ? 'active' : '') + '"><span class="ti">' + t[1] + '</span><span class="tl">' + t[2] + '</span></a>').join('');
@@ -80,7 +80,7 @@ window.MQ = window.MQ || {};
     $('#tabs').innerHTML = '';
     const main = $('#main');
     main.className = 'screen onboarding';
-    let avatar = FREE_AVATARS[0], goal = 30, country = guessCountry();
+    let avatar = FREE_AVATARS[0], goal = 30, country = guessCountry(), level = 'normal';
     main.innerHTML =
       '<div class="hero"><div class="logo">💸</div><h1>FiQuo</h1><p>Level up your money skills with bite-sized lessons, games and simulations. No real money involved, ever.</p></div>' +
       '<div class="card"><label class="label" for="name">What should we call you?</label><input id="name" class="input" maxlength="16" placeholder="Your nickname" autocomplete="off">' +
@@ -88,10 +88,13 @@ window.MQ = window.MQ || {};
       '<div class="label">Pick an avatar</div><div class="avatar-grid">' + FREE_AVATARS.map(a => '<button class="avatar-pick ' + (a === avatar ? 'sel' : '') + '" data-a="' + a + '">' + a + '</button>').join('') + '</div>' +
       '<div class="label">Where do you live?</div><div class="chips country-chips">' + ['IN', 'US', 'UK', 'GL'].map(k => '<button class="chip ' + (k === country ? 'on' : '') + '" data-c="' + k + '">' + MQ.COUNTRIES[k].flag + ' ' + MQ.COUNTRIES[k].name + '</button>').join('') + '</div>' +
       '<p class="hint">Sets your currency, typical salaries and prices in simulations, and a country-specific unit (tax, banking, credit).</p>' +
+      '<div class="label">How much do you already know about money?</div><div class="goal-grid diff-grid">' + Object.values(MQ.DIFFICULTY).map(d => '<button class="goal-pick ' + (d.id === level ? 'sel' : '') + '" data-d="' + d.id + '"><b>' + d.e + ' ' + d.name + '</b><span>' + esc(d.desc) + '</span></button>').join('') + '</div>' +
+      '<p class="hint">You can change this anytime in Profile → Settings.</p>' +
       '<div class="label">Daily goal</div><div class="goal-grid">' + GOALS.map(g => '<button class="goal-pick ' + (g.xp === goal ? 'sel' : '') + '" data-g="' + g.xp + '"><b>' + g.name + '</b><span>' + g.xp + ' XP/day</span></button>').join('') + '</div>' +
       '<button id="start" class="btn primary block lg">Start my quest 🚀</button></div>';
     $$('.avatar-pick', main).forEach(b => b.onclick = () => { avatar = b.dataset.a; $$('.avatar-pick', main).forEach(x => x.classList.toggle('sel', x === b)); });
     $$('.goal-pick', main).forEach(b => b.onclick = () => { goal = +b.dataset.g; $$('.goal-pick', main).forEach(x => x.classList.toggle('sel', x === b)); });
+    $$('[data-d]', main).forEach(b => b.onclick = () => { level = b.dataset.d; $$('[data-d]', main).forEach(x => x.classList.toggle('sel', x === b)); });
     $$('[data-c]', main).forEach(b => b.onclick = () => { country = b.dataset.c; $$('[data-c]', main).forEach(x => x.classList.toggle('on', x === b)); });
     $('#start').onclick = () => {
       const name = $('#name').value.trim();
@@ -99,6 +102,7 @@ window.MQ = window.MQ || {};
       S.profile = { name, avatar, id: Math.random().toString(36).slice(2, 10) };
       S.goal = goal;
       S.settings.country = country;
+      S.settings.difficulty = level;
       ST.save();
       sound('level');
       go('#/personality/onboard');
@@ -143,7 +147,7 @@ window.MQ = window.MQ || {};
       '<div class="home-cols"><div class="col"><div class="card lit-mini"><div class="kicker">🧠 Financial Literacy Score</div><h3>' + (MQ.adaptive.overall() ? Math.round(MQ.adaptive.overall() * 100) + '%' : 'Answer a few questions to unlock') + '</h3>' + MQ.adaptive.scoreTable() + '<p class="hint">Tap a topic for a 3-minute adaptive challenge.</p></div></div><div class="col">' +
       '<div class="card tip"><b>💡 Tip of the day</b><p>' + esc(money(tip)) + '</p></div>' +
       '<div class="card level-card"><div class="row"><div><div class="kicker">Level ' + lv.level + '</div><h3>' + lv.title + '</h3></div><div class="muted">' + S.xp + ' XP</div></div>' +
-      '<div class="bar"><i style="width:' + (lv.pct * 100).toFixed(1) + '%"></i></div><div class="muted small">' + (lv.need - lv.into) + ' XP to level ' + (lv.level + 1) + '</div></div></div></div>';
+      '<div class="bar"><i style="width:' + (lv.pct * 100).toFixed(1) + '%"></i></div><div class="row"><span class="muted small">' + (lv.need - lv.into) + ' XP to level ' + (lv.level + 1) + '</span><a class="small link" href="#/how">How do XP and levels work? ›</a></div></div></div></div>';
     renderChallenge($('#challenge', main));
     MQ.extras.mount($('#extras', main));
 
@@ -167,7 +171,10 @@ window.MQ = window.MQ || {};
     const r = ST.rng('challenge:' + today);
     const weak = MQ.adaptive.weakest();
     let q, label = '';
-    if (weak) { const pool = MQ.adaptive.bankQuestions(weak.cat.id); q = pool[Math.floor(r() * pool.length)]; label = ' · picked for you: ' + weak.cat.name; }
+    if (MQ.difficulty().id === 'hard') {
+      const cat = weak ? weak.cat : MQ.adaptive.CATS[Math.floor(r() * MQ.adaptive.CATS.length)];
+      q = MQ.adaptive.genQuestion(cat.id, 3, 'challenge:' + today); label = ' · 🔥 Advanced · ' + cat.name;
+    } else if (weak) { const pool = MQ.adaptive.bankQuestions(weak.cat.id); q = pool[Math.floor(r() * pool.length)]; label = ' · picked for you: ' + weak.cat.name; }
     else q = MQ.ALL_QUESTIONS[Math.floor(r() * MQ.ALL_QUESTIONS.length)];
     const qCat = q.cat || MQ.adaptive.catOfLesson(q.lessonId);
     if (S.challenge.date === today) {
@@ -234,15 +241,21 @@ window.MQ = window.MQ || {};
     if (!isUnlocked(lesson)) { toast('🔒 Locked'); go('#/learn'); return; }
     const unit = unitOf(lesson);
     const cards = lesson.cards;
+    // Advanced difficulty adds two freshly generated, harder questions on the same topic.
+    const quiz = lesson.quiz.slice();
+    if (MQ.difficulty().id === 'hard') {
+      const cat = MQ.adaptive.catOfLesson(lesson.id);
+      for (let i = 0; i < 2; i++) quiz.push(Object.assign(MQ.adaptive.genQuestion(cat, 3), { extra: true }));
+    }
     // Queue: first all questions in order; wrong ones come back at the end.
-    let queue = lesson.quiz.map((q, i) => i);
+    let queue = quiz.map((q, i) => i);
     const firstTry = {}; // question index -> correct on first try
     let step = 0; // index into cards, then quiz
     let qPos = 0;
     main.style.setProperty('--c', unit.color);
 
     function progress() {
-      const totalSteps = cards.length + lesson.quiz.length;
+      const totalSteps = cards.length + quiz.length;
       const doneSteps = Math.min(step, cards.length) + Object.keys(firstTry).filter(k => firstTry[k] !== undefined).length;
       return doneSteps / totalSteps;
     }
@@ -260,27 +273,27 @@ window.MQ = window.MQ || {};
     }
     function showQ() {
       if (qPos >= queue.length) { finish(); return; }
-      const qi = queue[qPos], q = lesson.quiz[qi];
+      const qi = queue[qPos], q = quiz[qi];
       const retry = firstTry[qi] === false;
-      frame('<div class="quiz pop">' + (retry ? '<div class="kicker warn">🔁 Try this one again</div>' : '<div class="kicker">Question</div>') + '<h2>' + esc(money(q.q)) + '</h2><div class="opts">' +
+      frame('<div class="quiz pop">' + (retry ? '<div class="kicker warn">🔁 Try this one again</div>' : q.extra ? '<div class="kicker warn">🔥 Advanced question</div>' : '<div class="kicker">Question</div>') + '<h2>' + esc(money(q.q)) + '</h2><div class="opts">' +
         q.options.map((o, i) => '<button class="opt" data-i="' + i + '">' + esc(money(o)) + '</button>').join('') + '</div></div>' +
         '<div class="check-bar"><button class="btn primary block" id="check" disabled>Check</button></div>');
       let pick = null;
       $$('.opt', main).forEach(b => b.onclick = () => { pick = +b.dataset.i; $$('.opt', main).forEach(x => x.classList.toggle('sel', x === b)); $('#check').disabled = false; });
       $('#check').onclick = () => {
         const ok = pick === q.answer;
-        if (firstTry[qi] === undefined) { firstTry[qi] = ok; S.answers.total++; if (ok) S.answers.correct++; MQ.adaptive.recordAnswer(MQ.adaptive.catOfLesson(lesson.id), ok, lesson.id + ':' + qi); ST.save(); }
+        if (firstTry[qi] === undefined) { firstTry[qi] = ok; S.answers.total++; if (ok) S.answers.correct++; MQ.adaptive.recordAnswer(MQ.adaptive.catOfLesson(lesson.id), ok, q.extra ? undefined : lesson.id + ':' + qi); ST.save(); }
         if (!ok) queue.push(qi);
         sound(ok ? 'good' : 'bad');
         $$('.opt', main).forEach((x, j) => { x.disabled = true; if (j === pick && !ok) x.classList.add('wrong'); if (ok && j === q.answer) x.classList.add('right'); });
         const bar = $('.check-bar', main);
         bar.className = 'check-bar ' + (ok ? 'good' : 'bad');
-        bar.innerHTML = '<div class="fb-text"><b>' + (ok ? pickOne(['Nice! 🎉', 'Correct! ✅', 'You got it! 💪', 'Money brain! 🧠']) : 'Not quite 🤔') + '</b><p>' + (ok ? esc(money(q.explain)) : 'Have another think. This question comes back at the end.') + '</p></div><button class="btn ' + (ok ? 'primary' : 'danger') + ' block" id="cont">Continue</button>';
+        bar.innerHTML = '<div class="fb-text"><b>' + (ok ? pickOne(['Nice! 🎉', 'Correct! ✅', 'You got it! 💪', 'Money brain! 🧠']) : 'Not quite 🤔') + '</b><p>' + (ok ? esc(money(q.explain)) : MQ.difficulty().id === 'easy' ? '💡 Hint: ' + esc(money(q.explain)) + ' This question comes back at the end.' : 'Have another think. This question comes back at the end.') + '</p></div><button class="btn ' + (ok ? 'primary' : 'danger') + ' block" id="cont">Continue</button>';
         $('#cont').onclick = () => { qPos++; showQ(); };
       };
     }
     function finish() {
-      const n = lesson.quiz.length;
+      const n = quiz.length;
       const correct = Object.values(firstTry).filter(Boolean).length;
       const score = correct / n;
       const prev = S.lessons[lesson.id];
@@ -302,6 +315,50 @@ window.MQ = window.MQ || {};
     showCard();
   });
   function pickOne(a) { return a[Math.floor(Math.random() * a.length)]; }
+
+
+  // ---------- How XP, levels & rewards work ----------
+  route('how', main => {
+    const lv = ST.levelInfo(S.xp), D = MQ.difficulty();
+    const rows = (list) => '<div class="how-table">' + list.map(r => '<div class="how-row"><span>' + r[0] + '</span><b>' + r[1] + '</b></div>').join('') + '</div>';
+    const levels = [];
+    for (let l = 1; l <= 10; l++) {
+      const need = 25 * l * (l - 1), title = ST.levelInfo(need).title;
+      levels.push('<div class="how-row ' + (l === lv.level ? 'you' : l < lv.level ? 'past' : '') + '"><span>' + (l < lv.level ? '✅' : l === lv.level ? '👉' : '🔒') + ' Level ' + l + ' · ' + title + '</span><b>' + need.toLocaleString() + ' XP</b></div>');
+    }
+    main.innerHTML =
+      '<h1>How FiQuo works</h1><p class="sub">XP, levels, coins, streaks and everything else, explained.</p>' +
+      '<div class="card how-now"><div><div class="kicker">You right now</div><h3>Level ' + lv.level + ' · ' + lv.title + '</h3><p class="muted small">' + S.xp + ' XP total · ' + (lv.need - lv.into) + ' XP to level ' + (lv.level + 1) + ' · ' + D.e + ' ' + D.name + ' difficulty</p></div><div class="bar"><i style="width:' + (lv.pct * 100).toFixed(1) + '%"></i></div></div>' +
+      '<section class="card how"><h2>⚡ XP (experience points)</h2><p>XP measures how much you have <b>practised</b>. Every lesson, game and simulation you finish earns XP. More XP means a higher level.</p>' +
+      rows([
+        ['📚 Finish a lesson', '10 XP + 3 per question right first time + 5 for a perfect score'],
+        ['🔁 Replay a lesson', 'Half XP'],
+        ['⚡ Daily challenge', '15 XP if right, 3 XP for trying'],
+        ['🎯 3-minute practice round', '8 XP + 2 per correct answer'],
+        ['🎮 Mini-games', 'About 5–40 XP, depending on your score'],
+        ['🏙️ Life Simulator year', '40 XP + up to 25 more for good decisions'],
+        ['🧺 Portfolio Simulator', '30 XP + up to 20 more for diversifying'],
+        ['📈 Market Mania year', '30–50 XP'],
+        ['🧩 Personality quiz', '10 XP'],
+        ['🗺️ All 3 weekly quests', '60 XP bonus chest']
+      ]) + '<p class="hint">🔥 On Advanced difficulty, every reward is worth 25% more XP.</p></section>' +
+      '<section class="card how"><h2>🏅 Levels</h2><p>Your level goes up as your total XP grows. Each level needs a bit more XP than the one before, and every level-up gives you <b>+25 coins</b>.</p>' +
+      '<div class="how-table levels">' + levels.join('') + '</div><p class="hint">After level 8 you keep the title Finance Legend, and levels keep going up forever.</p></section>' +
+      '<section class="card how"><h2>🪙 Coins</h2><p>Coins are FiQuo\'s pretend money for rewards. You can\'t buy them with real money.</p>' +
+      rows([['Every time you earn XP', 'Half that amount in coins'], ['Level up', '+25 coins'], ['New badge', '+10 coins'], ['Each weekly quest', '+40 coins']]) +
+      '<p><b>Spend them in the Shop</b> (Profile): a 🧊 Streak Freeze costs 50 coins, new avatars cost 100–250.</p></section>' +
+      '<section class="card how"><h2>🔥 Streaks & daily goal</h2><p>Your <b>streak</b> is how many days in a row you have learned something: finishing any lesson, game, practice round, quiz or simulation counts. Just opening the app doesn\'t.</p>' +
+      '<p>Your <b>daily goal</b> (' + S.goal + ' XP, change it in Settings) is a target for each day. Miss a day and your streak resets to zero, unless you have a 🧊 Streak Freeze, which saves it automatically (you can hold up to 2).</p>' +
+      '<p>Milestone badges at <b>7</b>, <b>30</b> and <b>100</b> days in a row.</p></section>' +
+      '<section class="card how"><h2>🏆 Leagues & leaderboards</h2><p>Each week you race 9 other players in a league, ranked by XP earned <b>that week</b>. Finish in the top 3 to move up (Bronze → Silver → Gold → Platinum → Diamond); the bottom 3 move down. League rivals are simulated so there\'s always competition.</p>' +
+      '<p>To compete with real friends, swap <b>friend codes</b> on the Ranks page. Friends boards also rank other skills, like best Life Sim decisions, longest streak, most improved and best diversification, so it isn\'t just about who plays the most.</p></section>' +
+      '<section class="card how"><h2>🗺️ Weekly quests & 🏅 badges</h2><p>Every Monday you get <b>3 new quests</b> (for example "Play 4 games"). Each one pays 40 coins, and finishing all three opens a 60 XP bonus chest.</p>' +
+      '<p><b>Badges</b> (' + ST.BADGES.length + ' to collect) are achievements for milestones like your first lesson, a 7-day streak, spotting 10 scams or reaching a real savings goal. See them all in Profile.</p></section>' +
+      '<section class="card how"><h2>🧠 XP vs Literacy Score</h2><p><b>XP shows effort</b>: how much you have done. Your <b>Financial Literacy Score</b> shows <b>understanding</b>: how often you get questions right in each topic, with recent answers counting most. You can have lots of XP and still have a topic to work on. The Personal Coach on Home points you to it.</p></section>' +
+      '<section class="card how"><h2>🎚️ Difficulty</h2>' + rows(Object.values(MQ.DIFFICULTY).map(d => [d.e + ' ' + d.name + (d.id === D.id ? ' (yours)' : ''), d.desc])) +
+      '<p class="hint">Change it anytime in Profile → Settings. The Portfolio Simulator and Market Mania work the same on every difficulty.</p></section>' +
+      '<a class="btn primary block lg" href="#/home">Got it</a>';
+  });
 
   // ---------- Ranks ----------
   route('ranks', (main, args) => {
@@ -391,7 +448,7 @@ window.MQ = window.MQ || {};
 
     main.innerHTML =
       '<div class="profile-head"><span class="avatar xl">' + esc(S.profile.avatar) + '</span><div><h1>' + esc(S.profile.name) + '</h1><p class="muted">Level ' + lv.level + ' · ' + lv.title + '</p></div><button class="btn ghost sm" id="edit">Edit</button></div>' +
-      '<div class="card"><div class="bar"><i style="width:' + lv.pct * 100 + '%"></i></div><div class="muted small">' + lv.into + ' / ' + lv.need + ' XP to level ' + (lv.level + 1) + '</div></div>' +
+      '<div class="card"><div class="bar"><i style="width:' + lv.pct * 100 + '%"></i></div><div class="row"><span class="muted small">' + lv.into + ' / ' + lv.need + ' XP to level ' + (lv.level + 1) + '</span><a class="small link" href="#/how">How do XP and levels work? ›</a></div></div>' +
       '<div class="stat-grid">' +
       stat('⚡', S.xp, 'Total XP') + stat('🔥', st.count, 'Day streak') + stat('🏅', S.streak.best, 'Best streak') +
       stat('📚', ST.countDone(S), 'Lessons done') + stat('🎯', acc + '%', 'Quiz accuracy') + stat('🪙', S.coins, 'Coins') + '</div>' +
@@ -416,6 +473,7 @@ window.MQ = window.MQ || {};
       SHOP_AVATARS.map(a => { const own = S.ownedAvatars.includes(a.e); return '<div class="shop-row"><span class="se">' + a.e + '</span><div><b>Avatar</b><p class="muted small">' + (own ? 'Owned' : 'Unlock a new look') + '</p></div><button class="btn buy-av" data-e="' + a.e + '" data-p="' + a.p + '">' + (own ? (S.profile.avatar === a.e ? 'Wearing' : 'Wear') : a.p + ' 🪙') + '</button></div>'; }).join('') +
       '</div>' +
       '<h2 class="section">Settings</h2><div class="card settings">' +
+      '<label class="set-row"><span>Difficulty</span><select id="s-diff">' + Object.values(MQ.DIFFICULTY).map(d => '<option value="' + d.id + '" ' + (MQ.difficulty().id === d.id ? 'selected' : '') + '>' + d.e + ' ' + d.name + (d.xp > 1 ? ' (+25% XP)' : '') + '</option>').join('') + '</select></label>' +
       '<label class="set-row"><span>Daily goal</span><select id="s-goal">' + GOALS.map(g => '<option value="' + g.xp + '" ' + (S.goal === g.xp ? 'selected' : '') + '>' + g.name + ' (' + g.xp + ' XP)</option>').join('') + '</select></label>' +
       '<label class="set-row"><span>Country mode</span><select id="s-country">' + ['IN', 'US', 'UK', 'GL'].map(k => '<option value="' + k + '" ' + (MQ.country().id === k ? 'selected' : '') + '>' + MQ.COUNTRIES[k].flag + ' ' + MQ.COUNTRIES[k].name + '</option>').join('') + '</select></label>' +
       (MQ.country().id === 'GL' ? '<label class="set-row"><span>Currency symbol</span><select id="s-cur">' + ['$', '£', '€', '₹', '¥', 'A$', 'C$', 'S$', 'HK$', 'R', 'AED '].map(c => '<option ' + (S.settings.currency === c ? 'selected' : '') + '>' + c + '</option>').join('') + '</select></label>' : '') +
@@ -439,6 +497,7 @@ window.MQ = window.MQ || {};
       S.profile.avatar = e; ST.save(); render();
     });
     $('#s-goal').onchange = e => { S.goal = +e.target.value; ST.save(); };
+    $('#s-diff').onchange = e => { S.settings.difficulty = e.target.value; ST.save(); toast(MQ.difficulty().e + ' ' + MQ.difficulty().name + ' mode on'); renderHeader(); };
     if ($('#s-cur')) $('#s-cur').onchange = e => { S.settings.currency = e.target.value; ST.save(); render(); };
     $('#s-country').onchange = e => { S.settings.country = e.target.value; ST.save(); toast(MQ.country().flag + ' ' + MQ.country().name + ' mode on'); render(); };
     $('#s-theme').onchange = e => { S.settings.theme = e.target.value; ST.save(); applyTheme(); };

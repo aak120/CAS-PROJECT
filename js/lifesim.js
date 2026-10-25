@@ -126,6 +126,7 @@ window.MQ = window.MQ || {};
     const tx = (c.tax || MQ.COUNTRIES.US.tax)[mode === 'teen' ? 'teen' : 'first'];
     Object.assign(scn, {
       taxRate: tx.rate, taxLabel: tx.label,
+      difficulty: opts.difficulty || MQ.difficulty().id,
       v: 1, seed, country: c.id, mode, months: opts.months || 12, inflation: c.inflation, savingsAPY: c.savingsAPY, cardAPR: c.cardAPR, loanAPR: c.loanAPR + 2,
       indexName: c.indexName
     });
@@ -148,33 +149,46 @@ window.MQ = window.MQ || {};
       if (p.impulseLevel === 'low') w.shock = 1.8;
     }
     const pool = Object.keys(EV).filter(k => !EV[k].followOnly && k !== 'crash' && EV[k].modes.includes(mode) && !(EV[k].needsRent && !scn.exp.rent) && !(EV[k].needsJob && mode === 'teen' && !scn.teenJob));
-    const used = new Set(), events = [];
+    // Separate random streams, so difficulty changes HOW OFTEN surprises happen and HOW MUCH they cost,
+    // but never swaps in a different (possibly easier) set of events for the same character.
+    const rollR = ST.rng('life:' + seed + ':roll'), pickR = ST.rng('life:' + seed + ':pick');
+    const crashR = ST.rng('life:' + seed + ':crash'), mkR = ST.rng('life:' + seed + ':mk');
+    // A fixed, personality-weighted order of events for this character
+    const order = [], left = pool.slice();
+    while (left.length) {
+      const tot = left.reduce((t, k) => t + w[EV[k].kind], 0);
+      let x = pickR() * tot, i = 0;
+      for (; i < left.length - 1; i++) { x -= w[EV[left[i]].kind]; if (x <= 0) break; }
+      order.push(left.splice(i, 1)[0]);
+    }
+    const chance = MQ.diffFor(scn.difficulty, 0.6, 0.8, 0.95), costMul = MQ.diffFor(scn.difficulty, 0.7, 1, 1.3);
+    const events = [];
     for (let m = 1; m <= scn.months; m++) {
-      if (r() > (m === 1 ? 0.55 : 0.8)) continue;
-      const cand = pool.filter(k => !used.has(k));
-      if (!cand.length) break;
-      const tot = cand.reduce((t, k) => t + w[EV[k].kind], 0);
-      let x = r() * tot, pick = cand[0];
-      for (const k of cand) { x -= w[EV[k].kind]; if (x <= 0) { pick = k; break; } }
-      used.add(pick);
-      events.push({ m, id: pick, p: EV[pick].gen(r, scn) });
+      const roll = rollR();
+      if (roll > (m === 1 ? 0.55 : chance) || events.length >= order.length) continue;
+      const id = order[events.length];
+      const ev = { m, id, p: EV[id].gen(ST.rng('life:' + seed + ':ev:' + id), scn) };
+      // Difficulty scales how much surprises cost (gains stay the same).
+      if (ev.p.c && EV[id].kind !== 'opportunity') ev.p.c = nice(ev.p.c * costMul);
+      events.push(ev);
     }
     // Maybe a market crash in the middle of the year
     let crashM = null;
-    if (r() < (p && p.riskLevel === 'high' ? 0.75 : 0.5)) {
-      crashM = 4 + Math.floor(r() * Math.max(1, scn.months - 6));
+    const crashRoll = crashR(), crashMonth = 4 + Math.floor(crashR() * Math.max(1, scn.months - 6)), crashP = EV.crash.gen(crashR);
+    if (crashRoll < (p && p.riskLevel === 'high' ? 0.75 : 0.5) + MQ.diffFor(scn.difficulty, -0.2, 0, 0.2)) {
+      crashM = crashMonth;
       const i = events.findIndex(e => e.m === crashM);
-      const ev = { m: crashM, id: 'crash', p: EV.crash.gen(r) };
+      const ev = { m: crashM, id: 'crash', p: crashP };
       if (i >= 0) events[i] = ev; else events.push(ev);
       events.sort((a, b) => a.m - b.m);
     }
     // Monthly market paths (the crash itself is applied by the event; afterwards markets slowly recover)
     const mk = { index: [], gold: [], hype: [] };
     for (let m = 1; m <= scn.months; m++) {
-      const g = gauss(r), rec = crashM && m > crashM && m <= crashM + 4 ? 1 : 0;
+      const g = gauss(mkR), rec = crashM && m > crashM && m <= crashM + 4 ? 1 : 0;
       mk.index.push(0.006 + 0.032 * g + rec * 0.025);
-      mk.gold.push(0.004 + 0.025 * gauss(r) - 0.15 * 0.032 * g);
-      mk.hype.push(m <= 3 ? 0.08 + 0.1 * gauss(r) : -0.04 + 0.16 * gauss(r) + rec * 0.03);
+      mk.gold.push(0.004 + 0.025 * gauss(mkR) - 0.15 * 0.032 * g);
+      mk.hype.push(m <= 3 ? 0.08 + 0.1 * gauss(mkR) : -0.04 + 0.16 * gauss(mkR) + rec * 0.03);
     }
     scn.events = events; scn.market = mk;
     if (mode === 'teen') { scn.cardAPR = 0; scn.loanAPR = 0; }
@@ -609,7 +623,7 @@ window.MQ = window.MQ || {};
     const ess = scn.exp.rent + scn.exp.food + scn.exp.transport + scn.exp.phone;
     main.innerHTML = head(main, 'Meet your character') +
       (challenge ? '<div class="card challenge-banner">⚔️ Challenge from <b>' + esc(challenge.by) + '</b>: same life, same surprises. Can you beat their net worth of <b>' + F(challenge.r.nw) + '</b>?</div>' : '') +
-      '<div class="card char pop"><div class="big-emoji">' + (scn.mode === 'teen' ? '🧑‍🎓' : '🧑‍💼') + '</div><h2>' + esc(scn.name) + ', ' + scn.age + '</h2><p class="muted">' + esc(scn.mode === 'custom' ? 'Your custom life' : scn.mode === 'teen' && !scn.teenJob ? 'Student · lives on pocket money and gifts' : 'Works as a ' + scn.job) + '</p>' +
+      '<div class="card char pop"><div class="big-emoji">' + (scn.mode === 'teen' ? '🧑‍🎓' : '🧑‍💼') + '</div><h2>' + esc(scn.name) + ', ' + scn.age + '</h2><p class="small"><span class="tag">' + MQ.DIFFICULTY[scn.difficulty || 'normal'].e + ' ' + MQ.DIFFICULTY[scn.difficulty || 'normal'].name + '</span></p><p class="muted">' + esc(scn.mode === 'custom' ? 'Your custom life' : scn.mode === 'teen' && !scn.teenJob ? 'Student · lives on pocket money and gifts' : 'Works as a ' + scn.job) + '</p>' +
       '<div class="ledger">' + (scn.taxRate ? '<div><span>💼 Gross salary</span><b>' + F(scn.income / (1 - scn.taxRate)) + '/mo</b></div><div><span>✂️ ' + esc(scn.taxLabel) + '</span><b class="down">−' + F(scn.income / (1 - scn.taxRate) - scn.income) + '</b></div>' : '') +
       '<div><span>' + (scn.mode === 'teen' ? '💰 Money in each month' : '💰 Take-home pay') + '</span><b class="up">' + F(scn.income) + '/mo</b></div>' +
       (scn.allowance && scn.teenJob && !scn.taxRate ? '<div><span>&nbsp;&nbsp;🪙 Pocket money</span><b>' + F(scn.allowance) + '</b></div><div><span>&nbsp;&nbsp;💼 Part-time job</span><b>' + F(scn.income - scn.allowance) + '</b></div>' : '') +
@@ -624,7 +638,7 @@ window.MQ = window.MQ || {};
       '<button class="btn primary block lg" id="go">Start month 1 ▶</button>' +
       (challenge ? '' : '<button class="btn ghost block" id="reroll">🎲 Different character</button>');
     $('#go').onclick = () => { const l = L(); payday(l.st, l.scn); l.phase = 'month'; save(); MQ.app.render(); };
-    if ($('#reroll')) $('#reroll').onclick = () => startRun(makeScenario({ mode: scn.mode === 'custom' ? 'first' : scn.mode, country: scn.country, personality: S().personality }));
+    if ($('#reroll')) $('#reroll').onclick = () => startRun(makeScenario({ mode: scn.mode === 'custom' ? 'first' : scn.mode, country: scn.country, personality: S().personality, difficulty: scn.difficulty }));
   }
 
   function hud(l) {

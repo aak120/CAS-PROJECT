@@ -257,7 +257,8 @@ window.MQ = window.MQ || {};
     const w = weakest();
     const cat = BY[args[0]] ? BY[args[0]] : (w ? w.cat : MQ.pick(Math.random, CATS));
     const before = score(cat.id);
-    let level = before === null ? 1 : before < 0.5 ? 1 : before < 0.75 ? 2 : 3;
+    const D = MQ.difficulty().id, maxLevel = D === 'easy' ? 2 : 3;
+    let level = D === 'hard' ? 3 : D === 'easy' ? 1 : before === null ? 1 : before < 0.5 ? 1 : before < 0.75 ? 2 : 3;
     const N = 6, used = [];
     let i = 0, correct = 0;
     main.style.setProperty('--c', '#6366f1');
@@ -283,7 +284,7 @@ window.MQ = window.MQ || {};
       $('#check').onclick = () => {
         const ok = pick === q.answer;
         recordAnswer(cat.id, ok, q.qid);
-        if (ok) { correct++; level = Math.min(3, level + 1); } else level = Math.max(1, level - 1);
+        if (ok) { correct++; level = Math.min(maxLevel, level + 1); } else level = Math.max(D === 'hard' ? 2 : 1, level - 1);
         sound(ok ? 'good' : 'bad');
         $$('.opt', main).forEach((x, j) => { x.disabled = true; if (j === q.answer) x.classList.add('right'); if (j === pick && !ok) x.classList.add('wrong'); });
         const bar = $('.check-bar', main);

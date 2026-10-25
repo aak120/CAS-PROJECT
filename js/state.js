@@ -69,7 +69,7 @@ window.MQ = window.MQ || {};
       counters: {},        // scams spotted, sims finished, ...
       challenges: [],      // multiplayer challenge results
       lifeSim: null, portfolio: null,
-      settings: { currency: '$', sound: true, theme: 'auto', country: null }
+      settings: { currency: '$', sound: true, theme: 'auto', country: null, difficulty: 'normal' }
     };
   }
 
@@ -99,6 +99,17 @@ window.MQ = window.MQ || {};
     S = fresh();
     save();
   }
+
+  // ---------- Difficulty ----------
+  MQ.DIFFICULTY = {
+    easy: { id: 'easy', e: '🌱', name: 'Beginner', xp: 1, desc: 'More time, simpler questions and hints when you get something wrong.' },
+    normal: { id: 'normal', e: '⚖️', name: 'Standard', xp: 1, desc: 'The normal FiQuo experience.' },
+    hard: { id: 'hard', e: '🔥', name: 'Advanced', xp: 1.25, desc: 'Harder questions, tighter timers, trickier games and a tougher Life Sim. Earn +25% XP.' }
+  };
+  MQ.difficulty = () => MQ.DIFFICULTY[(S && S.settings.difficulty) || 'normal'] || MQ.DIFFICULTY.normal;
+  // Pick a value by difficulty: MQ.diff(beginner, standard, advanced)
+  MQ.diff = (e, n, h) => ({ easy: e, normal: n, hard: h })[MQ.difficulty().id];
+  MQ.diffFor = (id, e, n, h) => ({ easy: e, normal: n, hard: h })[id || 'normal'];
 
   // ---------- Levels ----------
   const LEVEL_TITLES = ['Piggy Bank Rookie', 'Coin Collector', 'Budget Builder', 'Savings Specialist', 'Interest Wizard', 'Market Maven', 'Money Master', 'Finance Legend'];
@@ -143,7 +154,8 @@ window.MQ = window.MQ || {};
   // ---------- XP ----------
   function todayXp() { return S.xpLog[dateKey()] || 0; }
   function addXP(amount, why) {
-    amount = Math.max(0, Math.round(amount));
+    const bonus = MQ.difficulty().xp > 1 && why !== 'Quest';
+    amount = Math.max(0, Math.round(amount * (bonus ? MQ.difficulty().xp : 1)));
     if (!amount) return;
     const before = levelInfo(S.xp).level;
     const goalBefore = todayXp() >= S.goal;
@@ -160,7 +172,7 @@ window.MQ = window.MQ || {};
     const keys = Object.keys(S.xpLog).sort();
     while (keys.length > 60) delete S.xpLog[keys.shift()];
     save();
-    MQ.ui.toast('+' + amount + ' XP' + (why ? ' · ' + why : ''), 'xp');
+    MQ.ui.toast('+' + amount + ' XP' + (why ? ' · ' + why : '') + (bonus ? ' 🔥' : ''), 'xp');
     if (streakMsg) MQ.ui.toast(streakMsg);
     if (!goalBefore && todayXp() >= S.goal) { MQ.ui.toast('🎯 Daily goal reached!', 'good'); MQ.ui.sound('level'); }
     const after = levelInfo(S.xp);

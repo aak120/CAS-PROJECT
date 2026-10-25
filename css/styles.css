@@ -569,3 +569,26 @@ h4 { margin: 10px 0 4px; }
 .seo-intro { max-width: 640px; margin: 24px auto; line-height: 1.6; }
 .seo-intro h1 { font-size: 30px; }
 .seo-intro h2 { font-size: 20px; margin-top: 18px; }
+
+/* ---------- How it works + difficulty ---------- */
+.me { display: flex; align-items: center; gap: 8px; }
+.me a.lvl { color: var(--text); }
+.lvl-q { display: inline-grid; place-items: center; width: 16px; height: 16px; border-radius: 50%; background: var(--accent2); color: #fff; font-size: 11px; margin-left: 2px; }
+.diff-pill { padding: 3px 7px; }
+a.link { color: var(--accent2); font-weight: 800; }
+.how h2 { font-size: 19px; }
+.how p { max-width: 70ch; }
+.how-table { margin: 10px 0; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.how-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: 14px; }
+.how-row:last-child { border-bottom: 0; }
+.how-row b { font-weight: 700; color: var(--muted); }
+.how-table.levels .how-row { grid-template-columns: minmax(0, 1fr) auto; font-variant-numeric: tabular-nums; }
+.how-row.you { background: var(--good-bg); }
+.how-row.you b { color: var(--good); }
+.how-row.past { opacity: .65; }
+.how-now { display: grid; gap: 8px; }
+.diff-grid { grid-template-columns: 1fr; }
+.diff-grid .goal-pick span { font-size: 12px; }
+@media (min-width: 600px) { .diff-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 960px) { .screen-how { max-width: 860px; width: 100%; justify-self: center; } }
+@media (max-width: 420px) { .how-row { grid-template-columns: 1fr; gap: 2px; } }

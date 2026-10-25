@@ -46,6 +46,10 @@ Split ₹10 lakh / $10,000 / £10,000 across **Stocks, Bonds, ETFs, Gold, Cash, 
 ### 🧩 Money personality
 A scenario quiz at onboarding ("You have ₹10,000 left at the end of the month…") gives a profile such as 🟢 Planner · 🟡 Moderate risk · 🔴 Impulsive spending. It tailors the simulations and comes with a clear note that it is not a diagnosis or professional assessment.
 
+### 🎚️ Difficulty levels & "How FiQuo works"
+- **Beginner / Standard / Advanced**, chosen at sign-up or in Settings. Beginner gives more time, simpler questions and hints. Advanced adds harder generated questions to lessons, practice and the daily challenge, tighter game timers, trickier games and a tougher Life Sim, plus +25% XP. The Portfolio Simulator and Market Mania are the same on every level.
+- **How FiQuo works** page (tap the Lv badge): every way to earn XP, all levels, coins, streaks, leagues, quests, badges and difficulty, explained.
+
 ### 🗺️ Weekly quests & 🫙 real savings jar
 - **Weekly quests:** three new quests every Monday (finish lessons, play games, run a simulation…), each with a coin reward, plus a bonus chest for finishing all three.
 - **Real savings jar:** set a real-life goal, log money as you actually save it, and see progress and weeks to go. It's stored only on your device.
