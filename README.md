@@ -46,7 +46,18 @@ Split ₹10 lakh / $10,000 / £10,000 across **Stocks, Bonds, ETFs, Gold, Cash, 
 ### 🧩 Money personality
 A scenario quiz at onboarding ("You have ₹10,000 left at the end of the month…") gives a profile such as 🟢 Planner · 🟡 Moderate risk · 🔴 Impulsive spending. It tailors the simulations and comes with a clear note that it is not a diagnosis or professional assessment.
 
+### 📝 Quizzes & unit tests (like Khan Academy)
+- Every unit has a **mid-unit quiz** after lesson 2 and a **unit test** at the end that mixes ideas from every lesson.
+- **7 question types:** multiple choice, true/false, select all that apply, type a number, put in order, match up and **short answer (SAQ)**. Short answers are auto-marked by checking for key ideas, then show which ideas you hit and a model answer.
+- Results give a score, a mastery level (Mastered 90%+, Proficient 70%+, Familiar 50%+), a breakdown by question type and the lessons worth reviewing. Each retake draws a new mix of questions.
+- New badges: 🏁 Unit Master (90%+ on a unit test) and 🎯 Test Ace (100%).
+
+### 🔥 Advanced courses
+Three extra units on Standard and Advanced: **Investing Deep Dive** (index vs active funds, asset allocation, valuing a company), **How the Economy Works** (inflation and central banks, interest rates, exchange rates) and **Entrepreneur's Toolkit** (break-even, pricing and margins, cash flow and funding). Beginner sees a teaser.
+
 ### 🎚️ Difficulty levels & "How FiQuo works"
+- **The lessons themselves change:** Beginner starts every lesson with an "🌱 In simple words" summary; Advanced ends it with a "🔥 Go deeper" card (e.g. zero-based budgeting, effective vs marginal tax, the compound interest formula) plus 2 extra-hard questions.
+- **Tests change too:** Beginner 4-question quizzes / 8-question tests with gentler short-answer marking and hints; Standard 5 / 10; Advanced 6 / 12 with extra-hard questions and strict marking.
 - **Beginner / Standard / Advanced**, chosen at sign-up or in Settings. Beginner gives more time, simpler questions and hints. Advanced adds harder generated questions to lessons, practice and the daily challenge, tighter game timers, trickier games and a tougher Life Sim, plus +25% XP. The Portfolio Simulator and Market Mania are the same on every level.
 - **How FiQuo works** page (tap the Lv badge): every way to earn XP, all levels, coins, streaks, leagues, quests, badges and difficulty, explained.
 
@@ -110,6 +121,8 @@ Progress is saved in each browser (no accounts), so a phone and a laptop keep se
 index.html            App shell (header, screen, bottom tabs)
 css/styles.css        All styling, including light and dark themes
 js/content.js         ✏️ Lessons, quizzes, game data and tips. Edit this to add content!
+js/content-advanced.js Advanced courses and the Beginner/Advanced lesson extras
+js/assess.js          Quizzes and unit tests: question banks, 7 question types, marking
 js/country.js         Country modes (IN/US/UK) and country lessons
 js/adaptive.js        Literacy Score, question generators, practice mode
 js/personality.js     Money personality quiz

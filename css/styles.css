@@ -161,7 +161,7 @@ select { font: inherit; padding: 8px; border-radius: 10px; border: 1px solid var
 .unit-count { margin-left: auto; font-weight: 900; color: var(--c); }
 .path { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
 .node { display: flex; align-items: center; gap: 12px; padding: 8px; border-radius: 14px; cursor: pointer; }
-.node:nth-child(2) { margin-left: 28px; } .node:nth-child(3) { margin-left: 56px; }
+.node:nth-child(4n+2), .node:nth-child(4n+4) { margin-left: 28px; } .node:nth-child(4n+3) { margin-left: 56px; }
 .node-dot { width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; font-size: 24px; background: var(--card2); border: 3px solid var(--line); flex: none; }
 .node.open .node-dot { background: var(--c); border-color: color-mix(in srgb, var(--c) 60%, #000); box-shadow: 0 0 0 5px color-mix(in srgb, var(--c) 25%, transparent); animation: pulse 2s infinite; }
 .node.done .node-dot { background: color-mix(in srgb, var(--c) 25%, var(--card)); border-color: var(--c); }
@@ -502,7 +502,7 @@ h4 { margin: 10px 0 4px; }
   .onboarding { grid-column: 1 / -1; grid-row: 1 / -1; max-width: 620px; width: 100%; margin-inline: auto; }
 
   /* Focused screens (lessons, quizzes, games) stay at a comfortable reading width */
-  .screen-lesson, .screen-practice, .screen-game, .screen-personality, .screen-sim, .screen-ranks {
+  .screen-lesson, .screen-practice, .screen-test, .screen-game, .screen-personality, .screen-sim, .screen-ranks {
     max-width: 860px; width: 100%; justify-self: center;
   }
   .screen-lesson, .screen-practice { padding-bottom: 56px; }
@@ -592,3 +592,51 @@ a.link { color: var(--accent2); font-weight: 800; }
 @media (min-width: 600px) { .diff-grid { grid-template-columns: repeat(3, 1fr); } }
 @media (min-width: 960px) { .screen-how { max-width: 860px; width: 100%; justify-self: center; } }
 @media (max-width: 420px) { .how-row { grid-template-columns: 1fr; gap: 2px; } }
+
+/* ---------- Quizzes & unit tests ---------- */
+.test-node .node-dot { border-radius: 16px; }
+.test-node.test .node-dot { width: 58px; height: 58px; }
+.test-node .node-title small { font-weight: 700; font-size: 12px; }
+.unit.adv { border: 2px solid color-mix(in srgb, var(--c) 45%, var(--line)); }
+.adv-tag { display: inline-block; font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: .04em; color: var(--c); background: color-mix(in srgb, var(--c) 14%, transparent); padding: 3px 9px; border-radius: 99px; margin-bottom: 8px; }
+.mastery-line { font-size: 13px; font-weight: 800; color: var(--c); margin-top: 6px; }
+.adv-teaser h3 { margin: 4px 0; }
+.lesson-card.extra { border: 2px dashed color-mix(in srgb, var(--c) 50%, var(--line)); border-radius: var(--radius); background: color-mix(in srgb, var(--c) 6%, var(--card)); }
+.lesson-card.extra .kicker { margin-bottom: 6px; }
+.screen-test { padding-bottom: 40px; }
+.screen-test .check-bar { position: sticky; bottom: 8px; left: auto; transform: none; max-width: none; width: auto; margin-top: 18px; border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); max-height: 72vh; overflow-y: auto; }
+.check-bar.part { background: color-mix(in srgb, var(--gold) 16%, var(--bg)); }
+.check-bar.part b { color: color-mix(in srgb, var(--gold) 70%, var(--text)); }
+.fb-detail { margin-top: 6px; font-size: 14px; }
+.fb-detail p { margin: 4px 0; }
+.ans-list { margin: 6px 0; padding-left: 20px; }
+.ans-list li { margin: 2px 0; }
+.ideas { list-style: none; padding: 0; margin: 6px 0; }
+.ideas li { padding: 3px 0; font-weight: 700; }
+.ideas li.miss { color: var(--muted); }
+.model { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; margin-top: 8px; }
+.model p { margin: 4px 0 0; }
+.opt.check { display: flex; align-items: center; gap: 10px; }
+.opt.check .box { width: 20px; height: 20px; border-radius: 6px; border: 2px solid var(--line); flex: none; display: grid; place-items: center; font-size: 13px; }
+.opt.check.sel .box { background: var(--accent2); border-color: var(--accent2); }
+.opt.check.sel .box::after { content: '✓'; color: #fff; font-weight: 900; }
+.opts.tf { flex-direction: row; } .opts.tf .opt { flex: 1; text-align: center; }
+.num-in { display: flex; align-items: center; gap: 8px; font-size: 20px; font-weight: 900; }
+.num-in input { flex: 1; min-width: 0; font: inherit; font-size: 22px; padding: 12px 14px; border-radius: 14px; border: 2px solid var(--line); background: var(--card); color: var(--text); }
+.num-in input:focus, .screen-test textarea:focus { outline: none; border-color: var(--accent2); }
+.screen-test textarea { width: 100%; box-sizing: border-box; font: inherit; font-size: 16px; padding: 12px 14px; border-radius: 14px; border: 2px solid var(--line); background: var(--card); color: var(--text); resize: vertical; }
+.order-built { min-height: 60px; border: 2px dashed var(--line); border-radius: 14px; padding: 8px; display: flex; flex-direction: column; gap: 6px; justify-content: center; }
+.ord-item { display: flex; gap: 10px; align-items: center; font-weight: 700; background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; }
+.ord-item b { width: 24px; height: 24px; border-radius: 50%; background: var(--c); color: #fff; display: grid; place-items: center; font-size: 13px; flex: none; }
+.order-pool { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 8px; }
+.order-pool .chip { text-align: left; }
+.order-pool .chip:disabled { opacity: .35; cursor: default; }
+.match { display: flex; flex-direction: column; gap: 10px; }
+.match-row { display: grid; grid-template-columns: 1fr 1.3fr; gap: 10px; align-items: center; font-weight: 800; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px; }
+.match-row select { width: 100%; min-width: 0; }
+@media (max-width: 480px) { .match-row { grid-template-columns: 1fr; gap: 6px; } }
+.type-chips { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin: 4px 0 12px; }
+.type-chips .chip { cursor: default; }
+.card.left { text-align: left; }
+.row-link { display: block; padding: 8px 0; font-weight: 800; border-top: 1px solid var(--line); }
+.row-link:first-of-type { border-top: 0; }

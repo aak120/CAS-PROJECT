@@ -39,7 +39,7 @@ window.MQ = window.MQ || {};
     if (why === 'Quest') return;
     const q = data(), c = q.counts, add = (k, n) => { c[k] = (c[k] || 0) + (n || 1); };
     add('xp', amount);
-    if (why === 'Lesson') add('lesson');
+    if (why === 'Lesson' || why === 'Unit test' || why === 'Quiz') add('lesson');
     else if (why === 'Practice') add('practice');
     else if (why === 'Daily challenge') add('daily');
     else if (/Life Sim|Portfolio Sim|Market year/.test(why || '')) add('sim');

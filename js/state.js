@@ -68,6 +68,7 @@ window.MQ = window.MQ || {};
       records: {},         // personal bests for category leaderboards
       counters: {},        // scams spotted, sims finished, ...
       challenges: [],      // multiplayer challenge results
+      tests: {},           // quiz and unit test bests: 'unit:quiz' / 'unit:test'
       lifeSim: null, portfolio: null,
       settings: { currency: '$', sound: true, theme: 'auto', country: null, difficulty: 'normal' }
     };
@@ -102,9 +103,9 @@ window.MQ = window.MQ || {};
 
   // ---------- Difficulty ----------
   MQ.DIFFICULTY = {
-    easy: { id: 'easy', e: '🌱', name: 'Beginner', xp: 1, desc: 'More time, simpler questions and hints when you get something wrong.' },
-    normal: { id: 'normal', e: '⚖️', name: 'Standard', xp: 1, desc: 'The normal FiQuo experience.' },
-    hard: { id: 'hard', e: '🔥', name: 'Advanced', xp: 1.25, desc: 'Harder questions, tighter timers, trickier games and a tougher Life Sim. Earn +25% XP.' }
+    easy: { id: 'easy', e: '🌱', name: 'Beginner', xp: 1, desc: 'Every lesson starts with an "In simple words" summary. More time, simpler questions, hints when you slip, shorter tests (8 questions) with gentler short-answer marking.' },
+    normal: { id: 'normal', e: '⚖️', name: 'Standard', xp: 1, desc: 'The normal FiQuo experience. Unlocks the 3 Advanced courses. Unit tests have 10 questions.' },
+    hard: { id: 'hard', e: '🔥', name: 'Advanced', xp: 1.25, desc: 'Each lesson ends with a "Go deeper" card and 2 extra-hard questions. 12-question unit tests with strict marking, tighter timers, trickier games and a tougher Life Sim. Earn +25% XP.' }
   };
   MQ.difficulty = () => MQ.DIFFICULTY[(S && S.settings.difficulty) || 'normal'] || MQ.DIFFICULTY.normal;
   // Pick a value by difficulty: MQ.diff(beginner, standard, advanced)
@@ -191,6 +192,7 @@ window.MQ = window.MQ || {};
     else if (why === 'Practice') name = 'practice_complete';
     else if (why === 'Daily challenge') name = 'daily_challenge';
     else if (why === 'Personality') name = 'personality_quiz';
+    else if (why === 'Unit test' || why === 'Quiz') { name = 'test_complete'; params.test_kind = why; }
     else if (/Life Sim|Portfolio Sim|Market year/.test(why)) { name = 'simulation_complete'; params.simulation = why; }
     else if ((MQ.GAMES || []).some(g => g.title === why)) { name = 'game_complete'; params.game = why; }
     if (!name) return;
@@ -226,6 +228,8 @@ window.MQ = window.MQ || {};
     { id: 'self-aware', e: '🧩', name: 'Know Thyself', desc: 'Discover your money personality', test: s => !!s.personality },
     { id: 'challenger', e: '⚔️', name: 'Challenger', desc: 'Finish a multiplayer challenge', test: s => s.challenges.length >= 1 },
     { id: 'quest-master', e: '🗺️', name: 'Quest Master', desc: 'Complete all 3 weekly quests', test: s => flagOn(s, 'questMaster') },
+    { id: 'unit-master', e: '🏁', name: 'Unit Master', desc: 'Score 90%+ on a unit test', test: s => flagOn(s, 'unitMaster') },
+    { id: 'test-ace', e: '🎯', name: 'Test Ace', desc: 'Get 100% on a quiz or unit test', test: s => flagOn(s, 'testAce') },
     { id: 'real-saver', e: '🫙', name: 'Real Saver', desc: 'Reach a real-life savings goal', test: s => flagOn(s, 'realSaver') },
     { id: 'literate', e: '🧠', name: 'Money Brain', desc: 'Reach 70%+ Literacy Score in every category', test: s => MQ.adaptive && MQ.adaptive.allAbove(0.7) },
     { id: 'first-trade', e: '📈', name: 'First Trade', desc: 'Buy your first stock in the Market Sim', test: s => s.badgeFlags && s.badgeFlags.trade },

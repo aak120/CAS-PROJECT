@@ -1,9 +1,9 @@
 // Offline support: cache the app shell so FiQuo works without internet once loaded.
 // Bump VERSION whenever you change any file so phones pick up the update.
-const VERSION = 'fiquo-v16';
+const VERSION = 'fiquo-v17';
 const FILES = [
   './', './index.html', './manifest.webmanifest', './css/styles.css',
-  './js/content.js', './js/country.js', './js/ui.js', './js/state.js', './js/app.js', './js/extras.js', './js/adaptive.js', './js/personality.js',
+  './js/content.js', './js/content-advanced.js', './js/country.js', './js/ui.js', './js/state.js', './js/app.js', './js/extras.js', './js/adaptive.js', './js/assess.js', './js/personality.js',
   './js/games.js', './js/games2.js', './js/sims.js', './js/lifesim.js', './js/portfolio.js',
   './icons/icon.svg', './icons/icon-192.png', './icons/icon-512.png'
 ];

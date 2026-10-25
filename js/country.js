@@ -202,5 +202,9 @@ window.MQ = window.MQ || {};
     u.lessons.forEach((l, i) => { MQ.LESSONS[l.id] = Object.assign(l, { unitId: u.id, index: i }); });
   });
   MQ.countryUnit = function () { return MQ.COUNTRY_UNITS[MQ.country().id] || null; };
-  MQ.visibleUnits = function () { const cu = MQ.countryUnit(); return cu ? MQ.UNITS.concat([cu]) : MQ.UNITS; };
+  // Advanced courses show on Standard and Advanced difficulty; Beginner sees a teaser instead.
+  MQ.visibleUnits = function () {
+    const cu = MQ.countryUnit(), adv = MQ.ADV_UNITS && MQ.difficulty && MQ.difficulty().id !== 'easy' ? MQ.ADV_UNITS : [];
+    return MQ.UNITS.concat(cu ? [cu] : [], adv);
+  };
 })(window.MQ);

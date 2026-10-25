@@ -71,7 +71,7 @@ window.MQ = window.MQ || {};
     active = map[active] || active;
     const tabs = [['home', '🏠', 'Home'], ['learn', '📚', 'Learn'], ['play', '🎮', 'Play'], ['sim', '📈', 'Simulate'], ['ranks', '🏆', 'Ranks']];
     $('#tabs').innerHTML = tabs.map(t => '<a href="#/' + t[0] + '" class="tab ' + (active === t[0] ? 'active' : '') + '"><span class="ti">' + t[1] + '</span><span class="tl">' + t[2] + '</span></a>').join('');
-    $('#tabs').style.display = ['lesson', 'game', 'practice', 'personality'].includes(location.hash.split('/')[1]) ? 'none' : '';
+    $('#tabs').style.display = ['lesson', 'test', 'game', 'practice', 'personality'].includes(location.hash.split('/')[1]) ? 'none' : '';
   }
 
   // ---------- Onboarding ----------
@@ -199,7 +199,7 @@ window.MQ = window.MQ || {};
     });
   }
 
-  function unitOf(lesson) { return MQ.UNITS.find(u => u.id === lesson.unitId) || Object.values(MQ.COUNTRY_UNITS).find(u => u.id === lesson.unitId); }
+  function unitOf(lesson) { return MQ.UNITS.concat(MQ.ADV_UNITS || []).find(u => u.id === lesson.unitId) || Object.values(MQ.COUNTRY_UNITS).find(u => u.id === lesson.unitId); }
   function isUnlocked(lesson) {
     if (lesson.index === 0) return true;
     const prev = unitOf(lesson).lessons[lesson.index - 1];
@@ -216,21 +216,25 @@ window.MQ = window.MQ || {};
     const all = units.reduce((t, u) => t.concat(u.lessons), []);
     const done = all.filter(l => S.lessons[l.id] && S.lessons[l.id].done).length;
     const w = MQ.adaptive.weakest();
-    main.innerHTML = '<h1>Learn</h1><p class="sub">' + done + ' of ' + all.length + ' lessons complete. Units can be played in any order.</p>' +
+    main.innerHTML = '<h1>Learn</h1><p class="sub">' + done + ' of ' + all.length + ' lessons complete. Units can be played in any order. Each unit has a quiz halfway and a unit test at the end.</p>' +
       '<div class="card"><div class="row"><div><div class="kicker">🧠 Financial Literacy Score</div><h3>' + (MQ.adaptive.overall() ? Math.round(MQ.adaptive.overall() * 100) + '% overall' : 'Not enough answers yet') + '</h3></div><a class="btn sm primary" href="#/practice' + (w ? '/' + w.cat.id : '') + '">🎯 Practice</a></div>' + MQ.adaptive.scoreTable() +
       '<p class="hint">Tap a topic for a 3-minute adaptive challenge with freshly generated questions.</p></div>' +
       units.map(u => {
         const d = u.lessons.filter(l => S.lessons[l.id] && S.lessons[l.id].done).length;
-        return '<section class="unit" style="--c:' + u.color + '"><div class="unit-head"><span class="unit-emoji">' + u.emoji + '</span><div><h2>' + u.title + '</h2><p>' + esc(u.blurb) + '</p></div><span class="unit-count">' + d + '/' + u.lessons.length + '</span></div>' +
+        const ut = MQ.assess.rec(u.id, 'test');
+        return '<section class="unit' + (u.advanced ? ' adv' : '') + '" style="--c:' + u.color + '">' + (u.advanced ? '<div class="adv-tag">🔥 Advanced course</div>' : '') + '<div class="unit-head"><span class="unit-emoji">' + u.emoji + '</span><div><h2>' + u.title + '</h2><p>' + esc(u.blurb) + '</p></div><span class="unit-count">' + d + '/' + u.lessons.length + '</span></div>' +
           '<div class="bar unit-bar"><i style="width:' + (d / u.lessons.length * 100) + '%"></i></div>' +
+          (ut ? '<div class="mastery-line">' + MQ.assess.masteryOf(ut.best)[1] + ' Unit ' + MQ.assess.masteryOf(ut.best)[0].toLowerCase() + ' · best test ' + Math.round(ut.best * 100) + '%</div>' : '') +
           '<div class="path">' + u.lessons.map(l => {
             const rec = S.lessons[l.id], unlocked = isUnlocked(l);
             const cls = rec && rec.done ? 'done' : unlocked ? 'open' : 'locked';
             const stars = rec && rec.done ? '<span class="stars">' + starStr(rec.best) + '</span>' : '';
-            return '<a class="node ' + cls + '" ' + (unlocked ? 'href="#/lesson/' + l.id + '"' : 'aria-disabled="true"') + '><span class="node-dot">' + (cls === 'locked' ? '🔒' : l.emoji) + '</span><span class="node-title">' + esc(l.title) + stars + '</span></a>';
-          }).join('') + '</div></section>';
-      }).join('');
-    $$('.node.locked', main).forEach(n => n.onclick = () => toast('🔒 Finish the previous lesson to unlock this one'));
+            return '<a class="node ' + cls + '" ' + (unlocked ? 'href="#/lesson/' + l.id + '"' : 'aria-disabled="true"') + '><span class="node-dot">' + (cls === 'locked' ? '🔒' : l.emoji) + '</span><span class="node-title">' + esc(l.title) + stars + '</span></a>' +
+              (l.index === 1 && u.lessons.length > 2 ? MQ.assess.nodeHtml(u, 'quiz') : '');
+          }).join('') + MQ.assess.nodeHtml(u, 'test') + '</div></section>';
+      }).join('') +
+      (MQ.difficulty().id === 'easy' && MQ.ADV_UNITS ? '<section class="card adv-teaser"><div class="kicker">🔒 ' + MQ.ADV_UNITS.length + ' advanced courses</div><h3>' + MQ.ADV_UNITS.map(u => u.emoji + ' ' + esc(u.title)).join(' · ') + '</h3><p class="muted small">Ready for more? Switch to Standard or Advanced difficulty in Profile → Settings to unlock investing deep dives, how the economy works and an entrepreneur\'s toolkit.</p><a class="btn sm ghost" href="#/profile">Open settings</a></section>' : '');
+    $$('.node.locked', main).forEach(n => n.onclick = () => toast('🔒 ' + (n.dataset.msg || 'Finish the previous lesson to unlock this one')));
   });
   function starStr(best) { const n = best >= 1 ? 3 : best >= 0.75 ? 2 : 1; return '★'.repeat(n) + '☆'.repeat(3 - n); }
 
@@ -240,7 +244,10 @@ window.MQ = window.MQ || {};
     if (!lesson) { go('#/learn'); return; }
     if (!isUnlocked(lesson)) { toast('🔒 Locked'); go('#/learn'); return; }
     const unit = unitOf(lesson);
-    const cards = lesson.cards;
+    // Difficulty changes the lesson itself: Beginner opens with a plain-words summary, Advanced ends with a deeper idea.
+    const cards = lesson.cards.slice(), extra = (MQ.LESSON_EXTRA || {})[lesson.id], dId = MQ.difficulty().id;
+    if (extra && dId === 'easy') cards.unshift({ emoji: '🌱', title: 'In simple words', body: extra.simple, tag: 'simple' });
+    if (extra && dId === 'hard') cards.push({ emoji: '🔥', title: 'Go deeper: ' + extra.deep[0], body: extra.deep[1], tag: 'deep' });
     // Advanced difficulty adds two freshly generated, harder questions on the same topic.
     const quiz = lesson.quiz.slice();
     if (MQ.difficulty().id === 'hard') {
@@ -264,7 +271,7 @@ window.MQ = window.MQ || {};
     }
     function showCard() {
       const c = cards[step];
-      frame('<div class="lesson-card pop"><div class="big-emoji">' + c.emoji + '</div><h2>' + esc(money(c.title)) + '</h2><p>' + money(c.body) + '</p></div>' +
+      frame('<div class="lesson-card pop' + (c.tag ? ' extra ' + c.tag : '') + '">' + (c.tag ? '<div class="kicker">' + (c.tag === 'simple' ? '🌱 Beginner summary' : '🔥 Advanced extra') + '</div>' : '') + '<div class="big-emoji">' + c.emoji + '</div><h2>' + esc(money(c.title)) + '</h2><p>' + money(c.body) + '</p></div>' +
         '<div class="lesson-foot"><span class="muted">' + (step + 1) + ' / ' + cards.length + '</span>' +
         (step > 0 ? '<button class="btn ghost" id="back">Back</button>' : '') +
         '<button class="btn primary" id="next">' + (step === cards.length - 1 ? 'Start quiz ✏️' : 'Next') + '</button></div>');
@@ -333,6 +340,8 @@ window.MQ = window.MQ || {};
       rows([
         ['📚 Finish a lesson', '10 XP + 3 per question right first time + 5 for a perfect score'],
         ['🔁 Replay a lesson', 'Half XP'],
+        ['📝 Mid-unit quiz', '10 XP + up to 15 more for your score'],
+        ['🏁 Unit test', '20 XP + up to 30 more for your score (retakes: half)'],
         ['⚡ Daily challenge', '15 XP if right, 3 XP for trying'],
         ['🎯 3-minute practice round', '8 XP + 2 per correct answer'],
         ['🎮 Mini-games', 'About 5–40 XP, depending on your score'],
