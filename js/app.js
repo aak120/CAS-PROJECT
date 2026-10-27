@@ -13,6 +13,7 @@ window.MQ = window.MQ || {};
 
   // ---------- Router ----------
   const routes = {};
+  const PUBLIC = ['about', 'teacher'];
   function route(name, fn) { routes[name] = fn; }
   function go(hash) { if (location.hash === hash) render(); else location.hash = hash; }
   function render() {
@@ -20,17 +21,22 @@ window.MQ = window.MQ || {};
     closeModal();
     S = ST.get();
     applyTheme();
-    if (!S.profile) { renderOnboarding(); return; }
     const parts = (location.hash.replace(/^#\/?/, '') || 'home').split('/');
+    // The story and teacher pages work without a profile, so teachers and visitors can open them directly.
+    const isPublic = PUBLIC.includes(parts[0]);
+    if (!S.profile && !isPublic) {
+      if (parts[0] === 'join' && parts[1] && MQ.cloud) { MQ.cloud.research().pendingClass = parts[1].toUpperCase(); ST.save(); }
+      renderOnboarding(); return;
+    }
     const fn = routes[parts[0]] || routes.home;
     const main = $('#main');
     main.innerHTML = '';
     main.className = 'screen screen-' + parts[0];
-    $('.app').classList.toggle('focus', parts[0] === 'personality');
+    $('.app').classList.toggle('focus', parts[0] === 'personality' || !S.profile);
     trackScreen(parts);
     fn(main, parts.slice(1));
     renderHeader();
-    renderTabs(parts[0]);
+    if (S.profile) renderTabs(parts[0]); else $('#tabs').innerHTML = '';
     window.scrollTo(0, 0);
   }
   function onLeave(fn) { cleanup = fn; }
@@ -58,6 +64,7 @@ window.MQ = window.MQ || {};
 
   // ---------- Header & tabs ----------
   function renderHeader() {
+    if (!S.profile) { $('#topbar').innerHTML = '<a href="#/about" class="brand">💸 FiQuo</a><a class="btn sm primary" href="#/home">Start learning</a>'; return; }
     const st = ST.streakNow(), lv = ST.levelInfo(S.xp);
     $('#topbar').innerHTML =
       '<div class="me"><a href="#/profile" aria-label="Profile"><span class="avatar sm">' + esc(S.profile.avatar) + '</span></a><a href="#/how" class="lvl" title="How XP and levels work">Lv ' + lv.level + ' <span class="lvl-q">?</span></a>' + (MQ.difficulty().id !== 'normal' ? '<span class="lvl diff-pill" title="' + MQ.difficulty().name + ' difficulty">' + MQ.difficulty().e + '</span>' : '') + '</div>' +
@@ -67,11 +74,11 @@ window.MQ = window.MQ || {};
       '</div>';
   }
   function renderTabs(active) {
-    const map = { lesson: 'learn', practice: 'learn', game: 'play', sim: 'sim', personality: 'home', how: 'home' };
+    const map = { lesson: 'learn', test: 'learn', practice: 'learn', game: 'play', sim: 'sim', personality: 'home', how: 'home', check: 'home', survey: 'home', about: 'home', teacher: 'home', join: 'home' };
     active = map[active] || active;
     const tabs = [['home', '🏠', 'Home'], ['learn', '📚', 'Learn'], ['play', '🎮', 'Play'], ['sim', '📈', 'Simulate'], ['ranks', '🏆', 'Ranks']];
     $('#tabs').innerHTML = tabs.map(t => '<a href="#/' + t[0] + '" class="tab ' + (active === t[0] ? 'active' : '') + '"><span class="ti">' + t[1] + '</span><span class="tl">' + t[2] + '</span></a>').join('');
-    $('#tabs').style.display = ['lesson', 'test', 'game', 'practice', 'personality'].includes(location.hash.split('/')[1]) ? 'none' : '';
+    $('#tabs').style.display = ['lesson', 'test', 'game', 'practice', 'personality', 'check'].includes(location.hash.split('/')[1]) ? 'none' : '';
   }
 
   // ---------- Onboarding ----------
@@ -84,7 +91,7 @@ window.MQ = window.MQ || {};
     main.innerHTML =
       '<div class="hero"><div class="logo">💸</div><h1>FiQuo</h1><p>Level up your money skills with bite-sized lessons, games and simulations. No real money involved, ever.</p></div>' +
       '<div class="card"><label class="label" for="name">What should we call you?</label><input id="name" class="input" maxlength="16" placeholder="Your nickname" autocomplete="off">' +
-      '<p class="hint">Use a nickname, not your full name. Your progress stays on this device.</p>' +
+      '<p class="hint">Use a nickname, not your real name. It stays on this device and is never sent to FiQuo.</p>' +
       '<div class="label">Pick an avatar</div><div class="avatar-grid">' + FREE_AVATARS.map(a => '<button class="avatar-pick ' + (a === avatar ? 'sel' : '') + '" data-a="' + a + '">' + a + '</button>').join('') + '</div>' +
       '<div class="label">Where do you live?</div><div class="chips country-chips">' + ['IN', 'US', 'UK', 'GL'].map(k => '<button class="chip ' + (k === country ? 'on' : '') + '" data-c="' + k + '">' + MQ.COUNTRIES[k].flag + ' ' + MQ.COUNTRIES[k].name + '</button>').join('') + '</div>' +
       '<p class="hint">Sets your currency, typical salaries and prices in simulations, and a country-specific unit (tax, banking, credit).</p>' +
@@ -155,7 +162,7 @@ window.MQ = window.MQ || {};
   });
 
   function homeNudges() {
-    let out = '';
+    let out = MQ.impact ? MQ.impact.homeCard() : '';
     if (!S.personality) out += '<a class="card nudge" href="#/personality" style="--c:#8b5cf6"><span class="emoji-tile">🧩</span><div><div class="kicker">2-minute quiz</div><h3>Discover your money personality</h3><p class="muted small">Simulations adapt to how you handle money.</p></div><span class="go">›</span></a>';
     const w = MQ.adaptive.weakest();
     if (w) out += '<a class="card nudge" href="#/practice/' + w.cat.id + '" style="--c:#ef4444"><span class="emoji-tile">' + w.cat.e + '</span><div><div class="kicker">Personal coach · ' + Math.round(w.score * 100) + '%</div><h3>You seem to be struggling with ' + esc(w.cat.concept) + '.</h3><p class="muted small">Want a 3-minute challenge? Easier questions first, with explanations.</p></div><span class="go">›</span></a>';
@@ -366,6 +373,7 @@ window.MQ = window.MQ || {};
       '<section class="card how"><h2>🧠 XP vs Literacy Score</h2><p><b>XP shows effort</b>: how much you have done. Your <b>Financial Literacy Score</b> shows <b>understanding</b>: how often you get questions right in each topic, with recent answers counting most. You can have lots of XP and still have a topic to work on. The Personal Coach on Home points you to it.</p></section>' +
       '<section class="card how"><h2>🎚️ Difficulty</h2>' + rows(Object.values(MQ.DIFFICULTY).map(d => [d.e + ' ' + d.name + (d.id === D.id ? ' (yours)' : ''), d.desc])) +
       '<p class="hint">Change it anytime in Profile → Settings. The Portfolio Simulator and Market Mania work the same on every difficulty.</p></section>' +
+      '<a class="card nudge" href="#/about" style="--c:#0ea5e9"><span class="emoji-tile">💸</span><div><h3>The FiQuo story & impact</h3><p class="muted small">Why FiQuo was built and how we measure whether it works.</p></div><span class="go">›</span></a>' +
       '<a class="btn primary block lg" href="#/home">Got it</a>';
   });
 
@@ -490,7 +498,9 @@ window.MQ = window.MQ || {};
       '<label class="set-row"><span>Theme</span><select id="s-theme">' + [['auto', 'Match device'], ['light', 'Light'], ['dark', 'Dark']].map(t => '<option value="' + t[0] + '" ' + (S.settings.theme === t[0] ? 'selected' : '') + '>' + t[1] + '</option>').join('') + '</select></label>' +
       '<label class="set-row"><span>Sound effects</span><input type="checkbox" id="s-sound" ' + (S.settings.sound ? 'checked' : '') + '></label>' +
       '<button class="btn danger ghost block" id="reset">Reset all progress</button></div>' +
-      '<p class="hint center">FiQuo uses Google Analytics to count anonymous visits and which features are used. Your name, answers and progress stay on this device.</p>' +
+      MQ.impact.profileHtml() +
+      '<a class="card nudge" href="#/about" style="--c:#0ea5e9"><span class="emoji-tile">💸</span><div><h3>The FiQuo story & impact</h3><p class="muted small">Why FiQuo exists, how it is measured, and how teachers can use it.</p></div><span class="go">›</span></a>' +
+      '<p class="hint center">FiQuo uses Google Analytics to count anonymous visits and which features are used. Your name and progress stay on this device. Research sharing (above) is optional and never includes your name.</p>' +
       '<p class="hint center">FiQuo is an educational game. All money, stocks and events are simulated. Not financial advice.</p>';
 
     $('#buy-freeze').onclick = () => {
@@ -505,6 +515,7 @@ window.MQ = window.MQ || {};
       }
       S.profile.avatar = e; ST.save(); render();
     });
+    MQ.impact.wireProfile(main);
     $('#s-goal').onchange = e => { S.goal = +e.target.value; ST.save(); };
     $('#s-diff').onchange = e => { S.settings.difficulty = e.target.value; ST.save(); toast(MQ.difficulty().e + ' ' + MQ.difficulty().name + ' mode on'); renderHeader(); };
     if ($('#s-cur')) $('#s-cur').onchange = e => { S.settings.currency = e.target.value; ST.save(); render(); };

@@ -359,6 +359,7 @@ window.MQ = window.MQ || {};
         (lessonsToReview.length ? '<div class="card left"><h3>📖 Worth reviewing</h3>' + lessonsToReview.map(l => '<a class="row-link" href="#/lesson/' + l.id + '">' + l.emoji + ' ' + esc(l.title) + ' ›</a>').join('') + '</div>' : '') +
         '<a class="btn primary block lg" href="#/test/' + unit.id + '/' + kind + '">🔁 Try a new set of questions</a><a class="btn ghost block" href="#/learn">Back to units</a></div>';
       if (p >= 0.7) MQ.ui.confetti();
+      MQ.cloud.send('test_results', { unit: unit.id, kind, pct: Math.round(p * 1000) / 1000, questions: qs.length, difficulty: D.id });
       if (kind === 'test' && p >= 0.9) ST.flag('unitMaster');
       if (p === 1) ST.flag('testAce');
       ST.addXP(xp, kind === 'test' ? 'Unit test' : 'Quiz');

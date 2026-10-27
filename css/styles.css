@@ -640,3 +640,46 @@ a.link { color: var(--accent2); font-weight: 800; }
 .card.left { text-align: left; }
 .row-link { display: block; padding: 8px 0; font-weight: 800; border-top: 1px solid var(--line); }
 .row-link:first-of-type { border-top: 0; }
+
+/* ---------- Money Check, survey, story & teacher pages ---------- */
+.brand { font-weight: 900; font-size: 20px; color: var(--text); }
+.check-row { display: flex; gap: 10px; align-items: flex-start; cursor: pointer; margin: 8px 0; }
+.check-row input { width: 20px; height: 20px; margin-top: 2px; flex: none; accent-color: var(--accent2); }
+.check-row span { display: flex; flex-direction: column; gap: 2px; }
+.check-row small { color: var(--muted); font-weight: 600; }
+.conf-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+.conf { font: inherit; border: 2px solid var(--line); background: var(--card); color: var(--text); border-radius: 14px; padding: 8px 2px; display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer; }
+.conf span { font-size: 26px; } .conf small { font-size: 11px; font-weight: 800; color: var(--muted); text-align: center; }
+.conf.sel { border-color: var(--accent2); background: color-mix(in srgb, var(--accent2) 12%, var(--card)); }
+.likert, .nps { display: flex; flex-wrap: wrap; gap: 6px; }
+.nps .chip { min-width: 38px; text-align: center; }
+.chip.on { border-color: var(--accent2); background: color-mix(in srgb, var(--accent2) 15%, var(--card)); }
+.bar.dual { height: auto; display: grid; gap: 3px; background: none; overflow: visible; }
+.bar.dual em, .bar.dual i { display: block; height: 6px; min-width: 3px; border-radius: 99px; }
+.bar.dual em { background: color-mix(in srgb, var(--c, var(--accent)) 35%, var(--card2)); }
+.compare .cmp { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
+.compare .cmp div { display: flex; flex-direction: column; } .compare .cmp small { color: var(--muted); font-weight: 800; text-transform: uppercase; font-size: 11px; }
+.compare .cmp b { font-size: 30px; } .compare .arrow { font-size: 24px; color: var(--muted); }
+.delta { margin-left: auto; font-weight: 900; font-size: 18px; padding: 6px 12px; border-radius: 99px; background: var(--card2); }
+.delta.up { background: var(--good-bg); color: var(--good); } .delta.down { background: var(--bad-bg); color: var(--bad); }
+.research .card.consent { box-shadow: none; padding: 0; border: 0; background: none; margin: 10px 0; }
+.mono { font-family: ui-monospace, Menlo, monospace; font-size: 13px; word-break: break-all; }
+.impact-tiles { margin-bottom: 12px; }
+.impact-tiles .stat em { font-style: normal; font-size: 11px; color: var(--muted); font-weight: 700; margin-top: 2px; }
+.story-hero { text-align: center; padding: 10px 0 18px; }
+.story-hero .sub { max-width: 560px; margin-inline: auto; }
+.story h2 { margin-top: 0; }
+.story .stat-grid { margin: 10px 0; }
+.timeline { list-style: none; padding: 0; margin: 0; border-left: 3px solid var(--line); }
+.timeline li { position: relative; padding: 0 0 14px 16px; }
+.timeline li::before { content: ''; position: absolute; left: -8px; top: 4px; width: 13px; height: 13px; border-radius: 50%; background: var(--accent); }
+.timeline .when { display: block; font-size: 11px; font-weight: 900; text-transform: uppercase; color: var(--muted); }
+.timeline p { margin: 2px 0 0; font-size: 14px; }
+.quotes { display: grid; gap: 10px; margin-bottom: 12px; }
+.quotes blockquote { margin: 0; font-style: italic; font-weight: 700; }
+.quotes cite { display: block; font-style: normal; font-size: 12px; color: var(--muted); margin-top: 6px; }
+.class-card .row { align-items: flex-start; }
+.class-card h3 { margin: 0; }
+.class-stats:not(:empty) { margin-top: 10px; }
+.code-row { flex-wrap: wrap; }
+@media (min-width: 960px) { .screen-about, .screen-teacher, .screen-check, .screen-survey { max-width: 860px; width: 100%; justify-self: center; } }

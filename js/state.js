@@ -69,6 +69,7 @@ window.MQ = window.MQ || {};
       counters: {},        // scams spotted, sims finished, ...
       challenges: [],      // multiplayer challenge results
       tests: {},           // quiz and unit test bests: 'unit:quiz' / 'unit:test'
+      research: null,      // Money Check results, consent, class code, send queue (see cloud.js)
       lifeSim: null, portfolio: null,
       settings: { currency: '$', sound: true, theme: 'auto', country: null, difficulty: 'normal' }
     };
@@ -192,6 +193,8 @@ window.MQ = window.MQ || {};
     else if (why === 'Practice') name = 'practice_complete';
     else if (why === 'Daily challenge') name = 'daily_challenge';
     else if (why === 'Personality') name = 'personality_quiz';
+    else if (why === 'Money Check') name = 'money_check';
+    else if (why === 'Survey') name = 'survey_complete';
     else if (why === 'Unit test' || why === 'Quiz') { name = 'test_complete'; params.test_kind = why; }
     else if (/Life Sim|Portfolio Sim|Market year/.test(why)) { name = 'simulation_complete'; params.simulation = why; }
     else if ((MQ.GAMES || []).some(g => g.title === why)) { name = 'game_complete'; params.game = why; }
@@ -230,6 +233,8 @@ window.MQ = window.MQ || {};
     { id: 'quest-master', e: '🗺️', name: 'Quest Master', desc: 'Complete all 3 weekly quests', test: s => flagOn(s, 'questMaster') },
     { id: 'unit-master', e: '🏁', name: 'Unit Master', desc: 'Score 90%+ on a unit test', test: s => flagOn(s, 'unitMaster') },
     { id: 'test-ace', e: '🎯', name: 'Test Ace', desc: 'Get 100% on a quiz or unit test', test: s => flagOn(s, 'testAce') },
+    { id: 'before-after', e: '📈', name: 'Before & After', desc: 'Take both Money Checks', test: s => flagOn(s, 'beforeAfter') },
+    { id: 'feedback', e: '🗣️', name: 'Voice of FiQuo', desc: 'Complete the feedback survey', test: s => flagOn(s, 'feedback') },
     { id: 'real-saver', e: '🫙', name: 'Real Saver', desc: 'Reach a real-life savings goal', test: s => flagOn(s, 'realSaver') },
     { id: 'literate', e: '🧠', name: 'Money Brain', desc: 'Reach 70%+ Literacy Score in every category', test: s => MQ.adaptive && MQ.adaptive.allAbove(0.7) },
     { id: 'first-trade', e: '📈', name: 'First Trade', desc: 'Buy your first stock in the Market Sim', test: s => s.badgeFlags && s.badgeFlags.trade },

@@ -61,6 +61,13 @@ Three extra units on Standard and Advanced: **Investing Deep Dive** (index vs ac
 - **Beginner / Standard / Advanced**, chosen at sign-up or in Settings. Beginner gives more time, simpler questions and hints. Advanced adds harder generated questions to lessons, practice and the daily challenge, tighter game timers, trickier games and a tougher Life Sim, plus +25% XP. The Portfolio Simulator and Market Mania are the same on every level.
 - **How FiQuo works** page (tap the Lv badge): every way to earn XP, all levels, coins, streaks, leagues, quests, badges and difficulty, explained.
 
+### 📊 Measuring impact: Money Check, survey, teachers and "Our story"
+- **Money Check:** a 10-question check when you start and again after 5 more lessons. Two matched versions (A/B, randomly ordered), "Not sure" instead of guessing, a confidence rating, and a before/after comparison by topic.
+- **Feedback survey:** two agree/disagree questions, a 0–10 "would you recommend", a favourite feature and an optional comment.
+- **Teacher dashboard** (`#/teacher`): free class codes and join links; anonymous class averages only, hidden until 3+ students have results.
+- **Our story** page (`#/about`): why FiQuo exists, how it was built from feedback, how impact is measured, and live impact numbers.
+- **Research backend:** a free Supabase project with opt-in, anonymous data (no names or emails) and a "delete my data" button. Setup: [docs/BACKEND.md](docs/BACKEND.md).
+
 ### 🗺️ Weekly quests & 🫙 real savings jar
 - **Weekly quests:** three new quests every Monday (finish lessons, play games, run a simulation…), each with a coin reward, plus a bonus chest for finishing all three.
 - **Real savings jar:** set a real-life goal, log money as you actually save it, and see progress and weeks to go. It's stored only on your device.
@@ -123,6 +130,10 @@ css/styles.css        All styling, including light and dark themes
 js/content.js         ✏️ Lessons, quizzes, game data and tips. Edit this to add content!
 js/content-advanced.js Advanced courses and the Beginner/Advanced lesson extras
 js/assess.js          Quizzes and unit tests: question banks, 7 question types, marking
+js/impact.js          Money Check, survey, class codes, teacher dashboard, Our story page
+js/cloud.js           Research backend client (Supabase REST, offline queue)
+js/config.js          ✏️ Supabase URL and key, founder name, contact email
+supabase/schema.sql   Database tables, privacy rules and statistics functions
 js/country.js         Country modes (IN/US/UK) and country lessons
 js/adaptive.js        Literacy Score, question generators, practice mode
 js/personality.js     Money personality quiz
@@ -160,7 +171,8 @@ Open `js/content.js`, find a unit and add an object to its `lessons` array:
 
 - Progress is stored **only on the device** (browser `localStorage`). There are no accounts and no personal data is collected, which keeps it safe for students.
 - League rivals are **simulated** players so there's always someone to race. The **Friends** tab uses copy-and-paste friend codes (snapshots of name, XP, streak) so real classmates can compare progress without a server.
-- To have a real, live class leaderboard you'd need a backend (for example Firebase or Supabase). That would be a natural "version 2" for the project.
+- Names never leave the device (Google Analytics only gets screen names and event names).
+- **Optional research sharing** (off by default) sends anonymous scores and survey answers with a random device ID to Supabase. See [docs/BACKEND.md](docs/BACKEND.md) for exactly what is stored and how to set it up.
 
 ## CAS ideas
 
